@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { apiClient } from '@/lib/api-client';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -20,7 +21,6 @@ export default function RegisterPage() {
     last_name: '',
     phone_number: '',
     role: 'BUYER',
-    // Mocking address details for Step 3 (not part of the register endpoint, but for UI)
     street_address: '',
     city: '',
     state: '',
@@ -46,7 +46,6 @@ export default function RegisterPage() {
     setError(null);
 
     try {
-      // Backend registration data (only what serializer expects)
       const registerData = {
         email: formData.email,
         username: formData.username,
@@ -59,15 +58,15 @@ export default function RegisterPage() {
 
       await apiClient.register(registerData);
       setSuccess(true);
-      // In a real app, I would then login or redirect.
-      // Since address is a separate endpoint requiring auth, I'll stop here or just show success.
     } catch (err: any) {
       console.error(err);
       if (err.errors) {
-        // Simple error stringify for demo
-        setError(JSON.stringify(err.errors));
+        // More professional error handling: extract first error message
+        const firstErr = Object.values(err.errors)[0];
+        const message = Array.isArray(firstErr) ? firstErr[0] : (typeof firstErr === 'string' ? firstErr : 'Registration failed.');
+        setError(message);
       } else {
-        setError('An unexpected error occurred.');
+        setError('Connection failed. Please check your network and try again.');
       }
     } finally {
       setLoading(false);
@@ -76,369 +75,364 @@ export default function RegisterPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-        <div className="max-w-md w-full bg-white rounded-3xl shadow-xl p-10 text-center space-y-6">
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+      <div className="min-h-screen flex items-center justify-center bg-zinc-50/50 p-6">
+        <div className="max-w-md w-full bg-white rounded-[2.5rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)] border border-zinc-100 p-12 text-center animate-in fade-in zoom-in-95 duration-700">
+          <div className="w-24 h-24 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-8">
+            <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h2 className="text-3xl font-extrabold text-gray-900">Registration Successful!</h2>
-          <p className="text-gray-500 text-lg">Your account has been created. You can now log in and manage your profile.</p>
-          <button
-            onClick={() => router.push('/login')}
-            className="w-full py-4 px-6 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-all duration-300 shadow-lg shadow-indigo-200"
+          <h2 className="text-3xl font-black text-zinc-900 tracking-tight">Account Created!</h2>
+          <p className="text-zinc-500 mt-4 leading-relaxed font-medium">Welcome to the future of commerce. Your account is ready. Let's get you signed in.</p>
+          <Link
+            href="/login"
+            className="mt-10 block w-full py-5 px-6 bg-indigo-600 hover:bg-zinc-900 text-white font-bold rounded-2xl transition-all duration-300 shadow-xl shadow-indigo-100 uppercase tracking-widest text-xs"
           >
-            Go to Login
-          </button>
+            Sign in to Dashboard
+          </Link>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f8fafc] py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl w-full">
-        {/* Progress Bar */}
-        <div className="mb-12 relative">
-          <div className="flex justify-between items-center px-4">
+    <div className="min-h-screen bg-zinc-50/50 selection:bg-indigo-100">
+      <div className="max-w-6xl mx-auto px-6 py-12 lg:py-20 flex flex-col items-center">
+        
+        {/* Header Section */}
+        <header className="mb-16 text-center max-w-lg">
+          <Link href="/" className="text-3xl font-black text-indigo-600 tracking-tighter mb-4 inline-block">TREST.</Link>
+          <h1 className="text-4xl font-black text-zinc-900 tracking-tight mb-3">Begin your journey.</h1>
+          <p className="text-zinc-500 font-medium">Join thousands of businesses and shoppers on the most advanced platform.</p>
+        </header>
+
+        {/* Professional Step Progress bar */}
+        <div className="w-full max-w-4xl mb-20 relative">
+          <div className="flex justify-between items-center relative z-10 w-full px-2">
             {[1, 2, 3].map((s) => (
-              <div key={s} className="flex flex-col items-center relative z-10">
+              <div key={s} className="flex items-center gap-4 bg-zinc-50 group cursor-default">
                 <div 
-                  className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-500 ${
-                    step >= s ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-white text-gray-400 border-2 border-gray-100'
-                  }`}
+                   className={`w-14 h-14 rounded-2xl flex items-center justify-center text-lg font-black transition-all duration-500 ${
+                     step >= s 
+                     ? 'bg-zinc-900 text-white shadow-2xl shadow-zinc-200' 
+                     : 'bg-white text-zinc-300 border border-zinc-100 shadow-sm'
+                   }`}
                 >
                   {step > s ? (
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
                     </svg>
-                  ) : s}
+                  ) : `0${s}`}
                 </div>
-                <span className={`mt-3 text-sm font-semibold transition-colors ${step >= s ? 'text-indigo-600' : 'text-gray-400'}`}>
-                  {s === 1 ? 'Account' : s === 2 ? 'Profile' : 'Address'}
-                </span>
+                <div className="hidden sm:block text-left">
+                  <p className={`text-[10px] uppercase font-bold tracking-[0.2em] transition-colors ${step >= s ? 'text-indigo-600' : 'text-zinc-300'}`}>Step 0{s}</p>
+                  <h4 className={`text-sm font-black tracking-tight transition-colors ${step >= s ? 'text-zinc-900' : 'text-zinc-300'}`}>
+                    {s === 1 ? 'Credentials' : s === 2 ? 'Profile Info' : 'Address Details'}
+                  </h4>
+                </div>
               </div>
             ))}
           </div>
-          <div className="absolute top-6 left-8 right-8 h-[2px] bg-gray-200 -z-0">
-             <div 
-              className="h-full bg-indigo-600 transition-all duration-500" 
+          
+          {/* Connector Line */}
+          <div className="absolute top-7 left-8 right-8 h-[2px] bg-zinc-100 -z-0">
+            <div 
+              className="h-full bg-indigo-600 transition-all duration-700 ease-out"
               style={{ width: `${((step - 1) / 2) * 100}%` }}
-             />
+            />
           </div>
         </div>
 
-        <div className="bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)] overflow-hidden border border-gray-50">
-          <div className="grid grid-cols-1 md:grid-cols-12 min-h-[500px]">
-            {/* Left Side: Illustration or Visual */}
-            <div className="hidden md:flex md:col-span-4 bg-indigo-600 p-12 text-white flex-col justify-between relative overflow-hidden">
-              <div className="relative z-10">
-                <h1 className="text-4xl font-bold leading-tight mb-4 tracking-tight">Create your account.</h1>
-                <p className="text-indigo-100/80 text-lg">Join our community and start your journey today.</p>
-              </div>
-              <div className="relative z-10 bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
-                <p className="text-sm font-medium italic">"The process is amazingly smooth and the design is top notch."</p>
-                <div className="mt-4 flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-indigo-400"></div>
-                  <span className="text-xs font-bold opacity-80 uppercase tracking-widest">A. Django</span>
+        {/* Main Form Container - No Side Bar */}
+        <main className="w-full max-w-4xl">
+          <form onSubmit={handleSubmit} className="bg-white rounded-[3rem] shadow-[0_30px_100px_-20px_rgba(0,0,0,0.06)] border border-zinc-100/50 p-8 sm:p-16 relative overflow-hidden transition-all duration-500">
+            
+            {/* Step 1: Account */}
+            {step === 1 && (
+              <div className="animate-in fade-in slide-in-from-bottom-8 duration-700">
+                <div className="mb-12">
+                   <h2 className="text-3xl font-black text-zinc-900 tracking-tight">Account Credentials</h2>
+                   <p className="text-zinc-500 mt-2 font-medium">Protect your store with a secure account.</p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-10">
+                  <div className="space-y-1.5 focus-within:text-indigo-600 transition-colors">
+                    <label htmlFor="username" className="block text-[11px] font-black text-zinc-400 uppercase tracking-widest pl-1 mb-1.5">Username</label>
+                    <input
+                      id="username"
+                      type="text"
+                      name="username"
+                      required
+                      value={formData.username}
+                      onChange={handleChange}
+                      className="w-full h-14 px-6 bg-zinc-50 border border-zinc-100 focus:border-indigo-600 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all duration-300 outline-none rounded-2xl text-zinc-900 font-semibold"
+                      placeholder="e.g. creative_mind"
+                    />
+                  </div>
+                  <div className="space-y-1.5 focus-within:text-indigo-600 transition-colors">
+                    <label htmlFor="email" className="block text-[11px] font-black text-zinc-400 uppercase tracking-widest pl-1 mb-1.5">Email Address</label>
+                    <input
+                      id="email"
+                      type="email"
+                      name="email"
+                      required
+                      value={formData.email}
+                      onChange={handleChange}
+                      className="w-full h-14 px-6 bg-zinc-50 border border-zinc-100 focus:border-indigo-600 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all duration-300 outline-none rounded-2xl text-zinc-900 font-semibold"
+                      placeholder="name@trusted.com"
+                    />
+                  </div>
+                  <div className="space-y-1.5 focus-within:text-indigo-600 transition-colors">
+                    <label htmlFor="password" className="block text-[11px] font-black text-zinc-400 uppercase tracking-widest pl-1 mb-1.5">Create Password</label>
+                    <input
+                      id="password"
+                      type="password"
+                      name="password"
+                      required
+                      value={formData.password}
+                      onChange={handleChange}
+                      className="w-full h-14 px-6 bg-zinc-50 border border-zinc-100 focus:border-indigo-600 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all duration-300 outline-none rounded-2xl text-zinc-900 font-semibold"
+                      placeholder="••••••••"
+                    />
+                  </div>
+                  <div className="space-y-1.5 focus-within:text-indigo-600 transition-colors">
+                    <label htmlFor="confirmPassword" className="block text-[11px] font-black text-zinc-400 uppercase tracking-widest pl-1 mb-1.5">Confirm Password</label>
+                    <input
+                      id="confirmPassword"
+                      type="password"
+                      name="confirmPassword"
+                      required
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                      className="w-full h-14 px-6 bg-zinc-50 border border-zinc-100 focus:border-indigo-600 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all duration-300 outline-none rounded-2xl text-zinc-900 font-semibold"
+                      placeholder="••••••••"
+                    />
+                  </div>
                 </div>
               </div>
-              
-              {/* Abstract backgrounds */}
-              <div className="absolute top-[-20%] right-[-20%] w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
-              <div className="absolute bottom-[-10%] left-[-10%] w-48 h-48 bg-indigo-400/20 rounded-full blur-2xl"></div>
-            </div>
+            )}
 
-            {/* Right Side: Form Content */}
-            <form onSubmit={handleSubmit} className="md:col-span-8 p-8 sm:p-12">
-              <input type="hidden" name="role" value={formData.role} />
-              
-              <div className="min-h-[350px]">
-                {step === 1 && (
-                  <div className="animate-in fade-in slide-in-from-right-8 duration-500">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2">Account Setup</h2>
-                    <p className="text-gray-500 mb-8">Let's get your credentials sorted first.</p>
-                    <div className="space-y-5">
-                      <div>
-                        <label htmlFor="username" className="block text-[13px] font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1 cursor-pointer">Username</label>
-                        <input
-                          id="username"
-                          type="text"
-                          name="username"
-                          required
-                          value={formData.username}
-                          onChange={handleChange}
-                          className="w-full px-5 py-4 bg-gray-50 border-transparent focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all duration-200 outline-none rounded-2xl text-gray-700"
-                          placeholder="johndoe"
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor="email" className="block text-[13px] font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1 cursor-pointer">Email Address</label>
-                        <input
-                          id="email"
-                          type="email"
-                          name="email"
-                          required
-                          value={formData.email}
-                          onChange={handleChange}
-                          className="w-full px-5 py-4 bg-gray-50 border-transparent focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all duration-200 outline-none rounded-2xl text-gray-700"
-                          placeholder="john@example.com"
-                        />
-                      </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                          <label htmlFor="password" className="block text-[13px] font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1 cursor-pointer">Password</label>
-                          <input
-                            id="password"
-                            type="password"
-                            name="password"
-                            required
-                            value={formData.password}
-                            onChange={handleChange}
-                            className="w-full px-5 py-4 bg-gray-50 border-transparent focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all duration-200 outline-none rounded-2xl text-gray-700"
-                            placeholder="••••••••"
-                          />
-                        </div>
-                        <div>
-                          <label htmlFor="confirmPassword" className="block text-[13px] font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1 cursor-pointer">Confirm Password</label>
-                          <input
-                            id="confirmPassword"
-                            type="password"
-                            name="confirmPassword"
-                            required
-                            value={formData.confirmPassword}
-                            onChange={handleChange}
-                            className="w-full px-5 py-4 bg-gray-50 border-transparent focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all duration-200 outline-none rounded-2xl text-gray-700"
-                            placeholder="••••••••"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {step === 2 && (
-                  <div className="animate-in fade-in slide-in-from-right-8 duration-500">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2">Personal Profile</h2>
-                    <p className="text-gray-500 mb-8">Tell us a bit more about yourself.</p>
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label htmlFor="first_name" className="block text-[13px] font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1 cursor-pointer">First Name</label>
-                          <input
-                            id="first_name"
-                            type="text"
-                            name="first_name"
-                            required
-                            value={formData.first_name}
-                            onChange={handleChange}
-                            className="w-full px-5 py-4 bg-gray-50 border-transparent focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all duration-200 outline-none rounded-2xl text-gray-700"
-                            placeholder="John"
-                          />
-                        </div>
-                        <div>
-                          <label htmlFor="last_name" className="block text-[13px] font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1 cursor-pointer">Last Name</label>
-                          <input
-                            id="last_name"
-                            type="text"
-                            name="last_name"
-                            required
-                            value={formData.last_name}
-                            onChange={handleChange}
-                            className="w-full px-5 py-4 bg-gray-50 border-transparent focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all duration-200 outline-none rounded-2xl text-gray-700"
-                            placeholder="Doe"
-                          />
-                        </div>
-                      </div>
-                      <div>
-                        <label htmlFor="phone_number" className="block text-[13px] font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1 cursor-pointer">Phone Number</label>
-                        <input
-                          id="phone_number"
-                          type="tel"
-                          name="phone_number"
-                          value={formData.phone_number}
-                          onChange={handleChange}
-                          className="w-full px-5 py-4 bg-gray-50 border-transparent focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all duration-200 outline-none rounded-2xl text-gray-700"
-                          placeholder="+1 (555) 000-0000"
-                        />
-                      </div>
-                       <div>
-                        <label className="block text-[13px] font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">Join as</label>
-                        <div className="grid grid-cols-2 gap-4 mt-2">
-                          <button
-                            type="button"
-                            onClick={() => setFormData({ ...formData, role: 'BUYER' })}
-                            className={`px-5 py-4 rounded-2xl font-bold transition-all duration-300 border-2 ${
-                              formData.role === 'BUYER' 
-                              ? 'bg-indigo-600 text-white border-indigo-600 shadow-xl shadow-indigo-100' 
-                              : 'bg-white text-gray-600 border-gray-100 hover:border-indigo-200'
-                            }`}
-                          >
-                            Buyer
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setFormData({ ...formData, role: 'VENDOR' })}
-                            className={`px-5 py-4 rounded-2xl font-bold transition-all duration-300 border-2 ${
-                              formData.role === 'VENDOR' 
-                              ? 'bg-indigo-600 text-white border-indigo-600 shadow-xl shadow-indigo-100' 
-                              : 'bg-white text-gray-600 border-gray-100 hover:border-indigo-200'
-                            }`}
-                          >
-                            Vendor
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {step === 3 && (
-                  <div className="animate-in fade-in slide-in-from-right-8 duration-500">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2">Primary Address</h2>
-                    <p className="text-gray-500 mb-8">Where should we reach you?</p>
-                    <div className="space-y-4">
-                      <div>
-                        <label htmlFor="street_address" className="block text-[13px] font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1 cursor-pointer">Street Address</label>
-                        <input
-                          id="street_address"
-                          type="text"
-                          name="street_address"
-                          value={formData.street_address}
-                          onChange={handleChange}
-                          className="w-full px-5 py-4 bg-gray-50 border-transparent focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all duration-200 outline-none rounded-2xl text-gray-700"
-                          placeholder="123 Luxury Ave"
-                        />
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                         <div>
-                          <label htmlFor="city" className="block text-[13px] font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1 cursor-pointer">City</label>
-                          <input
-                            id="city"
-                            type="text"
-                            name="city"
-                            value={formData.city}
-                            onChange={handleChange}
-                            className="w-full px-5 py-4 bg-gray-50 border-transparent focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all duration-200 outline-none rounded-2xl text-gray-700"
-                            placeholder="New York"
-                          />
-                        </div>
-                        <div>
-                          <label htmlFor="state" className="block text-[13px] font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1 cursor-pointer">State</label>
-                          <input
-                            id="state"
-                            type="text"
-                            name="state"
-                            value={formData.state}
-                            onChange={handleChange}
-                            className="w-full px-5 py-4 bg-gray-50 border-transparent focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all duration-200 outline-none rounded-2xl text-gray-700"
-                            placeholder="NY"
-                          />
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label htmlFor="postal_code" className="block text-[13px] font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1 cursor-pointer">Postal Code</label>
-                          <input
-                            id="postal_code"
-                            type="text"
-                            name="postal_code"
-                            value={formData.postal_code}
-                            onChange={handleChange}
-                            className="w-full px-5 py-4 bg-gray-50 border-transparent focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all duration-200 outline-none rounded-2xl text-gray-700"
-                            placeholder="10001"
-                          />
-                        </div>
-                        <div>
-                          <label htmlFor="country" className="block text-[13px] font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1 cursor-pointer">Country</label>
-                          <select
-                            id="country"
-                            name="country"
-                            value={formData.country}
-                            onChange={handleChange}
-                            className="w-full px-5 py-4 bg-gray-50 border-transparent focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all duration-200 outline-none rounded-2xl text-gray-700 appearance-none bg-no-repeat bg-[right_1.25rem_center]"
-                          >
-                            <option value="United States">United States</option>
-                            <option value="United Kingdom">United Kingdom</option>
-                            <option value="Canada">Canada</option>
-                            <option value="Other">Other</option>
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {error && (
-                <div className="mt-4 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-lg text-sm font-medium">
-                  {error}
+            {/* Step 2: Profile */}
+            {step === 2 && (
+              <div className="animate-in fade-in slide-in-from-bottom-8 duration-700">
+                <div className="mb-12">
+                   <h2 className="text-3xl font-black text-zinc-900 tracking-tight">Personal Profile</h2>
+                   <p className="text-zinc-500 mt-2 font-medium">How should we address you within Trest?</p>
                 </div>
-              )}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-10">
+                   <div className="space-y-1.5 focus-within:text-indigo-600 transition-colors">
+                    <label htmlFor="first_name" className="block text-[11px] font-black text-zinc-400 uppercase tracking-widest pl-1 mb-1.5">First Name</label>
+                    <input
+                      id="first_name"
+                      type="text"
+                      name="first_name"
+                      required
+                      value={formData.first_name}
+                      onChange={handleChange}
+                      className="w-full h-14 px-6 bg-zinc-50 border border-zinc-100 focus:border-indigo-600 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all duration-300 outline-none rounded-2xl text-zinc-900 font-semibold"
+                    />
+                  </div>
+                  <div className="space-y-1.5 focus-within:text-indigo-600 transition-colors">
+                    <label htmlFor="last_name" className="block text-[11px] font-black text-zinc-400 uppercase tracking-widest pl-1 mb-1.5">Last Name</label>
+                    <input
+                      id="last_name"
+                      type="text"
+                      name="last_name"
+                      required
+                      value={formData.last_name}
+                      onChange={handleChange}
+                      className="w-full h-14 px-6 bg-zinc-50 border border-zinc-100 focus:border-indigo-600 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all duration-300 outline-none rounded-2xl text-zinc-900 font-semibold"
+                    />
+                  </div>
+                  <div className="space-y-1.5 focus-within:text-indigo-600 transition-colors">
+                    <label htmlFor="phone_number" className="block text-[11px] font-black text-zinc-400 uppercase tracking-widest pl-1 mb-1.5">Mobile Number (Optional)</label>
+                    <input
+                      id="phone_number"
+                      type="tel"
+                      name="phone_number"
+                      value={formData.phone_number}
+                      onChange={handleChange}
+                      className="w-full h-14 px-6 bg-zinc-50 border border-zinc-100 focus:border-indigo-600 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all duration-300 outline-none rounded-2xl text-zinc-900 font-semibold"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="block text-[11px] font-black text-zinc-400 uppercase tracking-widest pl-1 mb-3">I am joining as a</label>
+                    <div className="grid grid-cols-2 gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setFormData({ ...formData, role: 'BUYER' })}
+                        className={`h-14 rounded-2xl font-black text-sm tracking-tight transition-all duration-300 border ${
+                          formData.role === 'BUYER' 
+                          ? 'bg-zinc-900 text-white border-zinc-900 shadow-2xl shadow-zinc-200' 
+                          : 'bg-white text-zinc-400 border-zinc-100 hover:border-indigo-200'
+                        }`}
+                      >
+                        Shopper
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setFormData({ ...formData, role: 'VENDOR' })}
+                        className={`h-14 rounded-2xl font-black text-sm tracking-tight transition-all duration-300 border ${
+                          formData.role === 'VENDOR' 
+                          ? 'bg-zinc-900 text-white border-zinc-900 shadow-2xl shadow-zinc-200' 
+                          : 'bg-white text-zinc-400 border-zinc-100 hover:border-indigo-200'
+                        }`}
+                      >
+                        Merchant
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
-              <div className="mt-12 flex justify-between gap-4">
+            {/* Step 3: Address */}
+            {step === 3 && (
+              <div className="animate-in fade-in slide-in-from-bottom-8 duration-700">
+                <div className="mb-12">
+                   <h2 className="text-3xl font-black text-zinc-900 tracking-tight">Preferred Residence</h2>
+                   <p className="text-zinc-500 mt-2 font-medium">Necessary for shipping and billing compliance.</p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-x-8 gap-y-10">
+                  <div className="md:col-span-12 space-y-1.5 focus-within:text-indigo-600 transition-colors">
+                    <label htmlFor="street_address" className="block text-[11px] font-black text-zinc-400 uppercase tracking-widest pl-1 mb-1.5">Street Address</label>
+                    <input
+                      id="street_address"
+                      type="text"
+                      name="street_address"
+                      value={formData.street_address}
+                      onChange={handleChange}
+                      className="w-full h-14 px-6 bg-zinc-50 border border-zinc-100 focus:border-indigo-600 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all duration-300 outline-none rounded-2xl text-zinc-900 font-semibold"
+                    />
+                  </div>
+                  <div className="md:col-span-6 space-y-1.5 focus-within:text-indigo-600 transition-colors">
+                    <label htmlFor="city" className="block text-[11px] font-black text-zinc-400 uppercase tracking-widest pl-1 mb-1.5">City</label>
+                    <input
+                      id="city"
+                      type="text"
+                      name="city"
+                      value={formData.city}
+                      onChange={handleChange}
+                      className="w-full h-14 px-6 bg-zinc-50 border border-zinc-100 focus:border-indigo-600 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all duration-300 outline-none rounded-2xl text-zinc-900 font-semibold"
+                    />
+                  </div>
+                  <div className="md:col-span-6 space-y-1.5 focus-within:text-indigo-600 transition-colors">
+                    <label htmlFor="state" className="block text-[11px] font-black text-zinc-400 uppercase tracking-widest pl-1 mb-1.5">State / Province</label>
+                    <input
+                      id="state"
+                      type="text"
+                      name="state"
+                      value={formData.state}
+                      onChange={handleChange}
+                      className="w-full h-14 px-6 bg-zinc-50 border border-zinc-100 focus:border-indigo-600 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all duration-300 outline-none rounded-2xl text-zinc-900 font-semibold"
+                    />
+                  </div>
+                  <div className="md:col-span-4 space-y-1.5 focus-within:text-indigo-600 transition-colors">
+                    <label htmlFor="postal_code" className="block text-[11px] font-black text-zinc-400 uppercase tracking-widest pl-1 mb-1.5">ZIP Code</label>
+                    <input
+                      id="postal_code"
+                      type="text"
+                      name="postal_code"
+                      value={formData.postal_code}
+                      onChange={handleChange}
+                      className="w-full h-14 px-6 bg-zinc-50 border border-zinc-100 focus:border-indigo-600 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all duration-300 outline-none rounded-2xl text-zinc-900 font-semibold"
+                    />
+                  </div>
+                  <div className="md:col-span-8 space-y-1.5 focus-within:text-indigo-600 transition-colors">
+                    <label htmlFor="country" className="block text-[11px] font-black text-zinc-400 uppercase tracking-widest pl-1 mb-1.5">Country</label>
+                    <div className="relative">
+                       <select
+                        id="country"
+                        name="country"
+                        value={formData.country}
+                        onChange={handleChange}
+                        className="w-full h-14 px-6 bg-zinc-50 border border-zinc-100 focus:border-indigo-600 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all duration-300 outline-none rounded-2xl text-zinc-900 font-semibold appearance-none bg-no-repeat bg-[right_1.5rem_center]"
+                      >
+                        <option value="United States">United States</option>
+                        <option value="United Kingdom">United Kingdom</option>
+                        <option value="Canada">Canada</option>
+                        <option value="Australia">Australia</option>
+                        <option value="Germany">Germany</option>
+                      </select>
+                      <div className="absolute inset-y-0 right-6 flex items-center pointer-events-none text-zinc-400">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Error Message */}
+            {error && (
+              <div className="mt-12 p-5 bg-red-50 text-red-700 rounded-[1.5rem] text-sm font-bold flex items-center gap-4 animate-in slide-in-from-right-4 duration-500">
+                <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center shrink-0">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                </div>
+                {error}
+              </div>
+            )}
+
+            {/* Actions */}
+            <div className="mt-16 flex flex-col sm:flex-row items-center justify-between gap-6">
+               <div className="flex items-center gap-4 w-full sm:w-auto">
                 {step > 1 && (
                   <button
                     type="button"
                     onClick={prevStep}
-                    className="flex-1 py-4 px-8 border-2 border-gray-100 text-gray-600 font-bold rounded-2xl hover:bg-gray-50 hover:border-gray-200 transition-all duration-300"
+                    className="h-14 px-10 bg-white border border-zinc-100 text-zinc-500 font-bold rounded-2xl hover:bg-zinc-50 transition-all duration-300"
                   >
-                    Back
+                    Go Back
                   </button>
                 )}
-                
+              </div>
+              
+              <div className="flex items-center gap-4 w-full sm:w-auto">
                 {step < 3 ? (
                   <button
                     type="button"
-                    onClick={(e) => {
-                      // Basic validation for steps
-                      if (step === 1 && (!formData.username || !formData.email || !formData.password)) {
-                        setError('Please fill all fields.');
-                        return;
-                      }
-                      if (step === 1 && formData.password !== formData.confirmPassword) {
-                        setError("Passwords don't match.");
+                    onClick={() => {
+                      if (step === 1 && (!formData.username || !formData.email || !formData.password || !formData.confirmPassword)) {
+                        setError('Please define your account security first.');
                         return;
                       }
                       setError(null);
                       nextStep();
                     }}
-                    className="flex-1 py-4 px-8 bg-indigo-600 text-white font-bold rounded-2xl hover:bg-indigo-700 transition-all duration-300 shadow-xl shadow-indigo-100 flex items-center justify-center gap-2"
+                    className="w-full sm:w-auto h-14 px-12 bg-zinc-900 text-white font-black text-sm uppercase tracking-widest rounded-2xl hover:bg-indigo-600 transition-all duration-500 shadow-2xl shadow-zinc-200 flex items-center justify-center gap-3"
                   >
-                    Continue
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
+                    Next Step
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
                   </button>
                 ) : (
                   <button
                     type="submit"
                     disabled={loading}
-                    className="flex-1 py-4 px-8 bg-indigo-600 text-white font-bold rounded-2xl hover:bg-indigo-700 transition-all duration-300 shadow-xl shadow-indigo-100 flex items-center justify-center gap-2 disabled:opacity-50"
+                    className="w-full sm:w-auto h-14 px-12 bg-indigo-600 text-white font-black text-sm uppercase tracking-widest rounded-2xl hover:bg-zinc-900 transition-all duration-500 shadow-2xl shadow-indigo-100 flex items-center justify-center gap-3 disabled:opacity-50"
                   >
                     {loading ? (
                       <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                     ) : (
                       <>
-                        Complete Registration
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
+                        Finish Registration
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
                       </>
                     )}
                   </button>
                 )}
               </div>
-              
-              <div className="mt-8 text-center">
-                <p className="text-gray-400 text-sm">
-                  Already have an account? <a href="/login" className="text-indigo-600 font-bold hover:underline">Sign In</a>
-                </p>
-              </div>
-            </form>
-          </div>
-        </div>
+            </div>
+            
+            <div className="mt-12 text-center border-t border-zinc-50 pt-10">
+              <p className="text-zinc-400 text-xs font-bold uppercase tracking-widest leading-loose">
+                Already registered? <Link href="/login" className="text-indigo-600 hover:text-zinc-900 transition-colors ml-2 decoration-2 underline-offset-4">Identity Sign In</Link>
+              </p>
+            </div>
+          </form>
+        </main>
+
+        <footer className="mt-20 text-center">
+           <p className="text-zinc-300 text-[10px] font-black uppercase tracking-[0.4em]">© 2026 Trest World Systems</p>
+        </footer>
       </div>
     </div>
   );
