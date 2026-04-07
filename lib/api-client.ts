@@ -1,10 +1,10 @@
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
 
 export const apiClient = {
   async register(data: any) {
     try {
-      const response = await fetch(`${API_URL}/register/`, {
+      const response = await fetch(`${API_URL}/users/register/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -13,7 +13,7 @@ export const apiClient = {
       });
 
       const result = await response.json().catch(() => ({}));
-      
+
       if (!response.ok) {
         throw { errors: result, status: response.status };
       }
