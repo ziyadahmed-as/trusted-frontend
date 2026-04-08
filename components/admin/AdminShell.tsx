@@ -27,7 +27,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           </div>
 
           <div className="flex items-center gap-4">
-            <button className="relative w-11 h-11 flex items-center justify-center bg-gray-50 hover:bg-gray-100 rounded-2xl transition-all group">
+            <button title="Notifications" className="relative w-11 h-11 flex items-center justify-center bg-gray-50 hover:bg-gray-100 rounded-2xl transition-all group">
               <Bell className="w-5 h-5 text-gray-500 group-hover:text-indigo-600 transition-colors" />
               <span className="absolute top-3 right-3 w-2.5 h-2.5 bg-indigo-600 border-2 border-white rounded-full"></span>
             </button>
