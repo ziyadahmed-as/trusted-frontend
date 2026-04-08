@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { ChevronRight } from 'lucide-react';
 
 export default function VendorProfilePage() {
   const [loading, setLoading] = useState(false);
@@ -16,24 +17,40 @@ export default function VendorProfilePage() {
       <div className="max-w-4xl mx-auto">
         <header className="mb-12 flex justify-between items-end">
           <div>
-            <h1 className="text-4xl font-black text-gray-900 tracking-tight">Vendor Dashboard</h1>
-            <p className="text-gray-500 mt-2 font-medium italic">Grow your business with Trest.</p>
+            <h1 className="text-4xl font-black text-gray-900 tracking-tight">Vendor <span className="text-indigo-600">Dashboard</span></h1>
+            <p className="text-gray-500 mt-2 font-medium italic">Grow your business with TrestBiyyo.</p>
           </div>
-          <Link href="/" className="px-6 py-2 bg-white border border-gray-100 rounded-xl font-bold text-sm text-gray-600 hover:bg-gray-50">Back Home</Link>
+          <Link href="/" className="px-6 py-2 bg-white border border-gray-100 rounded-xl font-bold text-sm text-gray-600 hover:bg-gray-50 transition-all">Back Home</Link>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
            {/* Sidebar: Stats */}
-           <div className="md:col-span-1 space-y-6">
-             <div className="p-8 bg-indigo-600 rounded-[2rem] text-white shadow-xl shadow-indigo-100">
+           <div className="md:col-span-1 space-y-8">
+             {/* Verification Alert */}
+             <div className="p-8 bg-white border border-indigo-100 rounded-[2.5rem] shadow-xl shadow-indigo-100/10 relative overflow-hidden group">
+               <div className="absolute top-0 right-0 p-4">
+                  <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+               </div>
+               <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 mb-4 inline-block px-3 py-1 bg-indigo-50 rounded-lg">Verification</h3>
+               <p className="text-sm font-bold text-gray-900 mb-4 leading-relaxed">Complete your KYC to unlock full payout capabilities.</p>
+               <Link href="/kyc" className="flex items-center justify-between group/link">
+                 <span className="text-xs font-black uppercase tracking-widest text-indigo-600 group-hover/link:translate-x-1 transition-transform">Verify Now</span>
+                 <div className="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-100 group-hover/link:scale-110 transition-all">
+                   <ChevronRight className="w-4 h-4" />
+                 </div>
+               </Link>
+             </div>
+
+             <div className="p-8 bg-indigo-600 rounded-[2.5rem] text-white shadow-xl shadow-indigo-500/20 relative overflow-hidden">
+               <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
                <h3 className="text-xs font-bold uppercase tracking-widest opacity-70 mb-1">Current Tier</h3>
-               <p className="text-3xl font-black">{profile.subscription_tier}</p>
-               <button className="mt-4 px-4 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg text-xs font-bold transition-colors">Upgrade</button>
+               <p className="text-3xl font-black tracking-tighter italic">{profile.subscription_tier}</p>
+               <button className="mt-6 w-full py-2 bg-white/20 hover:bg-white/30 border border-white/20 rounded-xl text-xs font-bold transition-all backdrop-blur-sm">Upgrade Plan</button>
              </div>
              
-             <div className="p-8 bg-white border border-gray-100 rounded-[2rem] shadow-sm">
+             <div className="p-8 bg-white border border-gray-100 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.02)]">
                <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">Total Sales</h3>
-               <p className="text-3xl font-black text-gray-900">$0.00</p>
+               <p className="text-3xl font-black text-gray-900 tracking-tighter">$0.00</p>
              </div>
            </div>
 

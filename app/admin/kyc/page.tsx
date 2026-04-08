@@ -169,7 +169,7 @@ export default function KYCModerationPage() {
         <div className="px-10 py-8 bg-gray-50/30 border-t border-gray-50 flex flex-col sm:flex-row items-center justify-between gap-6">
           <p className="text-sm font-bold text-gray-400 italic">Showing 6 of 1,280 submissions</p>
           <div className="flex items-center gap-2">
-            <button disabled className="p-3 bg-white border border-gray-100 rounded-xl text-gray-300 transition-all">
+            <button title="Previous Page" disabled className="p-3 bg-white border border-gray-100 rounded-xl text-gray-300 transition-all">
               <ChevronLeft className="w-5 h-5" />
             </button>
             <div className="flex items-center gap-1">
@@ -185,7 +185,7 @@ export default function KYCModerationPage() {
                 </button>
               ))}
             </div>
-            <button className="p-3 bg-white border border-gray-100 rounded-xl text-gray-500 hover:bg-gray-50 transition-all">
+            <button title="Next Page" className="p-3 bg-white border border-gray-100 rounded-xl text-gray-500 hover:bg-gray-50 transition-all">
               <ChevronRight className="w-5 h-5" />
             </button>
           </div>

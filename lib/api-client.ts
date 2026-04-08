@@ -63,5 +63,42 @@ export const apiClient = {
     });
     if (!response.ok) throw new Error('Failed to fetch users');
     return response.json();
+  },
+
+  // --- User KYC Methods ---
+  async getKYCRequirements() {
+    const response = await fetch(`${API_URL}/kyc/requirements/`, {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    });
+    if (!response.ok) throw new Error('Failed to fetch requirements');
+    return response.json();
+  },
+
+  async getKYCStatus() {
+    const response = await fetch(`${API_URL}/kyc/status/`, {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    });
+    if (!response.ok) throw new Error('Failed to fetch KYC status');
+    return response.json();
+  },
+
+  async submitKYC(formData: FormData) {
+    const response = await fetch(`${API_URL}/kyc/submit/`, {
+      method: 'POST',
+      headers: { 
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+        // Note: Content-Type is NOT set here so the browser can set it to multipart/form-data with the correct boundary
+      },
+      body: formData
+    });
+    return response.json();
+  },
+
+  async getMe() {
+    const response = await fetch(`${API_URL}/users/users/me/`, {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    });
+    if (!response.ok) throw new Error('Failed to fetch profile');
+    return response.json();
   }
 };

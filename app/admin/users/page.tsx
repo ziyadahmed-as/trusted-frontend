@@ -108,7 +108,7 @@ export default function UserManagementPage() {
             className="bg-white p-10 rounded-[3rem] border border-gray-100 shadow-[0_20px_50px_rgba(0,0,0,0.02)] group hover:shadow-2xl hover:shadow-indigo-100 transition-all duration-500 relative overflow-hidden"
           >
             <div className="absolute top-8 right-8">
-              <button className="p-2.5 bg-gray-50 rounded-xl text-gray-400 hover:text-gray-900 transition-colors">
+              <button title="More Options" className="p-2.5 bg-gray-50 rounded-xl text-gray-400 hover:text-gray-900 transition-colors">
                 <MoreHorizontal className="w-5 h-5" />
               </button>
             </div>
