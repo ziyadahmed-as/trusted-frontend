@@ -16,6 +16,17 @@ export const apiClient = {
     return result;
   },
 
+  async register(data: any) {
+    const response = await fetch(`${API_URL}/users/register/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    const result = await response.json();
+    if (!response.ok) throw { errors: result };
+    return result;
+  },
+
   async getAdminStats() {
     const response = await fetch(`${API_URL}/users/admin-stats/`, {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }

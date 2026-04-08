@@ -68,7 +68,7 @@ export default function RegisterPage() {
       };
 
       await apiClient.register(registerData);
-      setSuccess(true);
+      router.push('/login?registered=true');
     } catch (err: any) {
       console.error(err);
       if (err.errors) {
@@ -148,7 +148,7 @@ export default function RegisterPage() {
         
         {/* Header Section */}
         <header className="mb-16 text-center max-w-lg">
-          <Link href="/" className="text-3xl font-black text-indigo-600 tracking-tighter mb-4 inline-block">TREST.</Link>
+          <Link href="/" className="text-3xl font-black text-indigo-600 tracking-tighter mb-4 inline-block">TrestBiyyo.</Link>
           <h1 className="text-4xl font-black text-zinc-900 tracking-tight mb-3">Begin your journey.</h1>
           <p className="text-zinc-500 font-medium">Join thousands of businesses and shoppers on the most advanced platform.</p>
         </header>

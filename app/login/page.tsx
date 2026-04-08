@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { apiClient } from '@/lib/api-client';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -12,18 +13,36 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // Mock login
-    setTimeout(() => {
+    
+    try {
+      const result = await apiClient.login(formData);
+      if (result.access) {
+        const user = await apiClient.getMe();
+        
+        // --- Role-Based Redirection Logic ---
+        if (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') {
+          router.push('/admin');
+        } else if (user.role === 'VENDOR' || user.role === 'DRIVER') {
+          router.push('/kyc');
+        } else {
+          router.push('/');
+        }
+      } else {
+        alert(result.detail || 'Access denied. Please check your credentials.');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Login identification failed. Please verify your connection.');
+    } finally {
       setLoading(false);
-      router.push('/');
-    }, 1000);
+    }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#f8fafc] py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)] p-10 border border-gray-50 animate-in fade-in zoom-in duration-500">
         <div className="text-center mb-10">
-          <h1 className="text-4xl font-black text-indigo-600 mb-2 tracking-tighter">TREST.</h1>
+          <h1 className="text-4xl font-black text-indigo-600 mb-2 tracking-tighter">TrestBiyyo.</h1>
           <h2 className="text-2xl font-bold text-gray-900">Welcome Back</h2>
           <p className="text-gray-500 mt-2">Manage your stores and orders with ease.</p>
         </div>

@@ -29,7 +29,7 @@ export default function Home() {
             Build your <span className="text-indigo-600">multi-vendor</span> empire.
           </h1>
           <p className="text-xl text-gray-500 max-w-2xl mx-auto leading-relaxed">
-            The most advanced ecommerce platform for modern business. Scale faster, sell smarter, and win bigger with Trest.
+            The most advanced ecommerce platform for modern business. Scale faster, sell smarter, and win bigger with TrestBiyyo.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-4">
             <Link href="/register" className="w-full sm:w-auto bg-gray-900 text-white px-10 py-5 rounded-2xl font-bold text-lg hover:bg-black transition-all shadow-2xl hover:scale-105 active:scale-95">
