@@ -29,10 +29,10 @@ export function Sidebar() {
     <div className="w-72 h-screen bg-white border-r border-gray-100 flex flex-col fixed left-0 top-0 z-40">
       <div className="p-8 pb-12">
         <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-black text-xl shadow-lg shadow-indigo-100 group-hover:rotate-6 transition-transform">
-            T
+          <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-xl shadow-indigo-100 group-hover:rotate-6 transition-transform">
+            TB
           </div>
-          <span className="text-2xl font-black tracking-tighter text-gray-900">TREST.</span>
+          <span className="text-2xl font-black tracking-tighter text-gray-900">TrestBiyyo.</span>
         </Link>
       </div>
 

@@ -42,9 +42,9 @@ export default function AdminDashboard() {
       <section className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="space-y-2">
           <h1 className="text-5xl font-black text-gray-900 tracking-tighter leading-tight">
-            Dashboard <span className="text-gray-400">Overview</span>
+            Admin <span className="text-gray-400">Dashboard</span>
           </h1>
-          <p className="text-gray-500 font-bold tracking-tight">Welcome back. Here's what's happening with Trest today.</p>
+          <p className="text-gray-500 font-bold tracking-tight">Access metrics for TrestBiyyo platform ecosystem.</p>
         </div>
         <div className="flex items-center gap-3">
           <button className="px-6 py-3 bg-white border border-gray-100 rounded-2xl text-sm font-bold text-gray-600 hover:bg-gray-50 transition-all flex items-center gap-2">

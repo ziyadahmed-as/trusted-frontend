@@ -55,7 +55,7 @@ export default function UserManagementPage() {
           <h1 className="text-5xl font-black text-gray-900 tracking-tighter leading-tight">
             User <span className="text-gray-400">Management</span>
           </h1>
-          <p className="text-gray-500 font-bold tracking-tight">Access, monitor, and manage roles for all Trest ecosystem users.</p>
+          <p className="text-gray-500 font-bold tracking-tight">Access, monitor, and manage roles for all TrestBiyyo ecosystem users.</p>
         </div>
         <button className="px-8 py-4 bg-indigo-600 text-white rounded-[1.5rem] font-bold hover:bg-indigo-700 transition-all shadow-2xl shadow-indigo-100 flex items-center gap-3 group">
           <UserPlus className="w-5 h-5 group-hover:rotate-12 transition-transform" />

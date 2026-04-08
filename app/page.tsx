@@ -7,7 +7,7 @@ export default function Home() {
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="text-2xl font-black tracking-tighter text-indigo-600">TREST.</div>
+          <div className="text-2xl font-black tracking-tighter text-indigo-600">TrestBiyyo.</div>
           <div className="hidden md:flex items-center gap-8 text-sm font-semibold text-gray-500">
             <a href="#" className="hover:text-indigo-600 transition-colors">Products</a>
             <a href="#" className="hover:text-indigo-600 transition-colors">Vendors</a>
@@ -61,7 +61,7 @@ export default function Home() {
 
       <footer className="border-t border-gray-100 py-12">
         <div className="max-w-7xl mx-auto px-6 text-center text-gray-400 text-sm font-medium">
-          &copy; 2026 Trest Ecommerce. Built for excellence.
+          &copy; 2026 TrestBiyyo Ecommerce. Built for excellence.
         </div>
       </footer>
     </div>

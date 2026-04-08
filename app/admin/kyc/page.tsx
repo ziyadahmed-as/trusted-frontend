@@ -55,7 +55,21 @@ export default function KYCModerationPage() {
 
   return (
     <div className="space-y-10">
-      {/* Header sections omitted for brevity in replace_file_content chunk, assuming they remain same */}
+      {/* Header */}
+      <section className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div className="space-y-2">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-600 shadow-lg shadow-amber-100">
+              <FileCheck className="w-6 h-6" />
+            </div>
+            <span className="text-sm font-black text-amber-600 uppercase tracking-widest bg-amber-50 px-3 py-1 rounded-lg">Moderation</span>
+          </div>
+          <h1 className="text-5xl font-black text-gray-900 tracking-tighter leading-tight">
+            KYC <span className="text-gray-400">Moderation</span>
+          </h1>
+          <p className="text-gray-500 font-bold tracking-tight">Validate identities and ensure compliance across TrestBiyyo.</p>
+        </div>
+      </section>
       
       {/* Submissions Table Overlay */}
       {loading && (
