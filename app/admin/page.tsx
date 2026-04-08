@@ -13,15 +13,29 @@ import {
 import { motion } from 'framer-motion';
 import { StatCard } from '@/components/admin/StatCard';
 import { cn } from '@/lib/utils';
-
-const recentActivities = [
-  { id: 1, type: 'KYC', user: 'Global Vendor Ltd', action: 'submitted national ID', time: '12 minutes ago', status: 'pending' },
-  { id: 2, type: 'SALE', user: 'John Doe', action: 'purchased Premium Plan', time: '45 minutes ago', status: 'completed' },
-  { id: 3, type: 'USER', user: 'Alice Smith', action: 'registered as vendor', time: '2 hours ago', status: 'verified' },
-  { id: 4, type: 'KYC', user: 'Tech Hub Co', action: 'updated business license', time: '4 hours ago', status: 'under review' },
-];
+import { apiClient } from '@/lib/api-client';
 
 export default function AdminDashboard() {
+  const [stats, setStats] = React.useState<any>(null);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    apiClient.getAdminStats()
+      .then(setStats)
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="h-[60vh] flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-indigo-600/20 border-t-indigo-600 rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  const activities = stats?.recent_activities || [];
+
   return (
     <div className="space-y-12">
       {/* Welcome Header */}
@@ -30,7 +44,7 @@ export default function AdminDashboard() {
           <h1 className="text-5xl font-black text-gray-900 tracking-tighter leading-tight">
             Dashboard <span className="text-gray-400">Overview</span>
           </h1>
-          <p className="text-gray-500 font-bold tracking-tight">Welcome back, Django. Here's what's happening with Trest today.</p>
+          <p className="text-gray-500 font-bold tracking-tight">Welcome back. Here's what's happening with Trest today.</p>
         </div>
         <div className="flex items-center gap-3">
           <button className="px-6 py-3 bg-white border border-gray-100 rounded-2xl text-sm font-bold text-gray-600 hover:bg-gray-50 transition-all flex items-center gap-2">
@@ -47,17 +61,17 @@ export default function AdminDashboard() {
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         <StatCard 
           title="Total Vendors" 
-          value="1,284" 
-          subValue="+14% since last month" 
+          value={stats?.total_vendors?.toString() || "0"} 
+          subValue="Active platform partners" 
           icon={Users} 
           trend="up" 
           trendValue="12.5%" 
           color="indigo" 
         />
         <StatCard 
-          title="Monthly Revenue" 
-          value="$84.2k" 
-          subValue="Target: $100k (84%)" 
+          title="Total Revenue" 
+          value={`$${(stats?.total_revenue / 1000).toFixed(1)}k`} 
+          subValue="Total delivered sales" 
           icon={DollarSign} 
           trend="up" 
           trendValue="8.2%" 
@@ -65,8 +79,8 @@ export default function AdminDashboard() {
         />
         <StatCard 
           title="Pending KYCs" 
-          value="42" 
-          subValue="12 require immediate review" 
+          value={stats?.pending_kycs?.toString() || "0"} 
+          subValue="Require verification" 
           icon={FileCheck} 
           trend="down" 
           trendValue="15.0%" 
@@ -74,8 +88,8 @@ export default function AdminDashboard() {
         />
         <StatCard 
           title="Total Products" 
-          value="18.5k" 
-          subValue="Across 24 categories" 
+          value={stats?.total_products?.toString() || "0"} 
+          subValue="Live catalog items" 
           icon={ShoppingBag} 
           trend="up" 
           trendValue="4.1%" 
@@ -91,7 +105,7 @@ export default function AdminDashboard() {
               <ShoppingBag className="w-10 h-10" />
             </div>
             <h3 className="text-3xl font-black text-gray-900 tracking-tighter mb-4">Sales & Productivity</h3>
-            <p className="text-gray-400 font-bold max-w-sm">Detailed interactive chart visualization will go here. Connect real-time analytics for live tracking.</p>
+            <p className="text-gray-400 font-bold max-w-sm">Live data integration successful. Revenue tracking activated for {stats?.total_orders} total orders.</p>
             <div className="mt-8 flex gap-4">
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-indigo-500"></div>
@@ -113,7 +127,7 @@ export default function AdminDashboard() {
             </div>
             
             <div className="space-y-6 flex-1">
-              {recentActivities.map((activity, idx) => (
+              {activities.map((activity: any, idx: number) => (
                 <motion.div 
                   key={activity.id}
                   initial={{ opacity: 0, x: -10 }}
@@ -132,7 +146,7 @@ export default function AdminDashboard() {
                       {activity.type === 'SALE' && <ShoppingBag className="w-5 h-5" />}
                       {activity.type === 'USER' && <Users className="w-5 h-5" />}
                     </div>
-                    {idx !== recentActivities.length - 1 && (
+                    {idx !== activities.length - 1 && (
                       <div className="absolute top-12 left-1/2 -translate-x-1/2 w-[1px] h-4 bg-gray-100"></div>
                     )}
                   </div>

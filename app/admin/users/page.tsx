@@ -14,23 +14,33 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-
-const mockUsers = [
-  { id: 1, name: 'Django Admin', email: 'admin@trest.com', role: 'SUPER_ADMIN', location: 'USA', joined: 'Jan 2026', status: 'active' },
-  { id: 2, name: 'John Vendor', email: 'john@vendor.com', role: 'VENDOR', location: 'UK', joined: 'Feb 2026', status: 'active' },
-  { id: 3, name: 'Alice Buyer', email: 'alice@test.com', role: 'BUYER', location: 'Canada', joined: 'Mar 2026', status: 'active' },
-  { id: 4, name: 'Robert Smith', email: 'robert@market.io', role: 'ADMIN', location: 'Germany', joined: 'Dec 2025', status: 'suspended' },
-  { id: 5, name: 'Sarah Wilson', email: 'sarah@store.net', role: 'VENDOR', location: 'Australia', joined: 'Feb 2026', status: 'active' },
-];
-
-const roleColors = {
-  SUPER_ADMIN: "bg-purple-100 text-purple-700 border-purple-200",
-  ADMIN: "bg-indigo-100 text-indigo-700 border-indigo-200",
-  VENDOR: "bg-emerald-100 text-emerald-700 border-emerald-200",
-  BUYER: "bg-slate-100 text-slate-700 border-slate-200",
-};
+import { apiClient } from '@/lib/api-client';
 
 export default function UserManagementPage() {
+  const [users, setUsers] = React.useState<any[]>([]);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    apiClient.getUsers()
+      .then(data => setUsers(data.results || data))
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
+
+  const roleColors = {
+    SUPER_ADMIN: "bg-purple-100 text-purple-700 border-purple-200",
+    ADMIN: "bg-indigo-100 text-indigo-700 border-indigo-200",
+    VENDOR: "bg-emerald-100 text-emerald-700 border-emerald-200",
+    BUYER: "bg-slate-100 text-slate-700 border-slate-200",
+  };
+
+  if (loading) {
+    return (
+      <div className="h-[60vh] flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-indigo-600/20 border-t-indigo-600 rounded-full animate-spin"></div>
+      </div>
+    );
+  }
   return (
     <div className="space-y-10">
       {/* Header */}
@@ -89,7 +99,7 @@ export default function UserManagementPage() {
 
       {/* User Profiles Map/Grid */}
       <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-        {mockUsers.map((user, idx) => (
+        {users.map((user, idx) => (
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -105,44 +115,44 @@ export default function UserManagementPage() {
 
             <div className="flex flex-col items-center text-center">
               <div className="relative mb-6">
-                <div className="w-24 h-24 rounded-[2rem] bg-gradient-to-br from-indigo-50 to-indigo-100/50 flex items-center justify-center text-3xl font-black text-indigo-600 group-hover:rotate-6 transition-transform duration-500">
-                  {user.name.charAt(0)}
+                <div className="w-24 h-24 rounded-[2rem] bg-gradient-to-br from-indigo-50 to-indigo-100/50 flex items-center justify-center text-3xl font-black text-indigo-600 group-hover:rotate-6 transition-transform duration-500 uppercase">
+                  {(user.username || 'U').charAt(0)}
                 </div>
                 <div className={cn(
                   "absolute -bottom-1 -right-1 w-8 h-8 rounded-xl border-4 border-white flex items-center justify-center",
-                  user.status === 'active' ? "bg-emerald-500" : "bg-rose-500"
+                  user.is_active ? "bg-emerald-500" : "bg-rose-500"
                 )}>
-                  {user.status === 'active' ? <ShieldCheck className="w-3.5 h-3.5 text-white" /> : <ShieldAlert className="w-3.5 h-3.5 text-white" />}
+                  {user.is_active ? <ShieldCheck className="w-3.5 h-3.5 text-white" /> : <ShieldAlert className="w-3.5 h-3.5 text-white" />}
                 </div>
               </div>
 
-              <h3 className="text-2xl font-black text-gray-900 tracking-tighter mb-1">{user.name}</h3>
+              <h3 className="text-2xl font-black text-gray-900 tracking-tighter mb-1 truncate max-w-full italic uppercase">{user.username}</h3>
               <div className="flex items-center gap-1.5 justify-center mb-6">
                 <Mail className="w-3.5 h-3.5 text-gray-400" />
-                <p className="text-xs font-bold text-gray-400">{user.email}</p>
+                <p className="text-xs font-bold text-gray-400 truncate">{user.email}</p>
               </div>
 
               <div className={cn(
                 "px-5 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest border mb-10",
                 roleColors[user.role as keyof typeof roleColors]
               )}>
-                {user.role.replace('_', ' ')}
+                {user.role?.replace('_', ' ') || 'USER'}
               </div>
 
               <div className="w-full grid grid-cols-2 gap-4 pt-8 border-t border-gray-50">
                 <div className="space-y-1">
                   <div className="flex items-center gap-1 text-[10px] font-black text-gray-300 uppercase tracking-tighter">
                     <MapPin className="w-3 h-3" />
-                    Location
+                    Role
                   </div>
-                  <p className="text-xs font-bold text-gray-500">{user.location}</p>
+                  <p className="text-xs font-bold text-gray-500">{user.role}</p>
                 </div>
                 <div className="space-y-1">
                   <div className="flex items-center gap-1 text-[10px] font-black text-gray-300 uppercase tracking-tighter">
                     <Calendar className="w-3 h-3" />
                     Joined
                   </div>
-                  <p className="text-xs font-bold text-gray-500">{user.joined}</p>
+                  <p className="text-xs font-bold text-gray-500">{new Date(user.date_joined).toLocaleDateString()}</p>
                 </div>
               </div>
               

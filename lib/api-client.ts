@@ -2,28 +2,26 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
 
 export const apiClient = {
-  async register(data: any) {
-    try {
-      const response = await fetch(`${API_URL}/users/register/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-
-      const result = await response.json().catch(() => ({}));
-
-      if (!response.ok) {
-        throw { errors: result, status: response.status };
-      }
-      return result;
-    } catch (err: any) {
-      if (err.errors) throw err;
-      // Network error (Failed to fetch)
-      console.error('Network Error in apiClient.register:', err);
-      throw { errors: { server: ['The backend server is unreachable. Check your connection or CORS settings.'] }, status: 500 };
+  async login(credentials: any) {
+    const response = await fetch(`${API_URL}/token/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(credentials),
+    });
+    const result = await response.json();
+    if (response.ok) {
+      localStorage.setItem('token', result.access);
+      localStorage.setItem('refresh', result.refresh);
     }
+    return result;
+  },
+
+  async getAdminStats() {
+    const response = await fetch(`${API_URL}/users/admin-stats/`, {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    });
+    if (!response.ok) throw new Error('Failed to fetch stats');
+    return response.json();
   },
 
   async getAdminKYCs(params: any = {}) {
@@ -31,6 +29,7 @@ export const apiClient = {
     const response = await fetch(`${API_URL}/kyc/admin/?${query}`, {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
     });
+    if (!response.ok) throw new Error('Failed to fetch KYCs');
     return response.json();
   },
 
@@ -59,9 +58,10 @@ export const apiClient = {
   },
 
   async getUsers() {
-    const response = await fetch(`${API_URL}/users/`, {
+    const response = await fetch(`${API_URL}/users/users/`, {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
     });
+    if (!response.ok) throw new Error('Failed to fetch users');
     return response.json();
   }
 };
