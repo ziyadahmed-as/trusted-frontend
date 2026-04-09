@@ -21,6 +21,12 @@ export default function KYCModerationPage() {
   const [activeTab, setActiveTab] = useState('all');
   const [kycs, setKycs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // KYC Modal States
+  const [selectedKyc, setSelectedKyc] = useState<any | null>(null);
+  const [rejectReason, setRejectReason] = useState('');
+  const [showRejectInput, setShowRejectInput] = useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
 
   const fetchKYCs = React.useCallback(async () => {
     setLoading(true);
@@ -40,16 +46,27 @@ export default function KYCModerationPage() {
   }, [fetchKYCs]);
 
   const handleAction = async (id: string, action: 'approve' | 'reject') => {
+    setActionLoading(true);
     try {
       if (action === 'approve') {
         await apiClient.approveKYC(id, 'Verified by Admin Dashboard');
       } else {
-        await apiClient.rejectKYC(id, 'Incomplete documentation', 'Please re-upload clearer images');
+        if (!rejectReason.trim()) {
+          alert('Rejection reason is required.');
+          setActionLoading(false);
+          return;
+        }
+        await apiClient.rejectKYC(id, rejectReason, 'Rejected from Admin Dashboard');
       }
+      setSelectedKyc(null);
+      setShowRejectInput(false);
+      setRejectReason('');
       fetchKYCs(); // Refresh list
     } catch (err) {
       alert('Error performing action. Check console.');
       console.error(err);
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -141,7 +158,11 @@ export default function KYCModerationPage() {
                     </td>
                     <td className="px-10 py-6 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <button title="View Details" className="p-2.5 bg-gray-50 hover:bg-white hover:shadow-lg rounded-xl transition-all border border-transparent hover:border-gray-100 group/btn">
+                        <button 
+                          onClick={() => { setSelectedKyc(kyc); setShowRejectInput(false); setRejectReason(''); }}
+                          title="View Details" 
+                          className="p-2.5 bg-gray-50 hover:bg-white hover:shadow-lg rounded-xl transition-all border border-transparent hover:border-gray-100 group/btn"
+                        >
                           <Eye className="w-4 h-4 text-gray-400 group-hover/btn:text-indigo-600" />
                         </button>
                         {kyc.status === 'pending' && (
@@ -191,6 +212,157 @@ export default function KYCModerationPage() {
           </div>
         </div>
       </section>
+
+      {/* KYC Details Modal */}
+      <AnimatePresence>
+        {selectedKyc && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm"
+          >
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="bg-white rounded-3xl shadow-2xl w-full max-w-3xl overflow-hidden max-h-[90vh] flex flex-col"
+            >
+              <div className="flex items-center justify-between p-6 border-b border-gray-100">
+                <div>
+                  <h3 className="text-xl font-black text-gray-900">KYC Review</h3>
+                  <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">ID: KYC-{selectedKyc.id}</p>
+                </div>
+                <button 
+                  onClick={() => setSelectedKyc(null)}
+                  className="p-2 bg-gray-50 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <XCircle className="w-5 h-5 text-gray-400" />
+                </button>
+              </div>
+
+              <div className="p-6 overflow-y-auto flex-1 space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-gray-50 rounded-2xl p-4">
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">User / Role</p>
+                    <p className="text-sm font-bold text-gray-900">{selectedKyc.user_email || 'Unknown User'}</p>
+                  </div>
+                  <div className="bg-gray-50 rounded-2xl p-4">
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Status</p>
+                    <div className={cn(
+                      "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter border",
+                      statusStyles[selectedKyc.status as keyof typeof statusStyles] || statusStyles.pending
+                    )}>
+                      {selectedKyc.status?.replace('_', ' ') || 'PENDING'}
+                    </div>
+                  </div>
+                  <div className="bg-gray-50 rounded-2xl p-4">
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Document Type</p>
+                    <p className="text-sm font-bold text-gray-900">{selectedKyc.document_type_name || selectedKyc.kyc_type || 'ID'}</p>
+                  </div>
+                  <div className="bg-gray-50 rounded-2xl p-4">
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Document Number</p>
+                    <p className="text-sm font-bold text-gray-900">{selectedKyc.document_number || 'N/A'}</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {selectedKyc.document_file && (
+                    <div>
+                      <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Document File</p>
+                      <div className="bg-gray-100 rounded-2xl aspect-video overflow-hidden relative">
+                         <img 
+                           src={selectedKyc.document_file} 
+                           alt="Document" 
+                           className="w-full h-full object-cover hover:object-contain transition-all"
+                         />
+                      </div>
+                    </div>
+                  )}
+                  {selectedKyc.LIVE_PHOTO && (
+                    <div>
+                      <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Live Photo</p>
+                      <div className="bg-gray-100 rounded-2xl aspect-video overflow-hidden relative">
+                         <img 
+                           src={selectedKyc.LIVE_PHOTO} 
+                           alt="Live Photo" 
+                           className="w-full h-full object-cover hover:object-contain transition-all"
+                         />
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
+                {showRejectInput && (
+                  <motion.div 
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    className="p-4 bg-rose-50 border border-rose-100 rounded-2xl space-y-3"
+                  >
+                    <label className="text-xs font-black text-rose-600 uppercase tracking-widest">Rejection Reason</label>
+                    <textarea 
+                      value={rejectReason}
+                      onChange={(e) => setRejectReason(e.target.value)}
+                      placeholder="Enter the reason for rejecting this document..."
+                      className="w-full bg-white border border-rose-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-rose-500 focus:outline-none"
+                      rows={3}
+                    />
+                  </motion.div>
+                )}
+              </div>
+
+              <div className="p-6 border-t border-gray-100 bg-gray-50/50 flex items-center justify-end gap-3">
+                {selectedKyc.status === 'pending' || selectedKyc.status === 'under_review' ? (
+                  <>
+                    {!showRejectInput ? (
+                      <>
+                        <button 
+                          onClick={() => setShowRejectInput(true)}
+                          className="px-6 py-2.5 rounded-xl bg-rose-100 text-rose-600 font-bold text-sm hover:bg-rose-200 transition-colors hover:scale-105 active:scale-95 transition-all"
+                        >
+                          Reject
+                        </button>
+                        <button 
+                          onClick={() => handleAction(selectedKyc.id, 'approve')}
+                          disabled={actionLoading}
+                          className="px-6 py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-sm hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-200 flex items-center gap-2 hover:scale-105 active:scale-95 transition-all"
+                        >
+                          {actionLoading && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
+                          Approve KYC
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <button 
+                          onClick={() => setShowRejectInput(false)}
+                          className="px-6 py-2.5 rounded-xl bg-gray-200 text-gray-700 font-bold text-sm hover:bg-gray-300 transition-colors"
+                        >
+                          Cancel
+                        </button>
+                        <button 
+                          onClick={() => handleAction(selectedKyc.id, 'reject')}
+                          disabled={actionLoading || !rejectReason.trim()}
+                          className="px-6 py-2.5 rounded-xl bg-rose-600 text-white font-bold text-sm hover:bg-rose-700 transition-colors shadow-lg shadow-rose-200 disabled:opacity-50 flex items-center gap-2 hover:scale-105 active:scale-95 transition-all"
+                        >
+                          {actionLoading && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
+                          Confirm Rejection
+                        </button>
+                      </>
+                    )}
+                  </>
+                ) : (
+                  <button 
+                    onClick={() => setSelectedKyc(null)}
+                    className="px-6 py-2.5 rounded-xl bg-gray-200 text-gray-900 font-bold text-sm hover:bg-gray-300 transition-colors"
+                  >
+                    Close
+                  </button>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
