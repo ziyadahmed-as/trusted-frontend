@@ -111,5 +111,57 @@ export const apiClient = {
     });
     if (!response.ok) throw new Error('Failed to fetch profile');
     return response.json();
+  },
+
+  // --- Product Methods ---
+  async getProducts() {
+    const response = await fetch(`${API_URL}/products/catalog/`, {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    });
+    if (!response.ok) throw new Error('Failed to fetch products');
+    return response.json();
+  },
+
+  async createProduct(data: any) {
+    const response = await fetch(`${API_URL}/products/catalog/`, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}` 
+      },
+      body: JSON.stringify(data)
+    });
+    const result = await response.json();
+    if (!response.ok) throw { errors: result };
+    return result;
+  },
+
+  async updateProduct(id: string, data: any) {
+    const response = await fetch(`${API_URL}/products/catalog/${id}/`, {
+      method: 'PATCH',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}` 
+      },
+      body: JSON.stringify(data)
+    });
+    const result = await response.json();
+    if (!response.ok) throw { errors: result };
+    return result;
+  },
+
+  async deleteProduct(id: string) {
+    const response = await fetch(`${API_URL}/products/catalog/${id}/`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    });
+    if (!response.ok) throw new Error('Failed to delete product');
+    return true;
+  },
+
+  async getCategories() {
+    const response = await fetch(`${API_URL}/products/categories/`);
+    if (!response.ok) throw new Error('Failed to fetch categories');
+    return response.json();
   }
 };

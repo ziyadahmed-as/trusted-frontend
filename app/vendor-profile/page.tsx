@@ -52,6 +52,14 @@ export default function VendorProfilePage() {
                <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">Total Sales</h3>
                <p className="text-3xl font-black text-gray-900 tracking-tighter">$0.00</p>
              </div>
+
+             <div className="p-8 bg-white border border-gray-100 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.02)]">
+               <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">Inventory</h3>
+               <Link href="/vendor-profile/products" className="w-full flex items-center justify-between py-3 px-4 bg-gray-50 hover:bg-indigo-50 rounded-2xl group transition-all">
+                 <span className="text-sm font-bold text-gray-700 group-hover:text-indigo-600">Product Dashboard</span>
+                 <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-indigo-600" />
+               </Link>
+             </div>
            </div>
 
            {/* Main Content: Profile Form */}
