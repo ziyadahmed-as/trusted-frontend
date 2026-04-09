@@ -1,7 +1,28 @@
+'use client';
 
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { ShoppingBag, Star, Tag, ChevronRight } from 'lucide-react';
+import { apiClient } from '@/lib/api-client';
 
 export default function Home() {
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCatalog = async () => {
+      try {
+        const data = await apiClient.getPublicProducts();
+        setProducts(data.results || data);
+      } catch (err) {
+        console.error('Failed to fetch catalog:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCatalog();
+  }, []);
+
   return (
     <div className="min-h-screen bg-white text-gray-900 flex flex-col">
       {/* Navigation */}
@@ -41,21 +62,73 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Feature grid placeholder */}
-        <section className="w-full max-w-7xl mx-auto px-6 py-24 grid grid-cols-1 md:grid-cols-3 gap-8">
-          {[
-            { title: "Global Reach", desc: "Sell to customers anywhere in the world with localized payments." },
-            { title: "Advanced Analytics", desc: "Real-time insights into your store's performance." },
-            { title: "Fast Shipping", desc: "Integrated logistics for seamless delivery experience." }
-          ].map((feature, i) => (
-            <div key={i} className="p-10 bg-gray-50 rounded-[2rem] border border-gray-100/50 hover:bg-white hover:shadow-2xl hover:shadow-indigo-100 transition-all duration-500 group">
-              <div className="w-14 h-14 bg-indigo-600 rounded-2xl mb-6 shadow-xl shadow-indigo-100 flex items-center justify-center text-white font-bold text-xl group-hover:scale-110 transition-transform">
-                0{i+1}
-              </div>
-              <h3 className="text-2xl font-bold mb-4">{feature.title}</h3>
-              <p className="text-gray-500 leading-relaxed font-medium">{feature.desc}</p>
+        {/* Discover Products Section */}
+        <section className="w-full max-w-7xl mx-auto px-6 py-24">
+          <div className="flex items-end justify-between mb-12">
+            <div>
+              <h2 className="text-4xl font-black tracking-tighter text-gray-900 mb-2">Discover <span className="text-indigo-600">Products</span></h2>
+              <p className="text-gray-500 font-bold">Explore the latest trending items from our top vendors.</p>
             </div>
-          ))}
+            <button className="hidden md:flex items-center gap-2 text-sm font-bold text-indigo-600 hover:text-indigo-700 transition-colors group">
+              View All Catalog <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </button>
+          </div>
+
+          {loading ? (
+            <div className="flex justify-center py-20">
+              <div className="w-12 h-12 border-4 border-indigo-600/20 border-t-indigo-600 rounded-full animate-spin"></div>
+            </div>
+          ) : products.length === 0 ? (
+            <div className="text-center py-20 bg-gray-50 rounded-[3rem] border border-gray-100">
+              <ShoppingBag className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <p className="text-gray-500 font-bold">No products available at the moment.</p>
+              <p className="text-sm text-gray-400 mt-2">Come back later or start your own store!</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {products.map((product) => (
+                <div key={product.id} className="group flex flex-col bg-white border border-gray-100 rounded-[2rem] overflow-hidden hover:shadow-2xl hover:shadow-indigo-100 transition-all duration-500">
+                  <div className="relative aspect-square bg-gray-50 overflow-hidden">
+                    {/* Placeholder for Product Image */}
+                    <div className="absolute inset-0 flex items-center justify-center text-gray-300 group-hover:scale-105 transition-transform duration-500">
+                      <ShoppingBag className="w-20 h-20 opacity-20" />
+                    </div>
+                    {product.stock <= 5 && product.stock > 0 && (
+                      <div className="absolute top-4 left-4 px-3 py-1 bg-amber-500 text-white text-[10px] font-black uppercase tracking-widest rounded-lg shadow-lg">
+                        Low Stock
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="p-6 flex flex-col flex-1">
+                    <div className="flex flex-col flex-1">
+                      <div className="flex items-center gap-2 mb-3">
+                         <span className="inline-flex items-center gap-1 px-2 py-1 bg-gray-50 border border-gray-100 rounded-md text-[10px] font-black uppercase tracking-wider text-gray-500">
+                           <Tag className="w-3 h-3" /> {product.category_name || 'Category'}
+                         </span>
+                      </div>
+                      <h3 className="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors line-clamp-2 mb-2 leading-tight">
+                        {product.name}
+                      </h3>
+                      <p className="text-sm text-gray-500 line-clamp-2 mt-auto mb-4">
+                        {product.description}
+                      </p>
+                    </div>
+                    
+                    <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-50">
+                      <div className="flex flex-col">
+                        <span className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-0.5">Price</span>
+                        <span className="text-xl font-black text-gray-900">${parseFloat(product.price).toFixed(2)}</span>
+                      </div>
+                      <button className="w-10 h-10 rounded-xl bg-gray-50 text-gray-600 flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-sm">
+                        <ChevronRight className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </section>
       </main>
 

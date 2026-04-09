@@ -114,6 +114,12 @@ export const apiClient = {
   },
 
   // --- Product Methods ---
+  async getPublicProducts() {
+    const response = await fetch(`${API_URL}/products/catalog/`);
+    if (!response.ok) throw new Error('Failed to fetch products');
+    return response.json();
+  },
+
   async getProducts() {
     const response = await fetch(`${API_URL}/products/catalog/`, {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
