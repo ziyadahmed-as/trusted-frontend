@@ -160,6 +160,7 @@ export default function VendorProfilePage() {
             </form>
           )}
         </div>
+        </div>
       </div>
     </div>
   );
