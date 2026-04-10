@@ -80,7 +80,7 @@ export const apiClient = {
 
   // --- User KYC Methods ---
   async getKYCRequirements() {
-    const response = await fetch(`${API_URL}/kyc/requirements/`, {
+    const response = await fetch(`${API_URL}/kyc/me/requirements/`, {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
     });
     if (!response.ok) throw new Error('Failed to fetch requirements');
@@ -88,7 +88,7 @@ export const apiClient = {
   },
 
   async getKYCStatus() {
-    const response = await fetch(`${API_URL}/kyc/status/`, {
+    const response = await fetch(`${API_URL}/kyc/me/status/`, {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
     });
     if (!response.ok) throw new Error('Failed to fetch KYC status');
@@ -96,7 +96,7 @@ export const apiClient = {
   },
 
   async submitKYC(formData: FormData) {
-    const response = await fetch(`${API_URL}/kyc/submit/`, {
+    const response = await fetch(`${API_URL}/kyc/me/submit/`, {
       method: 'POST',
       headers: { 
         'Authorization': `Bearer ${localStorage.getItem('token')}`
