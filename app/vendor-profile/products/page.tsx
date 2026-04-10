@@ -71,9 +71,18 @@ export default function VendorProductsPage() {
       setShowModal(false);
       setFormData({ name: '', category: '', price: '', stock: '', description: '' });
       fetchData(); // reload products
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert('Failed to add product. Make sure all fields are correct.');
+      let errorMessage = 'Failed to add product. Make sure all fields are correct.';
+      if (err.errors && err.errors.detail) {
+        errorMessage = err.errors.detail;
+      } else if (err.errors && typeof err.errors === 'object') {
+        const firstErrorKey = Object.keys(err.errors)[0];
+        if (Array.isArray(err.errors[firstErrorKey])) {
+           errorMessage = err.errors[firstErrorKey][0];
+        }
+      }
+      alert(errorMessage);
     } finally {
       setModalLoading(false);
     }
