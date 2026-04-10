@@ -180,6 +180,20 @@ export const apiClient = {
     return response.json();
   },
 
+  async postProductReview(data: any) {
+    const response = await fetch(`${API_URL}/products/reviews/`, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}` 
+      },
+      body: JSON.stringify(data)
+    });
+    const result = await response.json();
+    if (!response.ok) throw { errors: result };
+    return result;
+  },
+
   // --- Order & Cart Methods ---
   async syncCart(items: any[]) {
     // 1. Clear existing cart
