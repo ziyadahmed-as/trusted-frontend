@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ChevronRight, Save, Loader2, CheckCircle2 } from 'lucide-react';
+import { ChevronRight, Save, Loader2, CheckCircle2, TrendingUp, Package, AlertCircle } from 'lucide-react';
 import { apiClient } from '@/lib/api-client';
 import { cn } from '@/lib/utils';
 
@@ -10,6 +10,11 @@ export default function VendorProfilePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [stats, setStats] = useState({
+    total_sales: 0,
+    order_count: 0,
+    pending_count: 0
+  });
   const [profile, setProfile] = useState({
     store_name: '',
     description: '',
@@ -17,17 +22,21 @@ export default function VendorProfilePage() {
   });
 
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchDashboardData = async () => {
       try {
-        const data = await apiClient.getVendorProfile();
-        setProfile(data);
+        const [profileData, statsData] = await Promise.all([
+          apiClient.getVendorProfile(),
+          apiClient.getVendorStats()
+        ]);
+        setProfile(profileData);
+        setStats(statsData);
       } catch (err) {
-        console.error('Failed to fetch profile', err);
+        console.error('Failed to fetch dashboard data', err);
       } finally {
         setLoading(false);
       }
     };
-    fetchProfile();
+    fetchDashboardData();
   }, []);
 
   const handleSave = async (e: React.FormEvent) => {
@@ -52,69 +61,93 @@ export default function VendorProfilePage() {
 
   return (
     <div className="min-h-screen bg-[#f8fafc] py-20 px-6">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <header className="mb-12 flex justify-between items-end">
           <div>
-            <h1 className="text-4xl font-black text-gray-900 tracking-tight">Vendor <span className="text-indigo-600">Dashboard</span></h1>
-            <p className="text-gray-500 mt-2 font-medium italic">Grow your business with TrestBiyyo.</p>
+            <h1 className="text-5xl font-black text-gray-900 tracking-tight italic">Ven<span className="text-indigo-600">dor</span> Hub</h1>
+            <p className="text-gray-500 mt-2 font-medium italic">Grow your commerce empire with TrestBiyyo.</p>
           </div>
-          <Link href="/" className="px-6 py-2 bg-white border border-gray-100 rounded-xl font-bold text-sm text-gray-600 hover:bg-gray-50 transition-all">Back Home</Link>
+          <Link href="/" className="px-8 py-3 bg-gray-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-indigo-600 transition-all shadow-xl shadow-gray-200">Back to Shop</Link>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
            {/* Sidebar: Stats */}
-           <div className="md:col-span-1 space-y-8">
+           <div className="lg:col-span-4 space-y-8">
              {/* Verification Alert */}
              <div className="p-8 bg-white border border-indigo-100 rounded-[2.5rem] shadow-xl shadow-indigo-100/10 relative overflow-hidden group">
-               <div className="absolute top-0 right-0 p-4">
-                  <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+               <div className="absolute top-0 right-0 p-6">
+                  <div className="w-3 h-3 rounded-full bg-amber-500 animate-pulse" />
                </div>
-               <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 mb-4 inline-block px-3 py-1 bg-indigo-50 rounded-lg">Verification</h3>
-               <p className="text-sm font-bold text-gray-900 mb-4 leading-relaxed">Complete your KYC to unlock full payout capabilities.</p>
+               <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 mb-6 inline-block px-4 py-1.5 bg-indigo-50 rounded-xl">Account Identity</h3>
+               <p className="text-base font-bold text-gray-900 mb-6 leading-relaxed">Complete your KYC verification to enable secure payouts.</p>
                <Link href="/kyc" className="flex items-center justify-between group/link">
-                 <span className="text-xs font-black uppercase tracking-widest text-indigo-600 group-hover/link:translate-x-1 transition-transform">Verify Now</span>
-                 <div className="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-100 group-hover/link:scale-110 transition-all">
-                   <ChevronRight className="w-4 h-4" />
+                 <span className="text-[10px] font-black uppercase tracking-widest text-indigo-600 group-hover/link:translate-x-1 transition-transform">Start Verification</span>
+                 <div className="w-10 h-10 rounded-2xl bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-200 group-hover/link:scale-110 transition-all">
+                   <ChevronRight className="w-5 h-5" />
                  </div>
                </Link>
              </div>
 
-             <div className="p-8 bg-indigo-600 rounded-[2.5rem] text-white shadow-xl shadow-indigo-500/20 relative overflow-hidden">
-               <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
-               <h3 className="text-xs font-bold uppercase tracking-widest opacity-70 mb-1">Current Tier</h3>
-               <p className="text-3xl font-black tracking-tighter italic">{profile.subscription_tier}</p>
-               <button className="mt-6 w-full py-2 bg-white/20 hover:bg-white/30 border border-white/20 rounded-xl text-xs font-bold transition-all backdrop-blur-sm">Upgrade Plan</button>
+             {/* Dynamic Stats Cards */}
+             <div className="p-8 bg-indigo-600 rounded-[3rem] text-white shadow-2xl shadow-indigo-200 relative overflow-hidden group">
+               <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000" />
+               <TrendingUp className="w-10 h-10 mb-6 opacity-30" />
+               <h3 className="text-[10px] font-black uppercase tracking-widest opacity-70 mb-1">Lifetime Revenue</h3>
+               <p className="text-5xl font-black tracking-tighter italic">${parseFloat(stats.total_sales.toString()).toFixed(2)}</p>
+               <div className="mt-8 pt-8 border-t border-white/10 flex justify-between items-center">
+                  <div className="text-xs font-bold text-white/60">Tier: {profile.subscription_tier}</div>
+                  <button className="text-[10px] font-black uppercase tracking-widest bg-white/20 hover:bg-white text-white hover:text-indigo-600 px-4 py-2 rounded-xl transition-all">Upgrade</button>
+               </div>
              </div>
              
-             <div className="p-8 bg-white border border-gray-100 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.02)]">
-               <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">Total Sales</h3>
-               <p className="text-3xl font-black text-gray-900 tracking-tighter">$0.00</p>
+             <div className="grid grid-cols-2 gap-6">
+                <div className="p-8 bg-white border border-gray-100 rounded-[2.5rem] shadow-sm">
+                  <Package className="w-6 h-6 text-gray-400 mb-4" />
+                  <h3 className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1">Total Orders</h3>
+                  <p className="text-2xl font-black text-gray-900 tracking-tighter">{stats.order_count}</p>
+                </div>
+                <div className="p-8 bg-white border border-gray-100 rounded-[2.5rem] shadow-sm relative overflow-hidden">
+                  {stats.pending_count > 0 && <div className="absolute top-4 right-4"><AlertCircle className="w-4 h-4 text-amber-500 animate-bounce" /></div>}
+                  <h3 className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1">Pending</h3>
+                  <p className="text-2xl font-black text-gray-900 tracking-tighter">{stats.pending_count}</p>
+                </div>
              </div>
 
-             <div className="p-8 bg-white border border-gray-100 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.02)]">
-               <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">Inventory</h3>
-               <Link href="/vendor-profile/products" className="w-full flex items-center justify-between py-3 px-4 bg-gray-50 hover:bg-indigo-50 rounded-2xl group transition-all">
-                 <span className="text-sm font-bold text-gray-700 group-hover:text-indigo-600">Product Dashboard</span>
-                 <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-indigo-600" />
-               </Link>
+             <div className="p-8 bg-gray-900 rounded-[2.5rem] shadow-xl text-white">
+               <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-6">Operations Hub</h3>
+               <div className="space-y-4">
+                 <Link href="/vendor-profile/orders" className="w-full flex items-center justify-between py-4 px-6 bg-white/10 hover:bg-indigo-600 rounded-2xl group transition-all">
+                    <span className="text-xs font-black uppercase tracking-widest">Order Fulfillment</span>
+                    <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                 </Link>
+                 <Link href="/vendor-profile/products" className="w-full flex items-center justify-between py-4 px-6 bg-white/10 hover:bg-indigo-600 rounded-2xl group transition-all">
+                    <span className="text-xs font-black uppercase tracking-widest">Manage Inventory</span>
+                    <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                 </Link>
+               </div>
              </div>
            </div>
 
         {/* Main Content: Profile Form */}
-        <div className="md:col-span-2 p-10 bg-white border border-gray-100 rounded-[2rem] shadow-sm">
-          <h2 className="text-2xl font-bold mb-8">Store Information</h2>
+        <div className="lg:col-span-8 p-12 bg-white border border-gray-100 rounded-[3.5rem] shadow-sm">
+          <div className="flex items-center justify-between mb-12">
+            <h2 className="text-2xl font-black text-gray-900 tracking-tight italic flex items-center gap-3">
+              Store <span className="text-indigo-600">Configuration</span>
+            </h2>
+          </div>
+
           {loading ? (
             <div className="flex justify-center py-20">
                <Loader2 className="w-10 h-10 text-indigo-600 animate-spin" />
             </div>
           ) : (
-            <form onSubmit={handleSave} className="space-y-6">
-              <div>
-                <label htmlFor="store_name" className="block text-[13px] font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">Store Name</label>
+            <form onSubmit={handleSave} className="space-y-8">
+              <div className="space-y-4">
+                <label htmlFor="store_name" className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-2 italic">Official Store Name</label>
                 <input
                  id="store_name"
                  type="text"
-                 className="w-full px-5 py-4 bg-gray-50 border-transparent focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all duration-200 outline-none rounded-2xl text-gray-700"
+                 className="w-full px-8 py-6 bg-gray-50 border-transparent focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all duration-300 outline-none rounded-[1.8rem] text-gray-700 font-bold text-lg italic shadow-inner"
                  placeholder="The Premium Collective"
                  value={profile.store_name}
                  onChange={(e) => setProfile({ ...profile, store_name: e.target.value })}
@@ -122,41 +155,43 @@ export default function VendorProfilePage() {
                 />
               </div>
               
-              <div>
-                <label htmlFor="description" className="block text-[13px] font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">Store Description</label>
+              <div className="space-y-4">
+                <label htmlFor="description" className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-2 italic">Brand Narrative (Bio)</label>
                 <textarea
                  id="description"
-                 rows={4}
-                 className="w-full px-5 py-4 bg-gray-50 border-transparent focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all duration-200 outline-none rounded-2xl text-gray-700 resize-none"
-                 placeholder="Tell your customers about your brand..."
+                 rows={6}
+                 className="w-full px-8 py-6 bg-gray-50 border-transparent focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all duration-300 outline-none rounded-[2rem] text-gray-700 font-medium leading-relaxed italic resize-none shadow-inner"
+                 placeholder="Tell your customers about your brand story..."
                  value={profile.description}
                  onChange={(e) => setProfile({ ...profile, description: e.target.value })}
                  required
                 />
               </div>
 
-              <button 
-                type="submit" 
-                disabled={saving}
-                className={cn(
-                  "w-full py-4 text-white font-bold rounded-2xl transition-all shadow-xl flex items-center justify-center gap-2",
-                  saveSuccess ? "bg-emerald-500 shadow-emerald-100" : "bg-indigo-600 shadow-indigo-100 hover:bg-indigo-700"
-                )}
-              >
-                {saving ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : saveSuccess ? (
-                  <>
-                    <CheckCircle2 className="w-5 h-5" />
-                    Changes Saved!
-                  </>
-                ) : (
-                  <>
-                    <Save className="w-5 h-5" />
-                    Save Profile
-                  </>
-                )}
-              </button>
+              <div className="pt-6">
+                <button 
+                  type="submit" 
+                  disabled={saving}
+                  className={cn(
+                    "w-full py-6 text-white text-xs font-black uppercase tracking-[0.3em] rounded-[2rem] transition-all shadow-2xl flex items-center justify-center gap-3",
+                    saveSuccess ? "bg-emerald-500 shadow-emerald-200" : "bg-gray-900 shadow-gray-200 hover:bg-indigo-600 hover:shadow-indigo-100"
+                  )}
+                >
+                  {saving ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : saveSuccess ? (
+                    <>
+                      <CheckCircle2 className="w-5 h-5 " />
+                      Profile Updated Successfully
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-5 h-5" />
+                      Save Global Profile
+                    </>
+                  )}
+                </button>
+              </div>
             </form>
           )}
         </div>

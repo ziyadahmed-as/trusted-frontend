@@ -250,6 +250,36 @@ export const apiClient = {
     return response.json();
   },
 
+  async getVendorOrders() {
+    const response = await fetch(`${API_URL}/orders/order/vendor_orders/`, {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    });
+    if (!response.ok) throw new Error('Failed to fetch vendor orders');
+    return response.json();
+  },
+
+  async getVendorStats() {
+    const response = await fetch(`${API_URL}/orders/order/vendor_stats/`, {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    });
+    if (!response.ok) throw new Error('Failed to fetch vendor stats');
+    return response.json();
+  },
+
+  async updateOrderStatus(orderId: string, status: string) {
+    const response = await fetch(`${API_URL}/orders/order/${orderId}/update_status/`, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}` 
+      },
+      body: JSON.stringify({ status })
+    });
+    const result = await response.json();
+    if (!response.ok) throw { errors: result };
+    return result;
+  },
+
   // --- Vendor Profile Methods ---
   async getVendorProfile() {
     const response = await fetch(`${API_URL}/users/vendor-profile/`, {
