@@ -1,5 +1,7 @@
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api';
+// In dev, we use the absolute URL to avoid potential issues with Next.js rewrites and trailing slashes.
+console.log('API_URL:', API_URL);
 
 export const apiClient = {
   async login(credentials: any) {
