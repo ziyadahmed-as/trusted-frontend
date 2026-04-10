@@ -5,6 +5,7 @@ import { ShoppingBag, Star, Tag, ChevronRight, Heart } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { useCart } from '@/context/CartContext';
 
 interface ProductCardProps {
   product: {
@@ -23,6 +24,7 @@ interface ProductCardProps {
 export function ProductCard({ product, variant = 'standard' }: ProductCardProps) {
   const isFeatured = variant === 'featured';
   const isCompact = variant === 'compact';
+  const { addToCart } = useCart();
 
   return (
     <motion.div
@@ -71,7 +73,19 @@ export function ProductCard({ product, variant = 'standard' }: ProductCardProps)
 
         {/* Quick Add Button Overlay */}
         <div className="absolute inset-x-6 bottom-6 translate-y-20 group-hover:translate-y-0 transition-transform duration-500 z-10">
-          <button className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-indigo-600 transition-colors shadow-2xl">
+          <button 
+            onClick={(e) => {
+              e.preventDefault();
+              addToCart({
+                id: product.id.toString(),
+                name: product.name,
+                price: parseFloat(product.price),
+                quantity: 1,
+                stock: product.stock,
+              });
+            }}
+            className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-indigo-600 transition-colors shadow-2xl"
+          >
             Quick Add
           </button>
         </div>
