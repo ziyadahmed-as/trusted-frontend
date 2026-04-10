@@ -48,13 +48,20 @@ export function KYCUploadCard({ documentType, currentStatus, onSuccess }: KYCUpl
 
     const formData = new FormData();
     formData.append('kyc_type', documentType.code);
-    formData.append('document_file', file);
-    // Optional: if it were a photo, we could append it to LIVE_PHOTO instead
+    
+    // Choose the right field name based on document type
+    if (documentType.code === 'LIVE_PHOTO') {
+      formData.append('LIVE_PHOTO', file);
+    } else {
+      formData.append('document_file', file);
+    }
 
     try {
       const result = await apiClient.submitKYC(formData);
-      if (result.error) {
-        setError(result.error);
+      if (result.error || (typeof result === 'object' && !result.id && Object.keys(result).length > 0)) {
+        // If it's a field-level error object from DRF
+        const firstErr = typeof result === 'string' ? result : (result.error || Object.values(result)[0]);
+        setError(Array.isArray(firstErr) ? firstErr[0] : firstErr);
       } else {
         setFile(null);
         onSuccess();

@@ -1,16 +1,54 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Save, Loader2, CheckCircle2 } from 'lucide-react';
+import { apiClient } from '@/lib/api-client';
+import { cn } from '@/lib/utils';
 
 export default function VendorProfilePage() {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
   const [profile, setProfile] = useState({
     store_name: '',
     description: '',
     subscription_tier: 'BRONZE'
   });
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const data = await apiClient.getVendorProfile();
+        setProfile(data);
+      } catch (err) {
+        console.error('Failed to fetch profile', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProfile();
+  }, []);
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    setSaveSuccess(false);
+    try {
+      const result = await apiClient.updateVendorProfile({
+        store_name: profile.store_name,
+        description: profile.description
+      });
+      setProfile(result);
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 3000);
+    } catch (err) {
+      console.error('Failed to save profile', err);
+      alert('Failed to save profile. Please try again.');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#f8fafc] py-20 px-6">
@@ -62,39 +100,65 @@ export default function VendorProfilePage() {
              </div>
            </div>
 
-           {/* Main Content: Profile Form */}
-           <div className="md:col-span-2 p-10 bg-white border border-gray-100 rounded-[2rem] shadow-sm">
-             <h2 className="text-2xl font-bold mb-8">Store Information</h2>
-             <form className="space-y-6">
-               <div>
-                 <label htmlFor="store_name" className="block text-[13px] font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">Store Name</label>
-                 <input
-                  id="store_name"
-                  type="text"
-                  className="w-full px-5 py-4 bg-gray-50 border-transparent focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all duration-200 outline-none rounded-2xl text-gray-700"
-                  placeholder="The Premium Collective"
-                  value={profile.store_name}
-                  onChange={(e) => setProfile({ ...profile, store_name: e.target.value })}
-                 />
-               </div>
-               
-               <div>
-                 <label htmlFor="description" className="block text-[13px] font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">Store Description</label>
-                 <textarea
-                  id="description"
-                  rows={4}
-                  className="w-full px-5 py-4 bg-gray-50 border-transparent focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all duration-200 outline-none rounded-2xl text-gray-700 resize-none"
-                  placeholder="Tell your customers about your brand..."
-                  value={profile.description}
-                  onChange={(e) => setProfile({ ...profile, description: e.target.value })}
-                 />
-               </div>
+        {/* Main Content: Profile Form */}
+        <div className="md:col-span-2 p-10 bg-white border border-gray-100 rounded-[2rem] shadow-sm">
+          <h2 className="text-2xl font-bold mb-8">Store Information</h2>
+          {loading ? (
+            <div className="flex justify-center py-20">
+               <Loader2 className="w-10 h-10 text-indigo-600 animate-spin" />
+            </div>
+          ) : (
+            <form onSubmit={handleSave} className="space-y-6">
+              <div>
+                <label htmlFor="store_name" className="block text-[13px] font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">Store Name</label>
+                <input
+                 id="store_name"
+                 type="text"
+                 className="w-full px-5 py-4 bg-gray-50 border-transparent focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all duration-200 outline-none rounded-2xl text-gray-700"
+                 placeholder="The Premium Collective"
+                 value={profile.store_name}
+                 onChange={(e) => setProfile({ ...profile, store_name: e.target.value })}
+                 required
+                />
+              </div>
+              
+              <div>
+                <label htmlFor="description" className="block text-[13px] font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">Store Description</label>
+                <textarea
+                 id="description"
+                 rows={4}
+                 className="w-full px-5 py-4 bg-gray-50 border-transparent focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all duration-200 outline-none rounded-2xl text-gray-700 resize-none"
+                 placeholder="Tell your customers about your brand..."
+                 value={profile.description}
+                 onChange={(e) => setProfile({ ...profile, description: e.target.value })}
+                 required
+                />
+              </div>
 
-               <button type="button" className="w-full py-4 bg-indigo-600 text-white font-bold rounded-2xl hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-100">
-                 Save Profile
-               </button>
-             </form>
-           </div>
+              <button 
+                type="submit" 
+                disabled={saving}
+                className={cn(
+                  "w-full py-4 text-white font-bold rounded-2xl transition-all shadow-xl flex items-center justify-center gap-2",
+                  saveSuccess ? "bg-emerald-500 shadow-emerald-100" : "bg-indigo-600 shadow-indigo-100 hover:bg-indigo-700"
+                )}
+              >
+                {saving ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : saveSuccess ? (
+                  <>
+                    <CheckCircle2 className="w-5 h-5" />
+                    Changes Saved!
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-5 h-5" />
+                    Save Profile
+                  </>
+                )}
+              </button>
+            </form>
+          )}
         </div>
       </div>
     </div>

@@ -116,8 +116,9 @@ export const apiClient = {
   },
 
   // --- Product Methods ---
-  async getPublicProducts() {
-    const response = await fetch(`${API_URL}/products/catalog/`);
+  async getPublicProducts(params: any = {}) {
+    const query = new URLSearchParams(params).toString();
+    const response = await fetch(`${API_URL}/products/catalog/?${query}`);
     if (!response.ok) throw new Error('Failed to fetch products');
     return response.json();
   },
@@ -170,6 +171,27 @@ export const apiClient = {
   async getCategories() {
     const response = await fetch(`${API_URL}/products/categories/`);
     if (!response.ok) throw new Error('Failed to fetch categories');
+    return response.json();
+  },
+
+  // --- Vendor Profile Methods ---
+  async getVendorProfile() {
+    const response = await fetch(`${API_URL}/users/vendor-profile/`, {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    });
+    if (!response.ok) throw new Error('Failed to fetch vendor profile');
+    return response.json();
+  },
+
+  async updateVendorProfile(data: any) {
+    const response = await fetch(`${API_URL}/users/vendor-profile/`, {
+      method: 'PUT',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}` 
+      },
+      body: JSON.stringify(data)
+    });
     return response.json();
   }
 };
