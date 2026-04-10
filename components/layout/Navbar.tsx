@@ -32,7 +32,10 @@ export function Navbar() {
           
           {/* Logo & Mobile Menu */}
           <div className="flex items-center gap-4">
-            <button className="p-2 -ml-2 rounded-xl text-gray-400 hover:text-gray-900 hover:bg-gray-50 md:hidden transition-colors">
+            <button 
+              aria-label="Open Menu"
+              className="p-2 -ml-2 rounded-xl text-gray-400 hover:text-gray-900 hover:bg-gray-50 md:hidden transition-colors"
+            >
               <Menu className="w-6 h-6" />
             </button>
             <Link href="/" className="flex items-center gap-2 group">

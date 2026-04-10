@@ -183,7 +183,10 @@ export default function VendorOrdersPage() {
                                   {updatingId === order.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <>Advance Status <ArrowLeft className="w-3 h-3 rotate-180" /></>}
                                 </button>
                               )}
-                              <button className="p-2.5 bg-gray-50 text-gray-400 rounded-xl hover:bg-gray-100 transition-colors">
+                              <button 
+                                aria-label="More options"
+                                className="p-2.5 bg-gray-50 text-gray-400 rounded-xl hover:bg-gray-100 transition-colors"
+                              >
                                  <MoreVertical className="w-4 h-4" />
                               </button>
                            </div>

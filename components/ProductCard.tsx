@@ -67,7 +67,10 @@ export function ProductCard({ product, variant = 'standard' }: ProductCardProps)
           )}
         </div>
 
-        <button className="absolute top-6 right-6 w-12 h-12 bg-white/80 backdrop-blur-md rounded-2xl flex items-center justify-center text-gray-400 hover:text-rose-500 hover:scale-110 active:scale-95 transition-all shadow-xl shadow-black/5 z-10 border border-white">
+        <button 
+          aria-label="Add to wishlist"
+          className="absolute top-6 right-6 w-12 h-12 bg-white/80 backdrop-blur-md rounded-2xl flex items-center justify-center text-gray-400 hover:text-rose-500 hover:scale-110 active:scale-95 transition-all shadow-xl shadow-black/5 z-10 border border-white"
+        >
           <Heart className="w-5 h-5" />
         </button>
 

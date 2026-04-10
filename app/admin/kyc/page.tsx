@@ -235,6 +235,7 @@ export default function KYCModerationPage() {
                 </div>
                 <button 
                   onClick={() => setSelectedKyc(null)}
+                  aria-label="Close Review"
                   className="p-2 bg-gray-50 hover:bg-gray-100 rounded-full transition-colors"
                 >
                   <XCircle className="w-5 h-5 text-gray-400" />

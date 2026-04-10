@@ -121,11 +121,17 @@ export default function OrderDetailPage({ params }: PageProps) {
 
                {/* Tracking Visual */}
                <div className="relative pt-12 pb-8">
-                  <div className="absolute top-1/2 left-0 w-full h-1 bg-gray-50 -translate-y-1/2 hidden md:block" />
-                  <div 
-                    className="absolute top-1/2 left-0 h-1 bg-indigo-600 -translate-y-1/2 hidden md:block transition-all duration-1000" 
-                    style={{ width: `${(finalIndex / (statusSteps.length - 1)) * 100}%` }}
-                  />
+                  <div className="absolute top-1/2 left-0 w-full h-1 bg-gray-50 -translate-y-1/2 hidden md:block">
+                    <div 
+                      className={cn(
+                        "h-full bg-indigo-600 transition-all duration-1000",
+                        finalIndex === 0 && "w-0",
+                        finalIndex === 1 && "w-1/3",
+                        finalIndex === 2 && "w-2/3",
+                        finalIndex === 3 && "w-full"
+                      )}
+                    />
+                  </div>
                   
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-10 relative">
                     {statusSteps.map((step, idx) => {

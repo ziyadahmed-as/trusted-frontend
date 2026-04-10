@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { apiClient } from '@/lib/api-client';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -180,8 +181,12 @@ export default function RegisterPage() {
           </div>
           <div className="absolute top-6 left-8 right-8 h-[1px] bg-zinc-100 -z-0">
             <div 
-              className="h-full bg-indigo-600 transition-all duration-700 ease-out"
-              style={{ width: `${((step - 1) / (steps.length - 1)) * 100}%` }}
+              className={cn(
+                "h-full bg-indigo-600 transition-all duration-700 ease-out",
+                step === 1 && "w-0",
+                step === 2 && "w-1/2",
+                step === 3 && "w-full"
+              )}
             />
           </div>
         </div>

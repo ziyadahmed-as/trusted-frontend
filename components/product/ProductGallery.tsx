@@ -68,12 +68,14 @@ export function ProductGallery({ images }: ProductGalleryProps) {
           <>
             <button 
               onClick={() => setActiveIdx((prev) => (prev === 0 ? images.length - 1 : prev - 1))}
+              aria-label="Previous Image"
               className="absolute left-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/80 backdrop-blur-md rounded-2xl flex items-center justify-center text-gray-900 shadow-xl opacity-0 group-hover:opacity-100 transition-all hover:bg-white active:scale-90"
             >
               <ChevronLeft className="w-6 h-6" />
             </button>
             <button 
               onClick={() => setActiveIdx((prev) => (prev === images.length - 1 ? 0 : prev + 1))}
+              aria-label="Next Image"
               className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/80 backdrop-blur-md rounded-2xl flex items-center justify-center text-gray-900 shadow-xl opacity-0 group-hover:opacity-100 transition-all hover:bg-white active:scale-90"
             >
               <ChevronRight className="w-6 h-6" />

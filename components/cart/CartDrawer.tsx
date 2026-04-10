@@ -41,6 +41,7 @@ export function CartDrawer() {
               </div>
               <button
                 onClick={closeDrawer}
+                aria-label="Close Cart"
                 className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-900 transition-colors"
               >
                 <X className="w-5 h-5" />
@@ -90,6 +91,7 @@ export function CartDrawer() {
                             <h4 className="font-bold text-gray-900 text-sm line-clamp-2 pr-4">{item.name}</h4>
                             <button
                               onClick={() => removeFromCart(item.id)}
+                              aria-label="Remove item from cart"
                               className="text-gray-400 hover:text-rose-500 transition-colors"
                             >
                               <Trash2 className="w-4 h-4" />
@@ -103,6 +105,7 @@ export function CartDrawer() {
                           <div className="flex items-center gap-3 px-2 py-1 bg-gray-50 rounded-lg">
                             <button
                               onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                              aria-label="Decrease quantity"
                               className="text-gray-400 hover:text-gray-900 disabled:opacity-50"
                             >
                               <Minus className="w-3 h-3" />
@@ -113,6 +116,7 @@ export function CartDrawer() {
                             <button
                               onClick={() => updateQuantity(item.id, item.quantity + 1)}
                               disabled={item.quantity >= item.stock}
+                              aria-label="Increase quantity"
                               className="text-gray-400 hover:text-gray-900 disabled:opacity-50"
                             >
                               <Plus className="w-3 h-3" />

@@ -78,6 +78,7 @@ export function BuyBox({ product }: BuyBoxProps) {
             <div className="flex items-center justify-between p-2 bg-gray-50 rounded-2xl border border-gray-100">
               <button 
                 onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                aria-label="Decrease quantity"
                 className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-gray-900 shadow-sm hover:bg-gray-100 active:scale-90 transition-all"
               >
                 <Minus className="w-4 h-4" />
@@ -85,6 +86,7 @@ export function BuyBox({ product }: BuyBoxProps) {
               <span className="text-lg font-black italic">{quantity}</span>
               <button 
                 onClick={() => setQuantity(q => Math.min(product.stock, q + 1))}
+                aria-label="Increase quantity"
                 className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-gray-900 shadow-sm hover:bg-gray-100 active:scale-90 transition-all"
               >
                 <Plus className="w-4 h-4" />

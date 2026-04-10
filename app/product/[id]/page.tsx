@@ -118,10 +118,16 @@ export default function ProductDetailPage({ params }: PageProps) {
             <span className="text-gray-900 truncate max-w-[200px]">{product.category_name}</span>
           </div>
           <div className="flex items-center gap-2">
-            <button className="p-3 bg-gray-50 text-gray-400 rounded-xl hover:bg-gray-100 transition-all hover:scale-110 active:scale-90 shadow-sm">
+            <button 
+              aria-label="Share Product"
+              className="p-3 bg-gray-50 text-gray-400 rounded-xl hover:bg-gray-100 transition-all hover:scale-110 active:scale-90 shadow-sm"
+            >
               <Share2 className="w-5 h-5" />
             </button>
-            <button className="p-3 bg-gray-50 text-gray-400 rounded-xl hover:bg-gray-100 transition-all hover:scale-110 active:scale-90 shadow-sm">
+            <button 
+              aria-label="Add to Wishlist"
+              className="p-3 bg-gray-50 text-gray-400 rounded-xl hover:bg-gray-100 transition-all hover:scale-110 active:scale-90 shadow-sm"
+            >
               <Heart className="w-5 h-5" />
             </button>
           </div>
@@ -266,7 +272,9 @@ export default function ProductDetailPage({ params }: PageProps) {
                           {[1, 2, 3, 4, 5].map((s) => (
                             <button 
                               key={s} 
+                              type="button"
                               onClick={() => setReviewRating(s)}
+                              aria-label={`Rate ${s} stars`}
                               className="focus:outline-none hover:scale-125 transition-transform"
                             >
                               <Star className={cn("w-6 h-6", s <= reviewRating ? "fill-current text-amber-500" : "text-gray-300")} />

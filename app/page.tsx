@@ -1,16 +1,12 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { useSearchParams } from 'next/navigation';
 import { apiClient } from '@/lib/api-client';
 import { ProductCard } from '@/components/ProductCard';
 import { ChevronDown, Star, X, Filter } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
+// 
 export default function Home() {
-  const searchParams = useSearchParams();
-  const search = searchParams.get('search');
-
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -37,7 +33,6 @@ export default function Home() {
       if (selectedCategoryId) params.category = selectedCategoryId;
       if (minPrice) params.min_price = minPrice;
       if (maxPrice) params.max_price = maxPrice;
-      if (search) params.search = search;
 
       // Handle Sorting
       if (sortBy === 'price-low') params.ordering = 'price';
@@ -53,7 +48,7 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  }, [selectedCategoryId, minPrice, maxPrice, sortBy, search]);
+  }, [selectedCategoryId, minPrice, maxPrice, sortBy]);
 
   useEffect(() => {
     fetchInitialData();
@@ -71,9 +66,6 @@ export default function Home() {
     setMinPrice('');
     setMaxPrice('');
     setSortBy('featured');
-    if (search) {
-      window.location.href = '/'; // Clear search param
-    }
   };
 
   return (
@@ -84,7 +76,7 @@ export default function Home() {
           <h2 className="text-lg font-black text-gray-900 tracking-tight flex items-center gap-2">
             <Filter className="w-5 h-5" /> Filters
           </h2>
-          {(selectedCategoryId || minPrice || maxPrice || search) && (
+          {(selectedCategoryId || minPrice || maxPrice) && (
             <button
               onClick={clearFilters}
               className="text-[10px] font-black uppercase tracking-widest text-indigo-600 hover:text-indigo-800 transition-colors"
@@ -93,19 +85,6 @@ export default function Home() {
             </button>
           )}
         </div>
-
-        {/* Search status if searching */}
-        {search && (
-            <div className="p-4 bg-indigo-50 rounded-2xl border border-indigo-100">
-                <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-1">Searching for</p>
-                <div className="flex items-center justify-between">
-                    <p className="text-sm font-bold text-indigo-900 italic">"{search}"</p>
-                    <Link href="/" className="text-indigo-400 hover:text-indigo-600">
-                        <X className="w-4 h-4" />
-                    </Link>
-                </div>
-            </div>
-        )}
 
         {/* Categories Section */}
         <section>
@@ -179,9 +158,11 @@ export default function Home() {
           </div>
 
           <div className="flex items-center gap-4">
-            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Sort by</label>
+            <label htmlFor="sort-select" className="text-[10px] font-black uppercase tracking-widest text-gray-400">Sort by</label>
             <div className="relative group">
               <select
+                id="sort-select"
+                title="Sort premium products"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
                 className="appearance-none bg-gray-50 border border-gray-100 px-6 py-2.5 rounded-xl text-sm font-bold text-gray-700 outline-none focus:border-indigo-500 cursor-pointer pr-10 shadow-sm"
@@ -235,5 +216,3 @@ export default function Home() {
     </div>
   );
 }
-
-import Link from 'next/link';
