@@ -150,7 +150,7 @@ export function CartDrawer() {
                   </div>
                 </div>
 
-                <Link href="#" onClick={closeDrawer} className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black text-sm uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-indigo-600 hover:shadow-xl hover:shadow-indigo-200 transition-all active:scale-[0.98]">
+                <Link href="/checkout" onClick={closeDrawer} className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black text-sm uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-indigo-600 hover:shadow-xl hover:shadow-indigo-200 transition-all active:scale-[0.98]">
                   Proceed to Checkout <ArrowRight className="w-4 h-4" />
                 </Link>
                 <div className="mt-4 text-center">

@@ -180,6 +180,62 @@ export const apiClient = {
     return response.json();
   },
 
+  // --- Order & Cart Methods ---
+  async syncCart(items: any[]) {
+    // 1. Clear existing cart
+    await fetch(`${API_URL}/orders/cart/clear/`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    });
+    
+    // 2. Add items one by one (or batch if the API allowed, but here we add sequentially)
+    for (const item of items) {
+      await fetch(`${API_URL}/orders/cart/add_item/`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}` 
+        },
+        body: JSON.stringify({
+          product_id: item.id,
+          quantity: item.quantity,
+          variant_id: item.variant_id || null
+        })
+      });
+    }
+    return true;
+  },
+
+  async checkoutOrder(data: any = {}) {
+    const response = await fetch(`${API_URL}/orders/order/checkout/`, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}` 
+      },
+      body: JSON.stringify(data)
+    });
+    const result = await response.json();
+    if (!response.ok) throw { errors: result };
+    return result;
+  },
+
+  async getOrders() {
+    const response = await fetch(`${API_URL}/orders/order/`, {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    });
+    if (!response.ok) throw new Error('Failed to fetch orders');
+    return response.json();
+  },
+
+  async getOrder(id: string) {
+    const response = await fetch(`${API_URL}/orders/order/${id}/`, {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    });
+    if (!response.ok) throw new Error('Failed to fetch order');
+    return response.json();
+  },
+
   // --- Vendor Profile Methods ---
   async getVendorProfile() {
     const response = await fetch(`${API_URL}/users/vendor-profile/`, {
