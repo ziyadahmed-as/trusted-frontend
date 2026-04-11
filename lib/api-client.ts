@@ -299,5 +299,64 @@ export const apiClient = {
       body: JSON.stringify(data)
     });
     return response.json();
+  },
+
+  // --- Finance & Payout Methods ---
+  async getWalletSummary() {
+    const response = await fetch(`${API_URL}/finance/wallet-summary/`, {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    });
+    if (!response.ok) throw new Error('Failed to fetch wallet summary');
+    return response.json();
+  },
+
+  async getPayoutMethods() {
+    const response = await fetch(`${API_URL}/finance/payout-methods/`, {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    });
+    if (!response.ok) throw new Error('Failed to fetch payout methods');
+    return response.json();
+  },
+
+  async addPayoutMethod(data: any) {
+    const response = await fetch(`${API_URL}/finance/payout-methods/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify(data)
+    });
+    return response.json();
+  },
+
+  async getTransactions() {
+    const response = await fetch(`${API_URL}/finance/transactions/`, {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    });
+    if (!response.ok) throw new Error('Failed to fetch transactions');
+    return response.json();
+  },
+
+  async getPayouts() {
+    const response = await fetch(`${API_URL}/finance/payouts/`, {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    });
+    if (!response.ok) throw new Error('Failed to fetch payouts');
+    return response.json();
+  },
+
+  async requestPayout(amount: number) {
+    const response = await fetch(`${API_URL}/finance/payouts/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify({ amount })
+    });
+    const result = await response.json();
+    if (!response.ok) throw { errors: result };
+    return result;
   }
 };
