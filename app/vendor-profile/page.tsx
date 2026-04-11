@@ -124,6 +124,10 @@ export default function VendorProfilePage() {
                     <span className="text-xs font-black uppercase tracking-widest">Manage Inventory</span>
                     <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                  </Link>
+                 <Link href="/vendor-profile/finance" className="w-full flex items-center justify-between py-4 px-6 bg-white/10 hover:bg-indigo-600 rounded-2xl group transition-all">
+                    <span className="text-xs font-black uppercase tracking-widest">Finance & Payouts</span>
+                    <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                 </Link>
                </div>
              </div>
            </div>
