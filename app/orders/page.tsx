@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { apiClient } from '@/lib/api-client';
 import { 
@@ -27,7 +27,7 @@ const statusStyles = {
   CANCELLED: "bg-rose-50 text-rose-600 border-rose-100",
 };
 
-export default function OrderHistoryPage() {
+function OrderHistoryContent() {
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const searchParams = useSearchParams();
@@ -196,5 +196,13 @@ export default function OrderHistoryPage() {
         )}
       </section>
     </div>
+  );
+}
+
+export default function OrderHistoryPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-white" />}>
+      <OrderHistoryContent />
+    </Suspense>
   );
 }

@@ -2,13 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { 
-  ArrowLeft, 
-  Wallet, 
-  ArrowUpRight, 
-  History, 
-  Plus, 
-  Banknote, 
+import {
+  ArrowLeft,
+  Wallet,
+  ArrowUpRight,
+  History,
+  Plus,
+  Banknote,
   CreditCard,
   Loader2,
   CheckCircle2,
@@ -61,7 +61,7 @@ export default function VendorFinancePage() {
   const handleWithdraw = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!withdrawAmount || isNaN(parseFloat(withdrawAmount))) return;
-    
+
     setRequesting(true);
     try {
       await apiClient.requestPayout(parseFloat(withdrawAmount));
@@ -127,7 +127,7 @@ export default function VendorFinancePage() {
             <form onSubmit={handleWithdraw} className="space-y-6">
               <div className="relative">
                 <span className="absolute left-6 top-1/2 -translate-y-1/2 text-2xl font-black text-gray-600">$</span>
-                <input 
+                <input
                   type="number"
                   placeholder="0.00"
                   className="w-full bg-white/10 border-transparent focus:bg-white/20 focus:ring-2 focus:ring-indigo-500 outline-none rounded-2xl py-6 pl-12 pr-6 text-2xl font-black tracking-tighter text-white"
@@ -136,7 +136,7 @@ export default function VendorFinancePage() {
                   max={summary.available_balance}
                 />
               </div>
-              <button 
+              <button
                 type="submit"
                 disabled={requesting || !withdrawAmount || summary.available_balance <= 0}
                 className="w-full py-5 bg-indigo-600 hover:bg-white hover:text-indigo-600 transition-all rounded-2xl text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-xl shadow-indigo-900/20"
@@ -199,7 +199,7 @@ export default function VendorFinancePage() {
             </div>
 
             <div className="bg-white border border-gray-100 rounded-[2.5rem] shadow-sm overflow-hidden text-gray-400">
-               <div className="p-8 border-b border-gray-50 flex items-center justify-between">
+              <div className="p-8 border-b border-gray-50 flex items-center justify-between">
                 <h2 className="text-xl font-black text-gray-900 tracking-tight flex items-center gap-3">
                   <Banknote className="w-5 h-5 text-indigo-600" /> Payout <span className="text-indigo-600">Tracking</span>
                 </h2>
@@ -247,51 +247,54 @@ export default function VendorFinancePage() {
           {/* Payout Methods Panel */}
           <div className="lg:col-span-4 space-y-6">
             <div className="p-8 bg-white border border-gray-100 rounded-[2.5rem] shadow-sm">
-               <div className="flex items-center justify-between mb-8">
-                 <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-400">Payout Destinations</h3>
-                 <button className="p-2 bg-indigo-50 text-indigo-600 rounded-xl hover:bg-indigo-600 hover:text-white transition-all">
-                    <Plus className="w-4 h-4" />
-                 </button>
-               </div>
-               
-               <div className="space-y-4">
-                 {methods.length === 0 ? (
-                    <div className="py-8 text-center bg-gray-50 rounded-2xl border-2 border-dashed border-gray-100">
-                       <CreditCard className="w-8 h-8 text-gray-200 mx-auto mb-3" />
-                       <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-6">No payout methods linked</p>
-                    </div>
-                 ) : (
-                    methods.map((m) => (
-                       <div key={m.id} className="p-6 bg-gray-50 rounded-3xl border border-gray-100 relative group">
-                          {m.is_primary && <div className="absolute -top-2 -right-2 px-3 py-1 bg-indigo-600 text-white text-[8px] font-black uppercase tracking-tighter rounded-full shadow-lg">Primary</div>}
-                          <div className="flex items-center gap-4 mb-3">
-                             {m.method_type === 'BANK' ? <Banknote className="w-6 h-6 text-indigo-600" /> : <Wallet className="w-6 h-6 text-emerald-500" />}
-                             <h4 className="font-black text-gray-900 italic tracking-tight">{m.bank_name || 'Mobile Wallet'}</h4>
-                          </div>
-                          <p className="text-sm font-bold text-gray-500 mb-1">{m.account_holder_name}</p>
-                          <p className="font-mono text-xs font-bold text-gray-900 tracking-widest">**** {m.account_number.slice(-4)}</p>
-                       </div>
-                    ))
-                 )}
-               </div>
+              <div className="flex items-center justify-between mb-8">
+                <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-400">Payout Destinations</h3>
+                <button 
+                  aria-label="Add Payout Method"
+                  className="p-2 bg-indigo-50 text-indigo-600 rounded-xl hover:bg-indigo-600 hover:text-white transition-all"
+                >
+                  <Plus className="w-4 h-4" />
+                </button>
+              </div>
 
-               <div className="mt-8 p-6 bg-amber-50 rounded-3xl border border-amber-100">
-                  <div className="flex gap-4">
-                    <AlertCircle className="w-5 h-5 text-amber-500 shrink-0" />
-                    <p className="text-[10px] font-bold text-amber-800 leading-relaxed uppercase tracking-widest italic">
-                      Payouts are released weekly. Ensure your primary method is verified.
-                    </p>
+              <div className="space-y-4">
+                {methods.length === 0 ? (
+                  <div className="py-8 text-center bg-gray-50 rounded-2xl border-2 border-dashed border-gray-100">
+                    <CreditCard className="w-8 h-8 text-gray-200 mx-auto mb-3" />
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-6">No payout methods linked</p>
                   </div>
-               </div>
+                ) : (
+                  methods.map((m) => (
+                    <div key={m.id} className="p-6 bg-gray-50 rounded-3xl border border-gray-100 relative group">
+                      {m.is_primary && <div className="absolute -top-2 -right-2 px-3 py-1 bg-indigo-600 text-white text-[8px] font-black uppercase tracking-tighter rounded-full shadow-lg">Primary</div>}
+                      <div className="flex items-center gap-4 mb-3">
+                        {m.method_type === 'BANK' ? <Banknote className="w-6 h-6 text-indigo-600" /> : <Wallet className="w-6 h-6 text-emerald-500" />}
+                        <h4 className="font-black text-gray-900 italic tracking-tight">{m.bank_name || 'Mobile Wallet'}</h4>
+                      </div>
+                      <p className="text-sm font-bold text-gray-500 mb-1">{m.account_holder_name}</p>
+                      <p className="font-mono text-xs font-bold text-gray-900 tracking-widest">**** {m.account_number.slice(-4)}</p>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              <div className="mt-8 p-6 bg-amber-50 rounded-3xl border border-amber-100">
+                <div className="flex gap-4">
+                  <AlertCircle className="w-5 h-5 text-amber-500 shrink-0" />
+                  <p className="text-[10px] font-bold text-amber-800 leading-relaxed uppercase tracking-widest italic">
+                    Payouts are released weekly. Ensure your primary method is verified.
+                  </p>
+                </div>
+              </div>
             </div>
 
             <div className="p-8 bg-indigo-50 rounded-[2.5rem] border border-indigo-100 group relative overflow-hidden">
-               <TrendingUp className="w-32 h-32 absolute -bottom-10 -right-10 text-indigo-100 group-hover:rotate-12 transition-transform duration-700" />
-               <h3 className="text-[10px] font-black uppercase tracking-widest text-indigo-400 mb-4">Earnings Velocity</h3>
-               <p className="text-sm font-bold text-indigo-900 leading-relaxed italic mb-6">Your store earnings have increased by <span className="text-indigo-600">22%</span> this month. Keep it up!</p>
-               <Link href="/vendor-profile" className="inline-flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.2em] text-indigo-600 hover:gap-3 transition-all relative z-10">
-                  View Analytics <ArrowUpRight className="w-3 h-3" />
-               </Link>
+              <TrendingUp className="w-32 h-32 absolute -bottom-10 -right-10 text-indigo-100 group-hover:rotate-12 transition-transform duration-700" />
+              <h3 className="text-[10px] font-black uppercase tracking-widest text-indigo-400 mb-4">Earnings Velocity</h3>
+              <p className="text-sm font-bold text-indigo-900 leading-relaxed italic mb-6">Your store earnings have increased by <span className="text-indigo-600">22%</span> this month. Keep it up!</p>
+              <Link href="/vendor-profile" className="inline-flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.2em] text-indigo-600 hover:gap-3 transition-all relative z-10">
+                View Analytics <ArrowUpRight className="w-3 h-3" />
+              </Link>
             </div>
           </div>
         </div>
