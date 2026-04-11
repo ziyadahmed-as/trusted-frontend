@@ -14,7 +14,8 @@ import {
   CheckCircle2,
   AlertCircle,
   Clock,
-  ExternalLink
+  ExternalLink,
+  TrendingUp
 } from 'lucide-react';
 import { apiClient } from '@/lib/api-client';
 import { cn } from '@/lib/utils';
