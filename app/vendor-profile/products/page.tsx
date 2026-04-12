@@ -15,6 +15,7 @@ export default function VendorProductsPage() {
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<any>(null);
   
   // Modal states
   const [showModal, setShowModal] = useState(false);
@@ -30,12 +31,16 @@ export default function VendorProductsPage() {
   const fetchData = React.useCallback(async () => {
     setLoading(true);
     try {
-      const [prodsData, catsData] = await Promise.all([
+      const [prodsData, catsData, meData] = await Promise.all([
         apiClient.getProducts(),
-        apiClient.getCategories()
+        apiClient.getCategories(),
+        apiClient.getMe()
       ]);
-      setProducts(prodsData.results || prodsData);
+      const rawProducts = prodsData.results || prodsData;
+      const vendorProducts = rawProducts.filter((p: any) => p.vendor === meData.email);
+      setProducts(vendorProducts);
       setCategories(catsData.results || catsData);
+      setUser(meData);
     } catch (err) {
       console.error('Failed to fetch data', err);
     } finally {
@@ -208,16 +213,20 @@ export default function VendorProductsPage() {
                             <button title="View Store" className="p-2.5 bg-gray-50 hover:bg-white hover:shadow-lg rounded-xl transition-all border border-transparent hover:border-gray-100 group/btn">
                               <Eye className="w-4 h-4 text-gray-400 group-hover/btn:text-indigo-600" />
                             </button>
-                            <button title="Edit" className="p-2.5 bg-gray-50 hover:bg-white hover:shadow-lg rounded-xl transition-all border border-transparent hover:border-gray-100 group/btn">
-                              <Edit className="w-4 h-4 text-gray-400 group-hover/btn:text-indigo-600" />
-                            </button>
-                            <button 
-                              onClick={() => handleDelete(prod.id)}
-                              title="Delete" 
-                              className="p-2.5 bg-gray-50 hover:bg-rose-50 hover:shadow-lg rounded-xl transition-all border border-transparent hover:border-rose-100 group/btn"
-                            >
-                              <Trash2 className="w-4 h-4 text-gray-400 group-hover/btn:text-rose-600" />
-                            </button>
+                            {prod.vendor === user?.email && (
+                              <>
+                                <button title="Edit" className="p-2.5 bg-gray-50 hover:bg-white hover:shadow-lg rounded-xl transition-all border border-transparent hover:border-gray-100 group/btn">
+                                  <Edit className="w-4 h-4 text-gray-400 group-hover/btn:text-indigo-600" />
+                                </button>
+                                <button 
+                                  onClick={() => handleDelete(prod.id)}
+                                  title="Delete" 
+                                  className="p-2.5 bg-gray-50 hover:bg-rose-50 hover:shadow-lg rounded-xl transition-all border border-transparent hover:border-rose-100 group/btn"
+                                >
+                                  <Trash2 className="w-4 h-4 text-gray-400 group-hover/btn:text-rose-600" />
+                                </button>
+                              </>
+                            )}
                           </div>
                         </td>
                       </motion.tr>

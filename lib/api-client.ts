@@ -1,9 +1,10 @@
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api';
-// In dev, we use the absolute URL to avoid potential issues with Next.js rewrites and trailing slashes.
-console.log('API_URL:', API_URL);
+const API_URL = 'http://127.0.0.1:8000/api';
+console.log('[API Client] Initialized with:', API_URL);
 
 export const apiClient = {
+  getCurrentApiUrl() {
+    return API_URL;
+  },
   async login(credentials: any) {
     const response = await fetch(`${API_URL}/token/`, {
       method: 'POST',
@@ -30,19 +31,43 @@ export const apiClient = {
   },
 
   async getAdminStats() {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('No authentication token found. Please login.');
+    
     const response = await fetch(`${API_URL}/users/admin-stats/`, {
-      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      headers: { 'Authorization': `Bearer ${token}` }
     });
-    if (!response.ok) throw new Error('Failed to fetch stats');
+    if (!response.ok) {
+        console.error(`[API Client] Stats failed with status: ${response.status}`);
+        if (response.status === 401) throw new Error('Session expired. Please login again.');
+        throw new Error(`Failed to fetch stats (Status: ${response.status})`);
+    }
     return response.json();
   },
 
   async getAdminKYCs(params: any = {}) {
-    const query = new URLSearchParams(params).toString();
-    const response = await fetch(`${API_URL}/kyc/admin/?${query}`, {
+    const searchParams = new URLSearchParams(params);
+    const response = await fetch(`${API_URL}/kyc/admin/?${searchParams}`, {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
     });
-    if (!response.ok) throw new Error('Failed to fetch KYCs');
+    if (!response.ok) throw new Error('Failed to fetch admin KYCs');
+    return response.json();
+  },
+
+  async getAdminUserList(params: any = {}) {
+    const searchParams = new URLSearchParams(params);
+    const response = await fetch(`${API_URL}/kyc/admin/users/?${searchParams}`, {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    });
+    if (!response.ok) throw new Error('Failed to fetch user management list');
+    return response.json();
+  },
+
+  async getAdminUserKYCDetail(userId: string) {
+    const response = await fetch(`${API_URL}/kyc/admin/${userId}/user-profile/`, {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    });
+    if (!response.ok) throw new Error('Failed to fetch user kyc profile');
     return response.json();
   },
 
