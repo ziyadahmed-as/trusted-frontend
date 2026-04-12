@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { apiClient } from '@/lib/api-client';
 import { KYCUploadCard } from '@/components/kyc/KYCUploadCard';
@@ -23,7 +24,15 @@ export default function KYCVerificationPage() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
 
+  const router = useRouter();
+
   const fetchData = async () => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    if (!token) {
+      router.push('/login');
+      return;
+    }
+    
     try {
       const [reqs, stats, me] = await Promise.all([
         apiClient.getKYCRequirements(),
@@ -33,8 +42,13 @@ export default function KYCVerificationPage() {
       setRequirements(reqs);
       setStatus(stats);
       setUser(me);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to fetch KYC data:', err);
+      // If error is 401 or token expired/invalid, redirect to login
+      if (err.message && (err.message.includes('Failed to fetch requirements') || err.message.includes('401'))) {
+         localStorage.removeItem('token');
+         router.push('/login');
+      }
     } finally {
       setLoading(false);
     }
