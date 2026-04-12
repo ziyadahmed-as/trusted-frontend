@@ -145,9 +145,12 @@ export default function CheckoutPage() {
                      <span className="px-3 py-1 bg-white rounded-lg text-[10px] font-black text-indigo-600 uppercase border border-indigo-100">Authenticated</span>
                    </div>
                 ) : (
-                   <div className="p-6 bg-amber-50 rounded-2xl border border-amber-100 flex items-center justify-between">
-                     <p className="text-sm font-bold text-amber-900">Please sign in to complete your checkout profile.</p>
-                     <Link href="/login" className="px-4 py-2 bg-amber-600 text-white rounded-xl text-xs font-black uppercase tracking-widest">Sign In</Link>
+                   <div className="p-6 bg-amber-50 rounded-2xl border border-amber-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+                     <p className="text-sm font-bold text-amber-900">Please sign in or create an account to complete your order.</p>
+                     <div className="flex items-center gap-3 w-full sm:w-auto">
+                       <Link href="/login?redirect=/checkout" className="flex-1 sm:flex-none text-center px-6 py-3 bg-white text-amber-700 border border-amber-200 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-amber-100 transition-colors">Sign In</Link>
+                       <Link href="/register?redirect=/checkout" className="flex-1 sm:flex-none text-center px-6 py-3 bg-amber-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-amber-700 shadow-lg shadow-amber-600/20 transition-all">Register</Link>
+                     </div>
                    </div>
                 )}
 
