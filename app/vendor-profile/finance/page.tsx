@@ -84,7 +84,7 @@ export default function VendorFinancePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] py-12 px-6">
+    <div className="w-full">
       <div className="max-w-6xl mx-auto">
         <header className="mb-12">
           <Link href="/vendor-profile" className="flex items-center gap-2 text-gray-500 hover:text-indigo-600 transition-colors mb-6 group">

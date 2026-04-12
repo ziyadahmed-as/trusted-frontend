@@ -67,7 +67,7 @@ export default function VendorOrdersPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] pb-24">
+    <div className="w-full pb-24">
       <nav className="sticky top-0 w-full z-50 bg-white/80 backdrop-blur-2xl border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-4">

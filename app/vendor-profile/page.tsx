@@ -60,7 +60,7 @@ export default function VendorProfilePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] py-20 px-6">
+    <div className="w-full">
       <div className="max-w-6xl mx-auto">
         <header className="mb-12 flex justify-between items-end">
           <div>
@@ -113,23 +113,7 @@ export default function VendorProfilePage() {
                 </div>
              </div>
 
-             <div className="p-8 bg-gray-900 rounded-[2.5rem] shadow-xl text-white">
-               <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-6">Operations Hub</h3>
-               <div className="space-y-4">
-                 <Link href="/vendor-profile/orders" className="w-full flex items-center justify-between py-4 px-6 bg-white/10 hover:bg-indigo-600 rounded-2xl group transition-all">
-                    <span className="text-xs font-black uppercase tracking-widest">Order Fulfillment</span>
-                    <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                 </Link>
-                 <Link href="/vendor-profile/products" className="w-full flex items-center justify-between py-4 px-6 bg-white/10 hover:bg-indigo-600 rounded-2xl group transition-all">
-                    <span className="text-xs font-black uppercase tracking-widest">Manage Inventory</span>
-                    <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                 </Link>
-                 <Link href="/vendor-profile/finance" className="w-full flex items-center justify-between py-4 px-6 bg-white/10 hover:bg-indigo-600 rounded-2xl group transition-all">
-                    <span className="text-xs font-black uppercase tracking-widest">Finance & Payouts</span>
-                    <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                 </Link>
-               </div>
-             </div>
+             {/* Operations Hub links removed - now handled by left sidebar */}
            </div>
 
         {/* Main Content: Profile Form */}

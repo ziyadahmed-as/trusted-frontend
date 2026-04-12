@@ -101,7 +101,7 @@ export default function VendorProductsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] py-20 px-6">
+    <div className="w-full">
       <div className="max-w-6xl mx-auto space-y-10">
         
         {/* Header */}
