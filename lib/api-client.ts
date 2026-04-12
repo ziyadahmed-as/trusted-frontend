@@ -31,8 +31,8 @@ export const apiClient = {
   },
 
   async getAdminStats() {
-    const token = localStorage.getItem('token');
-    if (!token) throw new Error('No authentication token found. Please login.');
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    if (!token) throw new Error('Authentication required. Please login.');
     
     const response = await fetch(`${API_URL}/users/admin-stats/`, {
       headers: { 'Authorization': `Bearer ${token}` }
@@ -42,6 +42,32 @@ export const apiClient = {
         if (response.status === 401) throw new Error('Session expired. Please login again.');
         throw new Error(`Failed to fetch stats (Status: ${response.status})`);
     }
+    return response.json();
+  },
+
+  async auditKYC() {
+    const response = await fetch(`${API_URL}/users/admin/audit-kyc/`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    });
+    if (!response.ok) throw new Error('Global KYC Audit failed');
+    return response.json();
+  },
+
+  async syncInventory() {
+    const response = await fetch(`${API_URL}/users/admin/sync-inventory/`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    });
+    if (!response.ok) throw new Error('Inventory Sync failed');
+    return response.json();
+  },
+
+  async getPlatformHealth() {
+    const response = await fetch(`${API_URL}/users/admin/health/`, {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    });
+    if (!response.ok) throw new Error('Health check failed');
     return response.json();
   },
 

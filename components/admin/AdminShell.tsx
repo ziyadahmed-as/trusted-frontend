@@ -10,16 +10,16 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       <Sidebar />
       <div className="flex-1 ml-72 flex flex-col">
         {/* Top Navigation */}
-        <header className="h-20 bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between px-10 sticky top-0 z-30">
-          <div className="flex items-center gap-4 w-full max-w-xl">
+        <header className="h-24 bg-white/80 backdrop-blur-xl border-b border-gray-100/80 flex items-center justify-between px-12 sticky top-0 z-30 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+          <div className="flex items-center gap-6 w-full max-w-2xl">
             <div className="relative w-full group">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-indigo-600 transition-colors" />
+              <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-indigo-600 transition-colors" />
               <input 
                 type="text" 
-                placeholder="Search anything..." 
-                className="w-full bg-gray-50 border-none rounded-2xl py-3 pl-11 pr-16 text-sm font-medium focus:ring-2 focus:ring-indigo-100 focus:bg-white transition-all outline-none"
+                placeholder="Search metrics, users, or records..." 
+                className="w-full bg-gray-50 border border-transparent rounded-[1.25rem] py-3.5 pl-14 pr-16 text-sm font-semibold focus:ring-4 focus:ring-indigo-50 focus:bg-white focus:border-indigo-100 transition-all outline-none"
               />
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 bg-white border border-gray-100 px-2 py-1 rounded-lg shadow-sm">
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1.5 bg-white border border-gray-100 px-2.5 py-1.5 rounded-xl shadow-sm">
                 <Command className="w-3 h-3 text-gray-400" />
                 <span className="text-[10px] font-black text-gray-400">K</span>
               </div>

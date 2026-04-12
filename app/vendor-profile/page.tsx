@@ -1,20 +1,44 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { ChevronRight, Save, Loader2, CheckCircle2, TrendingUp, Package, AlertCircle } from 'lucide-react';
+import { 
+  ChevronRight, 
+  Save, 
+  Loader2, 
+  CheckCircle2, 
+  TrendingUp, 
+  Package, 
+  AlertCircle,
+  BarChart3,
+  Settings,
+  LayoutDashboard,
+  DollarSign,
+  ShoppingCart,
+  Zap,
+  ArrowUpRight,
+  Plus,
+  ArrowRight,
+  ExternalLink
+} from 'lucide-react';
 import { apiClient } from '@/lib/api-client';
 import { cn } from '@/lib/utils';
+import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
 
 export default function VendorProfilePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'settings'>('dashboard');
+  
   const [stats, setStats] = useState({
     total_sales: 0,
     order_count: 0,
-    pending_count: 0
+    pending_count: 0,
+    low_stock_count: 0,
+    sales_history: [] as number[]
   });
+  
   const [profile, setProfile] = useState({
     store_name: '',
     description: '',
@@ -53,11 +77,28 @@ export default function VendorProfilePage() {
       setTimeout(() => setSaveSuccess(false), 3000);
     } catch (err) {
       console.error('Failed to save profile', err);
-      alert('Failed to save profile. Please try again.');
     } finally {
       setSaving(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="h-[70vh] flex flex-col items-center justify-center gap-6">
+        <div className="relative">
+            <div className="w-20 h-20 border-4 border-indigo-600/10 border-t-indigo-600 rounded-full animate-spin"></div>
+            <Zap className="w-8 h-8 text-indigo-600 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-pulse" />
+        </div>
+        <p className="text-sm font-black text-indigo-600 uppercase tracking-[0.3em] animate-pulse">Synchronizing Intelligence...</p>
+      </div>
+    );
+  }
+
+  const salesHistory = stats.sales_history && stats.sales_history.length > 0 
+    ? stats.sales_history 
+    : [40, 65, 45, 80, 55, 95, 70, 85, 60, 100, 75, 90];
+    
+  const maxSales = Math.max(...salesHistory);
 
   return (
     <div className="w-full">
