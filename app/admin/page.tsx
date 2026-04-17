@@ -18,6 +18,7 @@ import {
   Package,
   Heart,
   TrendingUp,
+  Tag,
   Search,
   Loader2,
   CheckCircle2,
@@ -137,10 +138,10 @@ export default function AdminDashboard() {
           </div>
           
           <div className="flex flex-wrap items-center gap-4">
-            <button className="px-8 py-4 bg-white text-gray-900 rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 transition-all flex items-center gap-3">
-               Generate Audit
-               <ArrowUpRight className="w-4 h-4" />
-            </button>
+            <Link href="/admin/revenue" className="px-8 py-4 bg-white text-gray-900 rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 transition-all flex items-center gap-3 shadow-sm border border-gray-100">
+               View Revenue
+               <TrendingUp className="w-4 h-4 text-indigo-600" />
+            </Link>
             <Link href="/admin/kyc" className="px-8 py-4 bg-indigo-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-900/40 flex items-center gap-3">
                KYC Queue
                <div className="w-5 h-5 bg-white/20 rounded-lg flex items-center justify-center text-[10px]">
@@ -153,7 +154,7 @@ export default function AdminDashboard() {
         {/* Abstract Background Design */}
         <div className="absolute -right-20 -top-20 w-96 h-96 bg-indigo-600/20 rounded-full blur-[120px]"></div>
         <div className="absolute -left-20 -bottom-20 w-96 h-96 bg-purple-600/10 rounded-full blur-[100px]"></div>
-        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")` }}></div>
+        <div className="absolute inset-0 opacity-[0.03] bg-pattern-abstract"></div>
       </section>
 
       {/* Primary Analytics Grid */}
@@ -268,11 +269,12 @@ export default function AdminDashboard() {
 
           {/* Quick Actions Panel */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* KYC Audit */}
             <button 
                 onClick={() => handleQuickAction('audit')}
                 disabled={!!runningAction}
                 className={cn(
-                    "p-8 text-white rounded-[2.5rem] flex flex-col items-center text-center group hover:-translate-y-2 transition-all duration-500 shadow-2xl ",
+                    "p-8 text-white rounded-[2.5rem] flex flex-col items-start group hover:-translate-y-2 transition-all duration-500 shadow-2xl ",
                     runningAction === 'audit' ? "bg-indigo-400 cursor-not-allowed" : "bg-indigo-600 shadow-indigo-100 active:scale-95"
                 )}
             >
@@ -281,37 +283,40 @@ export default function AdminDashboard() {
                </div>
                <h4 className="text-sm font-black uppercase tracking-widest mb-1">Audit All KYC</h4>
                <p className="text-[10px] font-bold text-indigo-200">System-wide verification scan</p>
+               <div className="mt-4 flex items-center gap-2 text-[10px] font-black text-indigo-200 uppercase tracking-widest group-hover:gap-3 transition-all">
+                 Run Now <ArrowRight className="w-3 h-3" />
+               </div>
             </button>
             
-            <button 
-                onClick={() => handleQuickAction('sync')}
-                disabled={!!runningAction}
-                className={cn(
-                    "p-8 bg-white border border-gray-100 rounded-[2.5rem] flex flex-col items-center text-center group hover:-translate-y-2 transition-all duration-500 shadow-2xl ",
-                    runningAction === 'sync' ? "opacity-50 cursor-not-allowed" : "shadow-gray-100/40 active:scale-95"
-                )}
+            {/* Inventory */}
+            <Link 
+                href="/admin/inventory"
+                className="p-8 bg-white border border-gray-100 rounded-[2.5rem] flex flex-col items-start group hover:-translate-y-2 transition-all duration-500 shadow-xl shadow-gray-100/40 active:scale-95"
             >
                <div className="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                  {runningAction === 'sync' ? <Loader2 className="w-7 h-7 animate-spin" /> : <Package className="w-7 h-7" />}
+                  <Package className="w-7 h-7" />
                </div>
-               <h4 className="text-sm font-black uppercase tracking-widest mb-1 text-gray-900">Inventory Sync</h4>
-               <p className="text-[10px] font-bold text-gray-400">Validate global catalog</p>
-            </button>
+               <h4 className="text-sm font-black uppercase tracking-widest mb-1 text-gray-900">Inventory Control</h4>
+               <p className="text-[10px] font-bold text-gray-400">Monitor global catalog SKUs</p>
+               <div className="mt-4 flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest group-hover:text-emerald-600 group-hover:gap-3 transition-all">
+                 Open Module <ArrowRight className="w-3 h-3" />
+               </div>
+            </Link>
 
-            <button 
-                onClick={() => handleQuickAction('health')}
-                disabled={!!runningAction}
-                className={cn(
-                    "p-8 bg-white border border-gray-100 rounded-[2.5rem] flex flex-col items-center text-center group hover:-translate-y-2 transition-all duration-500 shadow-2xl ",
-                    runningAction === 'health' ? "opacity-50 cursor-not-allowed" : "shadow-gray-100/40 active:scale-95"
-                )}
+            {/* Category Hub */}
+            <Link 
+                href="/admin/categories"
+                className="p-8 bg-white border border-gray-100 rounded-[2.5rem] flex flex-col items-start group hover:-translate-y-2 transition-all duration-500 shadow-xl shadow-gray-100/40 active:scale-95"
             >
-               <div className="w-14 h-14 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                  {runningAction === 'health' ? <Loader2 className="w-7 h-7 animate-spin" /> : <Heart className="w-7 h-7" />}
+               <div className="w-14 h-14 bg-violet-50 text-violet-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
+                  <Tag className="w-7 h-7" />
                </div>
-               <h4 className="text-sm font-black uppercase tracking-widest mb-1 text-gray-900">Platform Health</h4>
-               <p className="text-[10px] font-bold text-gray-400">Service diagnostic audit</p>
-            </button>
+               <h4 className="text-sm font-black uppercase tracking-widest mb-1 text-gray-900">Category Hub</h4>
+               <p className="text-[10px] font-bold text-gray-400">Manage product taxonomy</p>
+               <div className="mt-4 flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest group-hover:text-violet-600 group-hover:gap-3 transition-all">
+                 Open Module <ArrowRight className="w-3 h-3" />
+               </div>
+            </Link>
           </div>
         </div>
 

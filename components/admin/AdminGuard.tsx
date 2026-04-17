@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 import { Loader2, ShieldAlert, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -11,27 +12,24 @@ interface AdminGuardProps {
 
 export function AdminGuard({ children }: AdminGuardProps) {
   const router = useRouter();
+  const { user, loading } = useAuth();
   const [authorized, setAuthorized] = useState(false);
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    const checkAuth = () => {
-      const token = localStorage.getItem('token');
-      
-      if (!token) {
-        console.warn('[Admin Guard] Access denied: No token found. Redirecting to login.');
+    if (!loading) {
+      if (!user) {
+        console.warn('[Admin Guard] Access denied: Not logged in. Redirecting to login.');
         router.push('/login');
-        return;
+      } else if (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN') {
+        console.warn(`[Admin Guard] Access denied: Role ${user.role} unauthorized. Redirecting to home.`);
+        router.push('/');
+      } else {
+        setAuthorized(true);
       }
-
-      // For a more professional implementation, we could verify the token/role here
-      // But for now, existence of token is our baseline for the Guard
-      setAuthorized(true);
       setChecking(false);
-    };
-
-    checkAuth();
-  }, [router]);
+    }
+  }, [user, loading, router]);
 
   if (checking) {
     return (

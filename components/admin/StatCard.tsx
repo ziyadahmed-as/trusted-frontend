@@ -27,7 +27,7 @@ export function StatCard({ title, value, subValue, icon: Icon, trend, trendValue
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -8, shadow: "0 25px 50px -12px rgba(0, 0, 0, 0.08)" }}
+      whileHover={{ y: -8, boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.08)" }}
       transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
       className="bg-white p-8 rounded-[3rem] border border-gray-100/80 shadow-[0_15px_45px_-15px_rgba(0,0,0,0.03)] relative overflow-hidden group"
     >
@@ -65,8 +65,7 @@ export function StatCard({ title, value, subValue, icon: Icon, trend, trendValue
       )}></div>
 
       {/* Subtle grid pattern overlay */}
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none group-hover:opacity-[0.05] transition-opacity duration-700" 
-           style={{ backgroundImage: `radial-gradient(circle, #000 1px, transparent 1px)`, backgroundSize: '24px 24px' }}></div>
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none group-hover:opacity-[0.05] transition-opacity duration-700 bg-grid-dot"></div>
     </motion.div>
   );
 }

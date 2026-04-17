@@ -13,12 +13,13 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
+
     try {
       const result = await apiClient.login(formData);
       if (result.access) {
         const user = await apiClient.getMe();
-        
+        console.log("User role: ", user.role)
+
         // --- Role-Based Redirection Logic ---
         if (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') {
           router.push('/admin');
@@ -66,7 +67,7 @@ export default function LoginPage() {
             />
           </div>
           <div>
-             <div className="flex justify-between items-center mb-2 ml-1">
+            <div className="flex justify-between items-center mb-2 ml-1">
               <label htmlFor="password" className="block text-[13px] font-bold text-gray-400 uppercase tracking-wider cursor-pointer">Password</label>
               <Link href="/forgot-password" title="Forgot Password?" className="text-xs font-bold text-indigo-600 hover:underline">Forgot?</Link>
             </div>

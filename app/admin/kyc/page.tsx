@@ -6,7 +6,8 @@ import {
   XCircle, Clock, MoreVertical, ArrowUpRight, 
   Users, Shield, Landmark, MapPin, ExternalLink,
   ChevronLeft, ChevronRight, AlertCircle, Info, Navigation,
-  UserCheck, UserX, Activity, Camera, ArrowRight, Upload
+  UserCheck, UserX, Activity, Camera, ArrowRight, Upload,
+  FileText
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -246,6 +247,7 @@ export default function KYCManagementPage() {
         )}
 
         <div className="overflow-x-auto mt-6">
+          <title>KYC Management | TrestBiyyo Admin</title>
           <table className="w-full text-left">
             <thead>
               <tr className="bg-gray-50/50 border-b border-gray-50">
@@ -310,8 +312,8 @@ export default function KYCManagementPage() {
                           </div>
                           <div className="h-1.5 w-32 bg-gray-100 rounded-full overflow-hidden">
                              <div 
-                               className="h-full bg-indigo-600 transition-all duration-500" 
-                               style={{ width: `${user.kyc_summary?.percentage}%` }}
+                               className="h-full bg-indigo-600 transition-all duration-500 dynamic-progress" 
+                               style={{ '--progress-width': `${user.kyc_summary?.percentage}%` } as React.CSSProperties}
                              />
                           </div>
                         </div>
@@ -345,12 +347,14 @@ export default function KYCManagementPage() {
       <AnimatePresence>
         {selectedUser && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center sm:justify-end p-0 sm:p-5">
-            <motion.div 
+            <motion.button 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSelectedUser(null)}
-              className="absolute inset-0 bg-gray-900/40 backdrop-blur-md"
+              className="absolute inset-0 bg-gray-900/40 backdrop-blur-md w-full h-full cursor-default"
+              aria-label="Close modal"
+              title="Close modal"
             />
             
             <motion.div 
@@ -373,6 +377,8 @@ export default function KYCManagementPage() {
                 </div>
                 <button 
                   onClick={() => setSelectedUser(null)}
+                  title="Close Profile"
+                  aria-label="Close Profile"
                   className="w-12 h-12 bg-white border border-gray-100 hover:bg-gray-50 rounded-2xl flex items-center justify-center text-gray-400 transition-all active:scale-75"
                 >
                   <XCircle className="w-6 h-6" />
@@ -478,6 +484,7 @@ export default function KYCManagementPage() {
                                      <a 
                                       href={`https://www.google.com/maps?q=${record.extracted_data.location.latitude},${record.extracted_data.location.longitude}`}
                                       target="_blank"
+                                      rel="noopener noreferrer"
                                       className="text-[11px] font-bold text-indigo-600 flex items-center gap-1 hover:underline"
                                      >
                                         View Pin <ExternalLink className="w-3 h-3" />
@@ -492,7 +499,7 @@ export default function KYCManagementPage() {
                                   <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Main File</p>
                                   <div className="aspect-video bg-gray-100 rounded-2xl overflow-hidden border border-gray-200 cursor-zoom-in">
                                     {record.document_file ? (
-                                      <img src={record.document_file} className="w-full h-full object-cover" />
+                                      <img src={record.document_file} alt={`Main document for ${record.document_type_name}`} className="w-full h-full object-cover" />
                                     ) : (
                                       <div className="w-full h-full flex items-center justify-center text-gray-300"><Info className="w-6 h-6"/></div>
                                     )}
@@ -502,7 +509,7 @@ export default function KYCManagementPage() {
                                   <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Identity Proof (Live)</p>
                                   <div className="aspect-video bg-gray-100 rounded-2xl overflow-hidden border border-gray-200 cursor-zoom-in">
                                     {record.LIVE_PHOTO ? (
-                                      <img src={record.LIVE_PHOTO} className="w-full h-full object-cover" />
+                                      <img src={record.LIVE_PHOTO} alt={`Live identity proof for ${record.document_type_name}`} className="w-full h-full object-cover" />
                                     ) : (
                                       <div className="w-full h-full flex items-center justify-center text-gray-300"><Camera className="w-6 h-6"/></div>
                                     )}
@@ -521,6 +528,7 @@ export default function KYCManagementPage() {
                                           value={rejectReason}
                                           onChange={(e) => setRejectReason(e.target.value)}
                                           placeholder="Rejection reason..."
+                                          aria-label="Rejection reason"
                                           className="w-full text-[11px] font-medium border border-rose-200 rounded-xl p-3 focus:outline-none focus:ring-4 focus:ring-rose-50 bg-rose-50/20"
                                           rows={3}
                                         />
@@ -610,6 +618,8 @@ export default function KYCManagementPage() {
                                     type="file" 
                                     id={`upload-${req.document_type.code}`}
                                     className="hidden" 
+                                    aria-label={`Upload ${req.document_type.name}`}
+                                    title={`Upload ${req.document_type.name}`}
                                     onChange={async (e) => {
                                       const file = e.target.files?.[0];
                                       if (!file) return;

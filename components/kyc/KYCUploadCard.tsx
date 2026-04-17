@@ -26,14 +26,14 @@ export function KYCUploadCard({ documentType, currentStatus, onSuccess }: KYCUpl
   const [error, setError] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
-  const [location, setLocation] = useState<{lat: number, lng: number} | null>(null);
+  const [location, setLocation] = useState<{ lat: number, lng: number } | null>(null);
   const [fetchingLocation, setFetchingLocation] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const webcamRef = useRef<Webcam>(null);
 
   React.useEffect(() => {
     // Automatically trigger location fetch for location-sensitive documents
-    if (['LOCATION_PROOF', 'PASSPORT'].includes(documentType.code) && status === 'NOT_SUBMITTED') {
+    if (documentType.code === 'LOCATION_PROOF' && status === 'NOT_SUBMITTED') {
       fetchLocation();
     }
   }, []);
@@ -109,7 +109,7 @@ export function KYCUploadCard({ documentType, currentStatus, onSuccess }: KYCUpl
 
     const formData = new FormData();
     formData.append('kyc_type', documentType.code);
-    
+
     if (location) {
       formData.append('latitude', location.lat.toString());
       formData.append('longitude', location.lng.toString());
@@ -166,7 +166,7 @@ export function KYCUploadCard({ documentType, currentStatus, onSuccess }: KYCUpl
   };
 
   return (
-    <div 
+    <div
       className={cn(
         "flex flex-col lg:flex-row lg:items-center justify-between gap-6 p-6 rounded-[2rem] border transition-all duration-300",
         statusStyles[status as keyof typeof statusStyles],
@@ -183,7 +183,7 @@ export function KYCUploadCard({ documentType, currentStatus, onSuccess }: KYCUpl
         )}>
           <FileText className="w-6 h-6" />
         </div>
-        
+
         <div className="flex-1 min-w-0">
           <h3 className="text-lg font-black text-gray-900 tracking-tight truncate">{documentType.name}</h3>
           <p className="text-[13px] font-medium text-gray-400 mt-0.5 line-clamp-2 pr-4">{documentType.description}</p>
@@ -227,45 +227,48 @@ export function KYCUploadCard({ documentType, currentStatus, onSuccess }: KYCUpl
             <div className="flex items-center gap-3">
               {!file ? (
                 <>
-                  {['LOCATION_PROOF', 'PASSPORT'].includes(documentType.code) && (
-                    <button 
-                      onClick={fetchLocation} 
+                  {documentType.code === 'LOCATION_PROOF' && (
+                    <button
+                      onClick={fetchLocation}
                       disabled={fetchingLocation}
                       className="flex-1 lg:flex-none px-6 py-3.5 bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-indigo-100 transition-all flex items-center justify-center gap-2 group w-[180px]"
                     >
-                      <MapPin className={cn("w-4 h-4 transition-transform", fetchingLocation && "animate-bounce")}/> 
+                      <MapPin className={cn("w-4 h-4 transition-transform", fetchingLocation && "animate-bounce")} />
                       {fetchingLocation ? 'Locating...' : location ? 'Location Fixed' : 'Detect Location'}
                     </button>
                   )}
                   {documentType.code === 'LIVE_PHOTO' && (
-                    <button 
-                      onClick={() => setIsCameraOpen(true)} 
+                    <button
+                      onClick={() => setIsCameraOpen(true)}
                       className="flex-1 lg:flex-none px-6 py-3.5 bg-indigo-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-100/50 transition-all flex items-center justify-center gap-2 group w-[180px]"
                     >
-                      <Camera className="w-4 h-4 group-hover:scale-110 transition-transform"/> Open Camera
+                      <Camera className="w-4 h-4 group-hover:scale-110 transition-transform" /> Open Camera
                     </button>
                   )}
-                  <button 
-                    onClick={() => fileInputRef.current?.click()} 
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
                     className={cn(
                       "flex-1 lg:flex-none px-6 py-3.5 border border-gray-200 rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 group w-[180px]",
                       documentType.code === 'LIVE_PHOTO' ? "bg-white text-gray-500" : "bg-white text-gray-900 hover:border-indigo-600 hover:text-indigo-600 hover:bg-indigo-50"
                     )}
                   >
-                    <Upload className="w-4 h-4 group-hover:-translate-y-0.5 transition-transform"/> {documentType.code === 'LIVE_PHOTO' ? 'Upload Image' : 'Upload File'}
+                    <Upload className="w-4 h-4 group-hover:-translate-y-0.5 transition-transform" /> {documentType.code === 'LIVE_PHOTO' ? 'Upload Image' : 'Upload File'}
                   </button>
-                  <input 
+                  <label htmlFor={`file-upload-${documentType.code}`}>  documentType</label>
+
+                  <input
                     id={`file-upload-${documentType.code}`}
-                    type="file" 
-                    className="hidden" 
+                    type="file"
+                    className="hidden"
                     ref={fileInputRef}
                     onChange={handleFileChange}
                     accept={documentType.code === 'LIVE_PHOTO' ? "image/*" : ".pdf,.jpg,.jpeg,.png,.webp"}
                   />
+
                   {location && documentType.code === 'LOCATION_PROOF' && (
-                    <button 
-                      onClick={handleSubmit} 
-                      disabled={loading} 
+                    <button
+                      onClick={handleSubmit}
+                      disabled={loading}
                       className="flex-1 lg:flex-none px-6 py-3.5 bg-emerald-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-emerald-700 shadow-lg shadow-emerald-100/50 transition-all flex items-center justify-center gap-2 group w-[180px]"
                     >
                       {loading ? 'Submitting...' : 'Submit Location'}
@@ -275,16 +278,16 @@ export function KYCUploadCard({ documentType, currentStatus, onSuccess }: KYCUpl
               ) : (
                 <div className="flex-1 lg:flex-none flex items-center gap-2 bg-indigo-50 p-1.5 pl-4 rounded-xl border border-indigo-100 w-full lg:w-[320px]">
                   <span className="text-xs font-bold text-indigo-900 truncate flex-1">{file.name}</span>
-                  <button 
-                    onClick={() => setFile(null)} 
+                  <button
+                    onClick={() => setFile(null)}
                     className="p-2 text-rose-400 hover:bg-rose-100 hover:text-rose-600 rounded-lg transition-colors"
                     title="Remove file"
                   >
-                    <X className="w-4 h-4"/>
+                    <X className="w-4 h-4" />
                   </button>
-                  <button 
-                    onClick={handleSubmit} 
-                    disabled={loading} 
+                  <button
+                    onClick={handleSubmit}
+                    disabled={loading}
                     className="px-5 py-2.5 bg-indigo-600 text-white rounded-lg text-xs font-black uppercase tracking-widest hover:bg-indigo-700 shadow-md shadow-indigo-200 disabled:opacity-50 transition-all"
                   >
                     {loading ? 'Outbox...' : 'Submit'}
@@ -295,8 +298,8 @@ export function KYCUploadCard({ documentType, currentStatus, onSuccess }: KYCUpl
           </>
         ) : (
           <div className="w-[180px] hidden lg:flex justify-end hidden">
-             {status === 'APPROVED' && <CheckCircle2 className="w-6 h-6 text-emerald-500" />}
-             {status === 'PENDING' && <Clock className="w-6 h-6 text-amber-500" />}
+            {status === 'APPROVED' && <CheckCircle2 className="w-6 h-6 text-emerald-500" />}
+            {status === 'PENDING' && <Clock className="w-6 h-6 text-amber-500" />}
           </div>
         )}
       </div>
@@ -304,13 +307,13 @@ export function KYCUploadCard({ documentType, currentStatus, onSuccess }: KYCUpl
       {/* Camera Capture Modal */}
       <AnimatePresence>
         {isCameraOpen && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-md"
           >
-            <motion.div 
+            <motion.div
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
@@ -321,7 +324,8 @@ export function KYCUploadCard({ documentType, currentStatus, onSuccess }: KYCUpl
                   <h3 className="text-xl font-black text-gray-900">Live Verification</h3>
                   <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Camera Capture</p>
                 </div>
-                <button 
+                <label htmlFor={`file-upload-${documentType.code}`}> open your camera </label>
+                <button id={`file-upload-${documentType.code}`}
                   onClick={() => setIsCameraOpen(false)}
                   className="p-2 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors text-gray-400 hover:text-gray-600"
                 >
@@ -347,7 +351,7 @@ export function KYCUploadCard({ documentType, currentStatus, onSuccess }: KYCUpl
                 </div>
 
                 <div className="flex flex-col gap-3">
-                  <button 
+                  <button
                     onClick={handleCapture}
                     className="w-full py-4 bg-indigo-600 text-white rounded-2xl text-sm font-black uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-100 flex items-center justify-center gap-3"
                   >
