@@ -1,17 +1,34 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 import { apiClient } from '@/lib/api-client';
 import { ProductCard } from '@/components/ProductCard';
 import { ChevronDown, Star, X, Filter } from 'lucide-react';
 import { cn } from '@/lib/utils';
-// 
+
 export default function Home() {
+  const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Filter States
+  // Redirect Admins and high-privilege roles if they land here
+  useEffect(() => {
+    if (!authLoading && user) {
+      if (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') {
+        router.push('/admin');
+      } else if ((user.role === 'VENDOR' || user.role === 'DRIVER') && !user.is_verified) {
+        router.push('/kyc');
+      }
+      // Verified Vendors/Drivers might want to see the shop, so we let them stay
+      // or we could redirect them too if the user prefers. 
+      // For now, let's just make sure Admin goes to his dashboard.
+    }
+  }, [user, authLoading, router]);
+
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [minPrice, setMinPrice] = useState<string>('');
   const [maxPrice, setMaxPrice] = useState<string>('');

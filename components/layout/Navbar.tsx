@@ -93,14 +93,23 @@ export function Navbar() {
                         <div className="px-4 py-2 border-b border-gray-50 mb-1">
                           <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{user.role}</p>
                         </div>
-                        <Link 
-                          href={user.role === 'ADMIN' ? '/admin' : '/vendor-profile'} 
-                          className="flex items-center gap-2 px-4 py-2.5 text-sm font-bold text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
-                          onClick={() => setIsUserMenuOpen(false)}
-                        >
-                          <UserCircle className="w-4 h-4" />
-                          Dashboard
-                        </Link>
+                        {(() => {
+                          let dashboardUrl = '/';
+                          if (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') dashboardUrl = '/admin';
+                          else if (user.role === 'VENDOR') dashboardUrl = user.is_verified ? '/vendor-profile' : '/kyc';
+                          else if (user.role === 'DRIVER') dashboardUrl = user.is_verified ? '/' : '/kyc';
+                          
+                          return (
+                            <Link 
+                              href={dashboardUrl} 
+                              className="flex items-center gap-2 px-4 py-2.5 text-sm font-bold text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
+                              onClick={() => setIsUserMenuOpen(false)}
+                            >
+                              <UserCircle className="w-4 h-4" />
+                              Dashboard
+                            </Link>
+                          );
+                        })()}
                         <button 
                           onClick={() => { logout(); setIsUserMenuOpen(false); }}
                           className="w-full flex items-center gap-2 px-4 py-2.5 text-sm font-bold text-rose-600 hover:bg-rose-50 transition-colors"

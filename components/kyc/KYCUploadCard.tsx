@@ -32,7 +32,8 @@ export function KYCUploadCard({ documentType, currentStatus, onSuccess }: KYCUpl
   const webcamRef = useRef<Webcam>(null);
 
   React.useEffect(() => {
-    if (documentType.code === 'LOCATION_PROOF' && status === 'NOT_SUBMITTED') {
+    // Automatically trigger location fetch for location-sensitive documents
+    if (['LOCATION_PROOF', 'PASSPORT'].includes(documentType.code) && status === 'NOT_SUBMITTED') {
       fetchLocation();
     }
   }, []);
@@ -226,7 +227,7 @@ export function KYCUploadCard({ documentType, currentStatus, onSuccess }: KYCUpl
             <div className="flex items-center gap-3">
               {!file ? (
                 <>
-                  {documentType.code === 'LOCATION_PROOF' && (
+                  {['LOCATION_PROOF', 'PASSPORT'].includes(documentType.code) && (
                     <button 
                       onClick={fetchLocation} 
                       disabled={fetchingLocation}

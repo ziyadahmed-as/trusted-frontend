@@ -23,7 +23,12 @@ export default function LoginPage() {
         if (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') {
           router.push('/admin');
         } else if (user.role === 'VENDOR' || user.role === 'DRIVER') {
-          router.push('/kyc');
+          // Check KYC status for specialized roles
+          if (user.is_verified) {
+            router.push(user.role === 'VENDOR' ? '/vendor-profile' : '/');
+          } else {
+            router.push('/kyc');
+          }
         } else {
           router.push('/');
         }
