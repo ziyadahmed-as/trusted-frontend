@@ -121,6 +121,41 @@ export const apiClient = {
     return response.json();
   },
 
+  async verifyUserIdentity(userId: string, isVerified: boolean = true) {
+    const response = await fetch(`${API_URL}/kyc/admin/${userId}/verify-identity/`, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}` 
+      },
+      body: JSON.stringify({ is_verified: isVerified })
+    });
+    if (!response.ok) throw new Error('Global identity update failed');
+    return response.json();
+  },
+
+  async resetKYCRecordStatus(recordId: string) {
+    const response = await fetch(`${API_URL}/kyc/admin/${recordId}/reset-to-pending/`, {
+      method: 'POST',
+      headers: { 
+        'Authorization': `Bearer ${localStorage.getItem('token')}` 
+      }
+    });
+    if (!response.ok) throw new Error('Reset status failed');
+    return response.json();
+  },
+
+  async setRecordUnderReview(recordId: string) {
+    const response = await fetch(`${API_URL}/kyc/admin/${recordId}/set_under_review/`, {
+      method: 'POST',
+      headers: { 
+        'Authorization': `Bearer ${localStorage.getItem('token')}` 
+      }
+    });
+    if (!response.ok) throw new Error('Set under review failed');
+    return response.json();
+  },
+
   async getUsers() {
     const response = await fetch(`${API_URL}/users/users/`, {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
