@@ -2,34 +2,26 @@
 
 import React, { useState, useEffect } from 'react';
 import { 
-  ChevronRight, 
-  Save, 
   Loader2, 
   CheckCircle2, 
-  TrendingUp, 
-  Package, 
   AlertCircle,
-  BarChart3,
-  Settings,
-  LayoutDashboard,
-  DollarSign,
+  Package,
+  TrendingUp,
   ShoppingCart,
-  Zap,
-  ArrowUpRight,
-  Plus,
-  ArrowRight,
-  ExternalLink
+  DollarSign,
+  Activity,
+  User,
+  Settings
 } from 'lucide-react';
 import { apiClient } from '@/lib/api-client';
 import { cn } from '@/lib/utils';
-import { motion, AnimatePresence } from 'framer-motion';
+import { StatCard } from '@/components/admin/StatCard';
 import Link from 'next/link';
 
 export default function VendorProfilePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'settings'>('dashboard');
   
   const [stats, setStats] = useState({
     total_sales: 0,
@@ -61,7 +53,7 @@ export default function VendorProfilePage() {
       }
     };
     fetchDashboardData();
-  }, []);
+  },[]);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,12 +76,9 @@ export default function VendorProfilePage() {
 
   if (loading) {
     return (
-      <div className="h-[70vh] flex flex-col items-center justify-center gap-6">
-        <div className="relative">
-            <div className="w-20 h-20 border-4 border-indigo-600/10 border-t-indigo-600 rounded-full animate-spin"></div>
-            <Zap className="w-8 h-8 text-indigo-600 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-pulse" />
-        </div>
-        <p className="text-sm font-black text-indigo-600 uppercase tracking-[0.3em] animate-pulse">Synchronizing Intelligence...</p>
+      <div className="h-[70vh] flex flex-col items-center justify-center gap-4">
+        <Loader2 className="w-10 h-10 text-[#10b981] animate-spin" />
+        <p className="text-sm font-medium text-[#64748b]">Loading your store metrics...</p>
       </div>
     );
   }
@@ -97,133 +86,150 @@ export default function VendorProfilePage() {
   const salesHistory = stats.sales_history && stats.sales_history.length > 0 
     ? stats.sales_history 
     : [40, 65, 45, 80, 55, 95, 70, 85, 60, 100, 75, 90];
-    
-  const maxSales = Math.max(...salesHistory);
 
   return (
-    <div className="w-full">
-      <div className="max-w-6xl mx-auto">
-        <header className="mb-12 flex justify-between items-end">
-          <div>
-            <h1 className="text-5xl font-black text-gray-900 tracking-tight italic">Ven<span className="text-indigo-600">dor</span> Hub</h1>
-            <p className="text-gray-500 mt-2 font-medium italic">Grow your commerce empire with TrestBiyyo.</p>
+    <div className="space-y-6 md:space-y-8">
+      {/* HEADER SECTION */}
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-black md:text-3xl">Vendor Dashboard</h2>
+          <p className="text-sm font-medium text-[#64748b]">Manage your store: {profile.store_name || "Settings required"}</p>
+        </div>
+      </div>
+
+      {stats.pending_count > 0 && (
+        <div className="p-4 rounded-sm border bg-[#f59e0b]/5 border-[#f59e0b]/20 text-[#f59e0b] flex items-center justify-between transition-all">
+          <div className="flex items-center gap-3">
+            <AlertCircle className="w-5 h-5" />
+            <span className="text-sm font-medium">You have {stats.pending_count} pending orders requiring fulfillment.</span>
           </div>
-          <Link href="/" className="px-8 py-3 bg-gray-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-indigo-600 transition-all shadow-xl shadow-gray-200">Back to Shop</Link>
-        </header>
+          <Link href="/vendor-profile/orders" className="text-sm font-bold underline">View Orders</Link>
+        </div>
+      )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-           {/* Sidebar: Stats */}
-           <div className="lg:col-span-4 space-y-8">
-             {/* Verification Alert */}
-             <div className="p-8 bg-white border border-indigo-100 rounded-[2.5rem] shadow-xl shadow-indigo-100/10 relative overflow-hidden group">
-               <div className="absolute top-0 right-0 p-6">
-                  <div className="w-3 h-3 rounded-full bg-amber-500 animate-pulse" />
-               </div>
-               <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 mb-6 inline-block px-4 py-1.5 bg-indigo-50 rounded-xl">Account Identity</h3>
-               <p className="text-base font-bold text-gray-900 mb-6 leading-relaxed">Complete your KYC verification to enable secure payouts.</p>
-               <Link href="/kyc" className="flex items-center justify-between group/link">
-                 <span className="text-[10px] font-black uppercase tracking-widest text-indigo-600 group-hover/link:translate-x-1 transition-transform">Start Verification</span>
-                 <div className="w-10 h-10 rounded-2xl bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-200 group-hover/link:scale-110 transition-all">
-                   <ChevronRight className="w-5 h-5" />
-                 </div>
-               </Link>
-             </div>
-
-             {/* Dynamic Stats Cards */}
-             <div className="p-8 bg-indigo-600 rounded-[3rem] text-white shadow-2xl shadow-indigo-200 relative overflow-hidden group">
-               <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000" />
-               <TrendingUp className="w-10 h-10 mb-6 opacity-30" />
-               <h3 className="text-[10px] font-black uppercase tracking-widest opacity-70 mb-1">Lifetime Revenue</h3>
-               <p className="text-5xl font-black tracking-tighter italic">${parseFloat(stats.total_sales.toString()).toFixed(2)}</p>
-               <div className="mt-8 pt-8 border-t border-white/10 flex justify-between items-center">
-                  <div className="text-xs font-bold text-white/60">Tier: {profile.subscription_tier}</div>
-                  <button className="text-[10px] font-black uppercase tracking-widest bg-white/20 hover:bg-white text-white hover:text-indigo-600 px-4 py-2 rounded-xl transition-all">Upgrade</button>
-               </div>
-             </div>
-             
-             <div className="grid grid-cols-2 gap-6">
-                <div className="p-8 bg-white border border-gray-100 rounded-[2.5rem] shadow-sm">
-                  <Package className="w-6 h-6 text-gray-400 mb-4" />
-                  <h3 className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1">Total Orders</h3>
-                  <p className="text-2xl font-black text-gray-900 tracking-tighter">{stats.order_count}</p>
-                </div>
-                <div className="p-8 bg-white border border-gray-100 rounded-[2.5rem] shadow-sm relative overflow-hidden">
-                  {stats.pending_count > 0 && <div className="absolute top-4 right-4"><AlertCircle className="w-4 h-4 text-amber-500 animate-bounce" /></div>}
-                  <h3 className="text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1">Pending</h3>
-                  <p className="text-2xl font-black text-gray-900 tracking-tighter">{stats.pending_count}</p>
-                </div>
-             </div>
-
-             {/* Operations Hub links removed - now handled by left sidebar */}
-           </div>
-
-        {/* Main Content: Profile Form */}
-        <div className="lg:col-span-8 p-12 bg-white border border-gray-100 rounded-[3.5rem] shadow-sm">
-          <div className="flex items-center justify-between mb-12">
-            <h2 className="text-2xl font-black text-gray-900 tracking-tight italic flex items-center gap-3">
-              Store <span className="text-indigo-600">Configuration</span>
-            </h2>
+      {/* STAT CARDS GRID */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4 2xl:gap-7.5">
+        <div className="rounded-sm border border-[#e2e8f0] bg-white py-6 px-7.5 shadow-sm">
+          <div className="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-[#f7f9fc]">
+            <DollarSign className="w-6 h-6 text-[#10b981]" />
           </div>
-
-          {loading ? (
-            <div className="flex justify-center py-20">
-               <Loader2 className="w-10 h-10 text-indigo-600 animate-spin" />
+          <div className="mt-4 flex items-end justify-between">
+            <div>
+              <h4 className="text-2xl font-bold text-black">${parseFloat(stats.total_sales.toString()).toFixed(2)}</h4>
+              <span className="text-sm font-medium text-[#64748b]">Total Revenue</span>
             </div>
-          ) : (
-            <form onSubmit={handleSave} className="space-y-8">
-              <div className="space-y-4">
-                <label htmlFor="store_name" className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-2 italic">Official Store Name</label>
+            <span className="flex items-center gap-1 text-sm font-medium text-[#10b981]">
+              <TrendingUp className="w-4 h-4" /> 15%
+            </span>
+          </div>
+        </div>
+
+        <div className="rounded-sm border border-[#e2e8f0] bg-white py-6 px-7.5 shadow-sm">
+          <div className="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-[#f7f9fc]">
+            <ShoppingCart className="w-6 h-6 text-[#3c50e0]" />
+          </div>
+          <div className="mt-4 flex items-end justify-between">
+            <div>
+              <h4 className="text-2xl font-bold text-black">{stats.order_count}</h4>
+              <span className="text-sm font-medium text-[#64748b]">Total Orders</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-sm border border-[#e2e8f0] bg-white py-6 px-7.5 shadow-sm">
+          <div className="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-[#f7f9fc]">
+            <Package className="w-6 h-6 text-[#d34053]" />
+          </div>
+          <div className="mt-4 flex items-end justify-between">
+            <div>
+              <h4 className="text-2xl font-bold text-black">{stats.pending_count}</h4>
+              <span className="text-sm font-medium text-[#64748b]">Pending Fulfillments</span>
+            </div>
+            {stats.pending_count > 0 && <span className="flex items-center gap-1 text-sm font-medium text-[#d34053]">High Priority</span>}
+          </div>
+        </div>
+        
+        <div className="rounded-sm border border-[#e2e8f0] bg-white py-6 px-7.5 shadow-sm">
+          <div className="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-[#f7f9fc]">
+            <User className="w-6 h-6 text-[#f59e0b]" />
+          </div>
+          <div className="mt-4 flex items-end justify-between">
+            <div>
+              <h4 className="text-2xl font-bold text-black">{profile.subscription_tier}</h4>
+              <span className="text-sm font-medium text-[#64748b]">Subscription Level</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 md:gap-6 lg:grid-cols-12 2xl:gap-7.5">
+        {/* Placeholder for Sales Analytics */}
+        <div className="col-span-1 lg:col-span-7 xl:col-span-8">
+          <div className="rounded-sm border border-[#e2e8f0] bg-white px-5 pt-7.5 pb-5 shadow-sm sm:px-7.5">
+             <div className="mb-4">
+                <h3 className="text-xl font-bold text-black">Sales Analytics</h3>
+             </div>
+             <div className="mt-8 h-[310px] w-full flex items-center justify-center bg-[#f9fafb] rounded border border-dashed border-[#e2e8f0]">
+                <div className="text-center">
+                    <Activity className="w-10 h-10 text-[#10b981]/30 mx-auto mb-2" />
+                    <p className="text-sm font-medium text-[#64748b]">Sales chart placeholder</p>
+                    <p className="text-[10px] text-[#8a99af] uppercase tracking-wider">Historical performance rendering area</p>
+                </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Global Store Settings form */}
+        <div className="col-span-1 lg:col-span-5 xl:col-span-4">
+          <div className="rounded-sm border border-[#e2e8f0] bg-white px-7.5 py-6 shadow-sm h-full">
+            <h4 className="mb-6 text-xl font-bold text-black flex items-center gap-2">
+              <Settings className="w-5 h-5 text-[#64748b]" /> Store Settings
+            </h4>
+
+            <form onSubmit={handleSave} className="space-y-5">
+              <div>
+                <label htmlFor="store_name" className="mb-2 block text-sm font-medium text-black">Store Name</label>
                 <input
                  id="store_name"
                  type="text"
-                 className="w-full px-8 py-6 bg-gray-50 border-transparent focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all duration-300 outline-none rounded-[1.8rem] text-gray-700 font-bold text-lg italic shadow-inner"
-                 placeholder="The Premium Collective"
+                 className="w-full rounded border border-[#e2e8f0] bg-transparent py-3 px-4 outline-none transition focus:border-[#10b981] active:border-[#10b981]"
+                 placeholder="Enter your store name"
                  value={profile.store_name}
                  onChange={(e) => setProfile({ ...profile, store_name: e.target.value })}
                  required
                 />
               </div>
               
-              <div className="space-y-4">
-                <label htmlFor="description" className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-2 italic">Brand Narrative (Bio)</label>
+              <div>
+                <label htmlFor="description" className="mb-2 block text-sm font-medium text-black">Brand Description</label>
                 <textarea
                  id="description"
-                 rows={6}
-                 className="w-full px-8 py-6 bg-gray-50 border-transparent focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all duration-300 outline-none rounded-[2rem] text-gray-700 font-medium leading-relaxed italic resize-none shadow-inner"
-                 placeholder="Tell your customers about your brand story..."
+                 rows={4}
+                 className="w-full rounded border border-[#e2e8f0] bg-transparent py-3 px-4 outline-none transition focus:border-[#10b981] active:border-[#10b981] resize-none"
+                 placeholder="Tell your customers about your brand..."
                  value={profile.description}
                  onChange={(e) => setProfile({ ...profile, description: e.target.value })}
                  required
                 />
               </div>
 
-              <div className="pt-6">
+              <div className="pt-2">
                 <button 
                   type="submit" 
                   disabled={saving}
-                  className={cn(
-                    "w-full py-6 text-white text-xs font-black uppercase tracking-[0.3em] rounded-[2rem] transition-all shadow-2xl flex items-center justify-center gap-3",
-                    saveSuccess ? "bg-emerald-500 shadow-emerald-200" : "bg-gray-900 shadow-gray-200 hover:bg-indigo-600 hover:shadow-indigo-100"
-                  )}
+                  className="flex w-full justify-center rounded bg-[#10b981] p-3 font-medium text-white hover:bg-opacity-90 transition"
                 >
                   {saving ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
                   ) : saveSuccess ? (
-                    <>
-                      <CheckCircle2 className="w-5 h-5 " />
-                      Profile Updated Successfully
-                    </>
+                    <span className="flex items-center gap-2"><CheckCircle2 className="w-5 h-5" /> Saved Successfully</span>
                   ) : (
-                    <>
-                      <Save className="w-5 h-5" />
-                      Save Global Profile
-                    </>
+                    "Save Configuration"
                   )}
                 </button>
               </div>
             </form>
-          )}
-        </div>
+          </div>
         </div>
       </div>
     </div>
