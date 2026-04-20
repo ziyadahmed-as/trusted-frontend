@@ -16,6 +16,7 @@ import {
 import { apiClient } from '@/lib/api-client';
 import { cn } from '@/lib/utils';
 import { StatCard } from '@/components/admin/StatCard';
+import { RevenueChart } from '@/components/charts/RevenueChart';
 import Link from 'next/link';
 
 export default function VendorProfilePage() {
@@ -169,13 +170,14 @@ export default function VendorProfilePage() {
              <div className="mb-4">
                 <h3 className="text-xl font-bold text-black">Sales Analytics</h3>
              </div>
-             <div className="mt-8 h-[310px] w-full flex items-center justify-center bg-[#f9fafb] rounded border border-dashed border-[#e2e8f0]">
-                <div className="text-center">
-                    <Activity className="w-10 h-10 text-[#10b981]/30 mx-auto mb-2" />
-                    <p className="text-sm font-medium text-[#64748b]">Sales chart placeholder</p>
-                    <p className="text-[10px] text-[#8a99af] uppercase tracking-wider">Historical performance rendering area</p>
-                </div>
-            </div>
+             <div className="mt-8">
+               <RevenueChart 
+                  data={salesHistory.map((val: number, idx: number) => ({ name: `W${idx+1}`, sales: val }))}
+                  dataKey1="sales"
+                  color1="#10b981"
+                  height="310px"
+               />
+             </div>
           </div>
         </div>
 

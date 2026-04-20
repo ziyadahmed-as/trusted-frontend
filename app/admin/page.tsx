@@ -16,6 +16,7 @@ import {
 import { StatCard } from '@/components/admin/StatCard';
 import { apiClient } from '@/lib/api-client';
 import { cn } from '@/lib/utils';
+import { RevenueChart } from '@/components/charts/RevenueChart';
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState<any>(null);
@@ -141,12 +142,23 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            <div className="mt-8 h-[350px] w-full flex items-center justify-center bg-[#f9fafb] rounded border border-dashed border-[#e2e8f0]">
-                <div className="text-center">
-                    <Activity className="w-10 h-10 text-[#3c50e0]/20 mx-auto mb-2" />
-                    <p className="text-sm font-medium text-[#64748b]">Growth analytics chart placeholder</p>
-                    <p className="text-[10px] text-[#8a99af] uppercase tracking-wider">ApexCharts would render here</p>
-                </div>
+            <div className="mt-8">
+               <RevenueChart 
+                  data={[
+                     { name: 'Sep', revenue: 2100, sales: 1500 },
+                     { name: 'Oct', revenue: 3000, sales: 2400 },
+                     { name: 'Nov', revenue: 4200, sales: 3200 },
+                     { name: 'Dec', revenue: 5800, sales: 4600 },
+                     { name: 'Jan', revenue: 4900, sales: 3900 },
+                     { name: 'Feb', revenue: 6900, sales: 5100 },
+                     { name: 'Mar', revenue: 8400, sales: 6500 },
+                  ]}
+                  dataKey1="revenue"
+                  dataKey2="sales"
+                  color1="#3c50e0"
+                  color2="#10b981"
+                  height="350px"
+               />
             </div>
           </div>
         </div>
