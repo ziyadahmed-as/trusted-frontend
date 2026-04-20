@@ -19,50 +19,64 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     : user?.email?.substring(0, 2).toUpperCase() ?? 'AD';
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] flex">
+    <div className="flex h-screen overflow-hidden bg-[#f1f5f9]">
       <Sidebar />
-      <div className="flex-1 ml-72 flex flex-col">
+      <div className="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
         {/* Top Navigation */}
-        <header className="h-20 bg-white/80 backdrop-blur-xl border-b border-gray-100/80 flex items-center justify-between px-10 sticky top-0 z-30 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
-          <div className="flex items-center gap-5 w-full max-w-xl">
-            <div className="relative w-full group">
-              <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-indigo-600 transition-colors" />
-              <input
-                type="text"
-                placeholder="Search users, KYC records, products..."
-                className="w-full bg-gray-50 border border-transparent rounded-2xl py-3 pl-12 pr-14 text-sm font-semibold focus:ring-4 focus:ring-indigo-50 focus:bg-white focus:border-indigo-100 transition-all outline-none"
-              />
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1 bg-white border border-gray-100 px-2 py-1 rounded-lg shadow-sm">
-                <Command className="w-3 h-3 text-gray-400" />
-                <span className="text-[9px] font-black text-gray-400">K</span>
+        <header className="sticky top-0 z-30 flex w-full bg-white drop-shadow-1">
+          <div className="flex flex-grow items-center justify-between px-4 py-4 shadow-sm md:px-6 2xl:px-11">
+            <div className="flex items-center gap-2 sm:gap-4 lg:hidden">
+              {/* Hamburger Button would go here */}
+            </div>
+
+            <div className="hidden sm:block">
+              <div className="relative">
+                <button className="absolute left-0 top-1/2 -translate-y-1/2">
+                  <Search className="w-5 h-5 text-gray-400" />
+                </button>
+                <input
+                  type="text"
+                  placeholder="Type to search..."
+                  className="w-full bg-transparent pl-9 pr-4 font-medium focus:outline-none xl:w-125"
+                />
               </div>
             </div>
-          </div>
 
-          <div className="flex items-center gap-3">
-            <button
-              title="Notifications"
-              className="relative w-10 h-10 flex items-center justify-center bg-gray-50 hover:bg-gray-100 rounded-2xl transition-all group"
-            >
-              <Bell className="w-4.5 h-4.5 text-gray-500 group-hover:text-indigo-600 transition-colors" />
-              <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-indigo-600 border-2 border-white rounded-full"></span>
-            </button>
-            <div className="h-7 w-px bg-gray-100 mx-1" />
             <div className="flex items-center gap-3">
-              <div className="text-right hidden sm:block">
-                <p className="text-sm font-bold text-gray-900 leading-none mb-1">{displayName}</p>
-                <p className="text-[10px] font-black text-indigo-600 uppercase tracking-tight bg-indigo-50 px-2 py-0.5 rounded-md inline-block">{roleLabel}</p>
-              </div>
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-indigo-100">
-                {initials}
+              <ul className="flex items-center gap-2">
+                <li>
+                  <button className="relative flex h-8.5 w-8.5 items-center justify-center rounded-full border border-[#e2e8f0] bg-[#f7f9fc] hover:text-[#3c50e0]">
+                    <Bell className="w-4.5 h-4.5 text-[#64748b]" />
+                    <span className="absolute -top-0.5 right-0 z-1 h-2 w-2 rounded-full bg-[#d34053]">
+                      <span className="absolute -z-1 inline-flex h-full w-full animate-ping rounded-full bg-[#d34053] opacity-75"></span>
+                    </span>
+                  </button>
+                </li>
+              </ul>
+
+              <div className="relative flex items-center gap-4">
+                <div className="hidden text-right lg:block">
+                  <span className="block text-sm font-medium text-black">
+                    {displayName}
+                  </span>
+                  <span className="block text-xs font-medium text-[#64748b]">
+                    {roleLabel}
+                  </span>
+                </div>
+
+                <div className="h-11 w-11 rounded-full flex items-center justify-center bg-[#3c50e0] text-white font-bold shadow-lg shadow-[#3c50e0]/20">
+                    {initials}
+                </div>
               </div>
             </div>
           </div>
         </header>
 
         {/* Content Area */}
-        <main className="p-8 lg:p-10 flex-1">
-          {children}
+        <main>
+          <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+            {children}
+          </div>
         </main>
       </div>
     </div>

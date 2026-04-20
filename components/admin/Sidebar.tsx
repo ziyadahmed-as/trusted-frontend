@@ -47,106 +47,84 @@ const navGroups = [
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { user, logout } = useAuth();
+  const { logout, user } = useAuth();
+  const [sidebarOpen, setSidebarOpen] = React.useState(true);
 
   const initials = user?.first_name && user?.last_name
     ? `${user.first_name[0]}${user.last_name[0]}`.toUpperCase()
-    : user?.email?.substring(0, 2).toUpperCase() ?? 'AD';
-
-  const displayName = user?.first_name && user?.last_name
-    ? `${user.first_name} ${user.last_name}`
-    : user?.username ?? 'Admin';
-
-  const roleLabel = user?.role === 'SUPER_ADMIN' ? 'Super Admin' : 'Admin';
+    : 'AD';
 
   return (
-    <div className="w-72 h-screen bg-white border-r border-gray-100 flex flex-col fixed left-0 top-0 z-40">
-      {/* Logo */}
-      <div className="px-8 pt-8 pb-6">
-        <Link href="/admin" className="flex items-center gap-3 group">
-          <div className="w-11 h-11 bg-gray-900 rounded-2xl flex items-center justify-center text-white font-black text-base shadow-xl shadow-gray-200/80 group-hover:bg-indigo-600 transition-colors duration-300">
-            TB
+    <aside className={cn(
+      "fixed left-0 top-0 z-40 flex h-screen flex-col overflow-y-hidden bg-[#1c2434] duration-300 ease-linear lg:static lg:translate-x-0 transition-transform",
+      sidebarOpen ? "translate-x-0 w-72" : "-translate-x-full lg:w-72"
+    )}>
+      {/* SIDEBAR HEADER */}
+      <div className="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5">
+        <Link href="/admin" className="flex items-center gap-3">
+          <div className="w-9 h-9 bg-[#3c50e0] rounded-lg flex items-center justify-center text-white font-bold text-xl">
+            T
           </div>
-          <div>
-            <span className="text-xl font-black tracking-tighter text-gray-900">TrestBiyyo</span>
-            <p className="text-[9px] font-black text-indigo-600 uppercase tracking-[0.25em] -mt-0.5">Admin Suite</p>
-          </div>
+          <span className="text-2xl font-bold text-white">TrestBiyyo</span>
         </Link>
       </div>
+      {/* SIDEBAR HEADER */}
 
-      {/* Nav Groups */}
-      <nav className="flex-1 px-4 overflow-y-auto custom-scrollbar space-y-6 pb-4">
-        {navGroups.map((group) => (
-          <div key={group.label}>
-            <p className="px-4 mb-2 text-[9px] font-black text-gray-300 uppercase tracking-[0.25em]">{group.label}</p>
-            <div className="space-y-1">
-              {group.items.map((item) => {
-                const isActive = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href));
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={cn(
-                      "flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold transition-all duration-300 group relative",
-                      isActive
-                        ? "bg-gray-900 text-white shadow-xl shadow-gray-200/80"
-                        : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
-                    )}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={cn(
-                        "w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-300",
-                        isActive ? "bg-white/10" : "bg-gray-100 group-hover:bg-indigo-50"
-                      )}>
-                        <item.icon className={cn("w-4 h-4", isActive ? "text-white" : "text-gray-400 group-hover:text-indigo-600 transition-colors")} />
-                      </div>
-                      {item.name}
-                    </div>
-                    {isActive && (
-                      <motion.div layoutId="active-pill" className="w-1.5 h-1.5 bg-indigo-400 rounded-full" />
-                    )}
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-        ))}
-      </nav>
+      <div className="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
+        {/* Sidebar Menu */}
+        <nav className="mt-5 px-4 py-4 lg:mt-9 lg:px-6">
+          {navGroups.map((group, groupIdx) => (
+            <div key={groupIdx}>
+              <h3 className="mb-4 ml-4 text-sm font-semibold text-[#8a99af] uppercase tracking-wider">
+                {group.label}
+              </h3>
 
-      {/* Footer */}
-      <div className="p-4 space-y-3 border-t border-gray-50">
-        {/* Platform Status */}
-        <div className="px-4 py-3 bg-emerald-50/60 rounded-2xl flex items-center gap-3">
-          <div className="relative flex-shrink-0">
-            <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
-          </div>
-          <div>
-            <p className="text-[9px] font-black text-emerald-700 uppercase tracking-widest">Platform Status</p>
-            <p className="text-[11px] font-bold text-emerald-600/80">Systems Operational</p>
-          </div>
-          <ShieldCheck className="w-4 h-4 text-emerald-500 ml-auto" />
-        </div>
-
-        {/* User card */}
-        <div className="bg-gray-900 rounded-2xl p-4 shadow-xl shadow-gray-200/60">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-black text-sm shadow-lg flex-shrink-0">
-              {initials}
+              <ul className="mb-6 flex flex-col gap-1.5">
+                {group.items.map((item, itemIdx) => {
+                  const isActive = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href));
+                  return (
+                    <li key={itemIdx}>
+                      <Link
+                        href={item.href}
+                        className={cn(
+                          "group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-[#dee4ee] duration-300 ease-in-out hover:bg-[#333a48]",
+                          isActive && "bg-[#333a48]"
+                        )}
+                      >
+                        <item.icon className={cn("w-5 h-5", isActive ? "text-white" : "text-[#dee4ee]")} />
+                        {item.name}
+                        {isActive && (
+                           <div className="absolute right-4 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-[#3c50e0]"></div>
+                        )}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
             </div>
-            <div className="overflow-hidden flex-1">
-              <p className="text-sm font-black text-white truncate leading-tight">{displayName}</p>
-              <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-tighter">{roleLabel}</p>
-            </div>
-          </div>
-          <button
-            onClick={logout}
-            className="w-full flex items-center justify-center gap-2 px-3 py-2.5 bg-white/10 hover:bg-white/20 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest text-white transition-all"
-          >
-            <LogOut className="w-3.5 h-3.5 text-indigo-400" />
-            Sign Out
-          </button>
-        </div>
+          ))}
+        </nav>
+        {/* Sidebar Menu */}
       </div>
-    </div>
+
+      <div className="mt-auto px-6 py-6 border-t border-[#2e3a47]">
+        <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-full bg-[#3c50e0] flex items-center justify-center text-white font-bold">
+                {initials}
+            </div>
+            <div className="overflow-hidden">
+                <p className="text-sm font-medium text-white truncate">{user?.username || 'Admin'}</p>
+                <p className="text-xs text-[#8a99af] truncate lowercase">{user?.role || 'administrator'}</p>
+            </div>
+        </div>
+        <button
+          onClick={logout}
+          className="flex w-full items-center justify-center gap-2 rounded-md bg-[#333a48] px-4 py-2.5 text-sm font-medium text-white hover:bg-opacity-90 transition-all border border-transparent hover:border-[#3c50e0]/30"
+        >
+          <LogOut className="w-4 h-4 text-[#8a99af]" />
+          Logout
+        </button>
+      </div>
+    </aside>
   );
 }
