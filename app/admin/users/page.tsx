@@ -33,6 +33,18 @@ export default function UserManagementPage() {
     role: '',
     is_active: true
   });
+  
+  // Add User Modal
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [addFormData, setAddFormData] = useState({
+    first_name: '',
+    last_name: '',
+    username: '',
+    email: '',
+    password: '',
+    role: 'BUYER'
+  });
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fetchUsers = async () => {
@@ -78,6 +90,26 @@ export default function UserManagementPage() {
     }
   };
 
+  const handleAddUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+        await apiClient.register(addFormData);
+        setShowAddModal(false);
+        setAddFormData({ first_name: '', last_name: '', username: '', email: '', password: '', role: 'BUYER' });
+        fetchUsers();
+    } catch (err: any) {
+        console.error('Failed to add user', err);
+        let errorMsg = 'Failed to create user. Please check data.';
+        if (err.errors) {
+            errorMsg = typeof err.errors === 'object' ? JSON.stringify(err.errors) : err.errors;
+        }
+        alert(errorMsg);
+    } finally {
+        setIsSubmitting(false);
+    }
+  };
+
   const handleDelete = async (id: string, name: string) => {
     if (confirm(`Are you sure you want to permanently delete user ${name}? This action cannot be undone.`)) {
         try {
@@ -111,8 +143,11 @@ export default function UserManagementPage() {
           <h2 className="text-2xl font-bold text-black md:text-3xl">User Management</h2>
           <p className="text-sm font-medium text-[#64748b]">Manage the platform directory, roles, and access control.</p>
         </div>
-        <button className="flex items-center gap-2 rounded bg-[#3c50e0] py-2 px-4 font-medium text-white hover:bg-opacity-90 transition shadow-sm">
-          <UserPlus className="w-5 h-5" /> Invite User
+        <button 
+           onClick={() => setShowAddModal(true)}
+           className="flex items-center gap-2 rounded bg-[#3c50e0] py-2 px-4 font-medium text-white hover:bg-opacity-90 transition shadow-sm"
+        >
+          <UserPlus className="w-5 h-5" /> Add User
         </button>
       </div>
 
@@ -280,6 +315,108 @@ export default function UserManagementPage() {
                       className="flex items-center justify-center rounded bg-[#3c50e0] py-2 px-6 text-sm font-medium text-white hover:bg-opacity-90 transition disabled:opacity-50"
                     >
                       {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save Changes'}
+                    </button>
+                 </div>
+             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Add User Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-lg rounded-sm border border-[#e2e8f0] bg-white shadow-default">
+             <div className="border-b border-[#e2e8f0] py-4 px-6.5 flex justify-between items-center bg-[#f7f9fc]">
+                 <h3 className="font-semibold text-black">Register New User</h3>
+                 <button onClick={() => setShowAddModal(false)} className="text-[#64748b] hover:text-black">
+                    <XCircle className="w-5 h-5" />
+                 </button>
+             </div>
+             <form onSubmit={handleAddUser} className="p-6.5 max-h-[80vh] overflow-y-auto">
+                 <div className="mb-4.5 flex gap-4">
+                     <div className="w-1/2">
+                         <label className="mb-2.5 block text-sm font-medium text-black">First Name *</label>
+                         <input 
+                           required
+                           type="text"
+                           value={addFormData.first_name}
+                           onChange={(e) => setAddFormData({...addFormData, first_name: e.target.value})}
+                           className="w-full rounded border border-[#e2e8f0] bg-transparent py-2.5 px-4 text-sm font-medium outline-none transition focus:border-[#3c50e0]"
+                         />
+                     </div>
+                     <div className="w-1/2">
+                         <label className="mb-2.5 block text-sm font-medium text-black">Last Name *</label>
+                         <input 
+                           required
+                           type="text"
+                           value={addFormData.last_name}
+                           onChange={(e) => setAddFormData({...addFormData, last_name: e.target.value})}
+                           className="w-full rounded border border-[#e2e8f0] bg-transparent py-2.5 px-4 text-sm font-medium outline-none transition focus:border-[#3c50e0]"
+                         />
+                     </div>
+                 </div>
+
+                 <div className="mb-4.5">
+                     <label className="mb-2.5 block text-sm font-medium text-black">Username *</label>
+                     <input 
+                       required
+                       type="text"
+                       value={addFormData.username}
+                       onChange={(e) => setAddFormData({...addFormData, username: e.target.value})}
+                       className="w-full rounded border border-[#e2e8f0] bg-transparent py-2.5 px-4 text-sm font-medium outline-none transition focus:border-[#3c50e0]"
+                     />
+                 </div>
+
+                 <div className="mb-4.5">
+                     <label className="mb-2.5 block text-sm font-medium text-black">Email Address *</label>
+                     <input 
+                       required
+                       type="email"
+                       value={addFormData.email}
+                       onChange={(e) => setAddFormData({...addFormData, email: e.target.value})}
+                       className="w-full rounded border border-[#e2e8f0] bg-transparent py-2.5 px-4 text-sm font-medium outline-none transition focus:border-[#3c50e0]"
+                     />
+                 </div>
+
+                 <div className="mb-4.5">
+                     <label className="mb-2.5 block text-sm font-medium text-black">Password *</label>
+                     <input 
+                       required
+                       type="password"
+                       value={addFormData.password}
+                       onChange={(e) => setAddFormData({...addFormData, password: e.target.value})}
+                       className="w-full rounded border border-[#e2e8f0] bg-transparent py-2.5 px-4 text-sm font-medium outline-none transition focus:border-[#3c50e0]"
+                     />
+                 </div>
+                 
+                 <div className="mb-6">
+                     <label className="mb-2.5 block text-sm font-medium text-black">Platform Role *</label>
+                     <select 
+                       value={addFormData.role}
+                       onChange={(e) => setAddFormData({...addFormData, role: e.target.value})}
+                       className="w-full rounded border border-[#e2e8f0] bg-transparent py-2.5 px-4 text-sm font-medium outline-none transition focus:border-[#3c50e0]"
+                     >
+                       <option value="BUYER">BUYER</option>
+                       <option value="VENDOR">VENDOR</option>
+                       <option value="DRIVER">DRIVER</option>
+                       <option value="ADMIN">ADMIN</option>
+                     </select>
+                 </div>
+
+                 <div className="flex justify-end gap-3 border-t border-[#e2e8f0] pt-5">
+                    <button 
+                      type="button"
+                      onClick={() => setShowAddModal(false)}
+                      className="rounded bg-[#f7f9fc] py-2 px-4 text-sm font-medium text-black hover:bg-gray-200 transition"
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="flex items-center justify-center rounded bg-[#3c50e0] py-2 px-6 text-sm font-medium text-white hover:bg-opacity-90 transition disabled:opacity-50"
+                    >
+                      {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Register User'}
                     </button>
                  </div>
              </form>

@@ -32,6 +32,9 @@ export default function KYCManagementPage() {
   const [selectedUser, setSelectedUser] = useState<any | null>(null);
   const [userProfile, setUserProfile] = useState<any | null>(null);
   const [profileLoading, setProfileLoading] = useState(false);
+  
+  const [selectedKYCRecords, setSelectedKYCRecords] = useState<string[]>([]);
+  const [detailRecord, setDetailRecord] = useState<any | null>(null);
 
   // Record Moderation States
   const [rejectId, setRejectId] = useState<string | null>(null);
@@ -110,6 +113,8 @@ export default function KYCManagementPage() {
 
   const handleOpenProfile = (user: any) => {
     setSelectedUser(user);
+    setSelectedKYCRecords([]);
+    setDetailRecord(null);
     fetchUserProfile(user.id);
   };
 
@@ -148,6 +153,10 @@ export default function KYCManagementPage() {
       
       // Refresh user profile after action
       if (selectedUser) fetchUserProfile(selectedUser.id);
+      if (detailRecord) {
+         // Auto-close detail record if approved or pending to see table again
+         if (action === 'approve' || action === 'pending') setDetailRecord(null);
+      }
       setRejectId(null);
       setRejectReason('');
       fetchStats();
@@ -159,6 +168,26 @@ export default function KYCManagementPage() {
       setActionLoading(false);
     }
   };
+
+  const handleBulkApprove = async () => {
+     if (selectedKYCRecords.length === 0) return;
+     if (!confirm(`Are you sure you want to approve ${selectedKYCRecords.length} records instantly?`)) return;
+     
+     setActionLoading(true);
+     try {
+       await Promise.all(selectedKYCRecords.map(id => apiClient.approveKYC(id, 'Bulk Approved by Admin')));
+       setSelectedKYCRecords([]);
+       if (selectedUser) fetchUserProfile(selectedUser.id);
+       fetchStats();
+       fetchUsers();
+     } catch (err) {
+       console.error(err);
+       alert('Failed to process one or more bulk approvals. Data may be out of sync.');
+     } finally {
+       setActionLoading(false);
+     }
+  };
+
 
   return (
     <div className="space-y-10 pb-20">
@@ -490,24 +519,25 @@ export default function KYCManagementPage() {
                    </button>
                 </div>
 
-                {/* Documents List */}
+                {/* Documents List & Detail Routing */}
                 <div className="space-y-6">
-                  <div className="flex items-center justify-between">
-                     <h4 className="text-lg font-black text-gray-900 tracking-tight">Identity Documents</h4>
-                     <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Audit one-by-one</span>
-                  </div>
-
-                  {profileLoading ? (
-                    <div className="py-20 flex flex-col items-center justify-center text-gray-400 gap-4">
-                       <div className="w-10 h-10 border-4 border-gray-100 border-t-indigo-600 rounded-full animate-spin" />
-                       <p className="text-xs font-black uppercase tracking-widest">Syncing Identity Data...</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {userProfile?.kyc_records.map((record: any) => (
+                  {detailRecord ? (
+                     <div className="space-y-4">
+                        <div className="flex items-center gap-3">
+                           <button 
+                             onClick={() => setDetailRecord(null)}
+                             className="px-4 py-2 bg-gray-50 text-gray-500 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-gray-100 transition-all flex items-center gap-2 border border-gray-100"
+                           >
+                             <ChevronLeft className="w-4 h-4" /> Back to Records
+                           </button>
+                           <h4 className="text-xl font-black text-gray-900 tracking-tight">Viewing Details: {detailRecord.document_type_name}</h4>
+                        </div>
+                        
+                        {/* THE DETAILED LIST VIEW FOR SELECTED DOCUMENT */}
                         <motion.div 
-                          key={record.id}
-                          className="bg-white border border-gray-100 rounded-[2rem] p-6 shadow-sm hover:shadow-md transition-all group"
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="bg-white border border-gray-100 rounded-[2rem] p-6 shadow-sm group"
                         >
                           <div className="flex flex-col xl:flex-row gap-8">
                             {/* Record Info */}
@@ -518,15 +548,15 @@ export default function KYCManagementPage() {
                                     <FileCheck className="w-5 h-5" />
                                   </div>
                                   <div>
-                                    <h5 className="text-sm font-black text-gray-900">{record.document_type_name}</h5>
-                                    <p className="text-[10px] font-bold text-gray-400">SN: {record.document_number || 'N/A'}</p>
+                                    <h5 className="text-sm font-black text-gray-900">{detailRecord.document_type_name}</h5>
+                                    <p className="text-[10px] font-bold text-gray-400">SN: {detailRecord.document_number || 'N/A'}</p>
                                   </div>
                                 </div>
                                 <div className={cn(
                                   "px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest border shadow-sm",
-                                  statusStyles[record.status as keyof typeof statusStyles]
+                                  statusStyles[detailRecord.status as keyof typeof statusStyles]
                                 )}>
-                                  {record.status}
+                                  {detailRecord.status}
                                 </div>
                               </div>
 
@@ -534,14 +564,14 @@ export default function KYCManagementPage() {
                                 <div className="p-3 bg-gray-50 rounded-xl border border-gray-100">
                                    <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Submitted</p>
                                    <p className="text-[11px] font-bold text-gray-900">
-                                      {new Date(record.submitted_at).toLocaleDateString()}
+                                      {new Date(detailRecord.submitted_at).toLocaleDateString()}
                                    </p>
                                 </div>
-                                {record.extracted_data?.location && (
+                                {detailRecord.extracted_data?.location && (
                                   <div className="p-3 bg-indigo-50/50 rounded-xl border border-indigo-100">
                                      <p className="text-[9px] font-black text-indigo-400 uppercase tracking-widest mb-1">GPS Evidence</p>
                                      <a 
-                                      href={`https://www.google.com/maps?q=${record.extracted_data.location.latitude},${record.extracted_data.location.longitude}`}
+                                      href={`https://www.google.com/maps?q=${detailRecord.extracted_data.location.latitude},${detailRecord.extracted_data.location.longitude}`}
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       className="text-[11px] font-bold text-indigo-600 flex items-center gap-1 hover:underline"
@@ -557,13 +587,13 @@ export default function KYCManagementPage() {
                                 <div className="space-y-2">
                                   <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Main File</p>
                                   <button 
-                                    onClick={() => record.document_file && setPreviewImage(record.document_file)}
+                                    onClick={() => detailRecord.document_file && setPreviewImage(detailRecord.document_file)}
                                     className="w-full aspect-video bg-gray-100 rounded-2xl overflow-hidden border border-gray-200 cursor-zoom-in hover:border-indigo-400 transition-colors"
                                     title="View full-resolution main file"
                                     aria-label="View full-resolution main file"
                                   >
-                                    {record.document_file ? (
-                                      <img src={record.document_file} alt={`Main document for ${record.document_type_name}`} className="w-full h-full object-cover" />
+                                    {detailRecord.document_file ? (
+                                      <img src={detailRecord.document_file} alt={`Main document for ${detailRecord.document_type_name}`} className="w-full h-full object-cover" />
                                     ) : (
                                       <div className="w-full h-full flex items-center justify-center text-gray-300"><Info className="w-6 h-6"/></div>
                                     )}
@@ -572,13 +602,13 @@ export default function KYCManagementPage() {
                                 <div className="space-y-2">
                                   <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Identity Proof (Live)</p>
                                   <button 
-                                    onClick={() => record.LIVE_PHOTO && setPreviewImage(record.LIVE_PHOTO)}
+                                    onClick={() => detailRecord.LIVE_PHOTO && setPreviewImage(detailRecord.LIVE_PHOTO)}
                                     className="w-full aspect-video bg-gray-100 rounded-2xl overflow-hidden border border-gray-200 cursor-zoom-in hover:border-indigo-400 transition-colors"
                                     title="View full-resolution live proof"
                                     aria-label="View full-resolution live proof"
                                   >
-                                    {record.LIVE_PHOTO ? (
-                                      <img src={record.LIVE_PHOTO} alt={`Live identity proof for ${record.document_type_name}`} className="w-full h-full object-cover" />
+                                    {detailRecord.LIVE_PHOTO ? (
+                                      <img src={detailRecord.LIVE_PHOTO} alt={`Live identity proof for ${detailRecord.document_type_name}`} className="w-full h-full object-cover" />
                                     ) : (
                                       <div className="w-full h-full flex items-center justify-center text-gray-300"><Camera className="w-6 h-6"/></div>
                                     )}
@@ -587,17 +617,16 @@ export default function KYCManagementPage() {
                               </div>
                             </div>
 
-                            {/* Record Actions */}
+                            {/* Record Actions inline in list layout */}
                             <div className="xl:w-64 border-l border-gray-100 xl:pl-8 flex flex-col justify-center gap-3">
-                               {record.status === 'PENDING' || record.status === 'UNDER_REVIEW' ? (
+                               {detailRecord.status === 'PENDING' || detailRecord.status === 'UNDER_REVIEW' ? (
                                  <>
-                                   {rejectId === record.id ? (
+                                   {rejectId === detailRecord.id ? (
                                      <div className="space-y-3">
                                         <textarea 
                                           value={rejectReason}
                                           onChange={(e) => setRejectReason(e.target.value)}
                                           placeholder="Rejection reason..."
-                                          aria-label="Rejection reason"
                                           className="w-full text-[11px] font-medium border border-rose-200 rounded-xl p-3 focus:outline-none focus:ring-4 focus:ring-rose-50 bg-rose-50/20"
                                           rows={3}
                                         />
@@ -609,7 +638,7 @@ export default function KYCManagementPage() {
                                               Cancel
                                            </button>
                                            <button 
-                                              onClick={() => handleDocumentAction(record.id, 'reject')}
+                                              onClick={() => handleDocumentAction(detailRecord.id, 'reject')}
                                               disabled={actionLoading || !rejectReason.trim()}
                                               className="flex-1 py-2 bg-rose-600 text-white rounded-xl text-[10px] font-black uppercase shadow-lg shadow-rose-100 disabled:opacity-50"
                                            >
@@ -620,7 +649,7 @@ export default function KYCManagementPage() {
                                    ) : (
                                      <>
                                        <button 
-                                         onClick={() => handleDocumentAction(record.id, 'approve')}
+                                         onClick={() => handleDocumentAction(detailRecord.id, 'approve')}
                                          disabled={actionLoading}
                                          className="w-full py-4 bg-emerald-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-xl shadow-emerald-100 hover:bg-emerald-700 transition-all flex items-center justify-center gap-2"
                                        >
@@ -629,19 +658,11 @@ export default function KYCManagementPage() {
                                        
                                        <div className="flex gap-2">
                                          <button 
-                                           onClick={() => handleDocumentAction(record.id, 'review')}
-                                           disabled={actionLoading || record.status === 'UNDER_REVIEW'}
-                                           className="flex-1 py-3 bg-indigo-50 text-indigo-600 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-100 transition-all flex items-center justify-center gap-2"
-                                           title="Mark as Under Review"
-                                         >
-                                           <Clock className="w-3 h-3" /> Review
-                                         </button>
-                                         <button 
-                                           onClick={() => setRejectId(record.id)}
+                                           onClick={() => setRejectId(detailRecord.id)}
                                            disabled={actionLoading}
                                            className="flex-1 py-3 bg-rose-50 text-rose-600 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-100 transition-all flex items-center justify-center gap-2"
                                          >
-                                           <UserX className="w-3 h-3" /> Reject
+                                           <UserX className="w-3 h-3" /> Reject Document
                                          </button>
                                        </div>
                                      </>
@@ -650,13 +671,13 @@ export default function KYCManagementPage() {
                                ) : (
                                  <div className="text-center py-6 bg-gray-50 rounded-2xl border border-gray-100 border-dashed space-y-3">
                                     <div>
-                                       <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Audited & {record.status}</p>
+                                       <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Audited & {detailRecord.status}</p>
                                        <p className="text-[9px] font-bold text-gray-400 mt-1 italic">
-                                         {new Date(record.updated_at).toLocaleString()}
+                                         {new Date(detailRecord.updated_at).toLocaleString()}
                                        </p>
                                     </div>
                                     <button 
-                                      onClick={() => handleDocumentAction(record.id, 'pending')}
+                                      onClick={() => handleDocumentAction(detailRecord.id, 'pending')}
                                       disabled={actionLoading}
                                       className="w-full py-2 bg-white border border-gray-200 text-gray-600 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-gray-100 transition-all shadow-sm"
                                     >
@@ -667,8 +688,102 @@ export default function KYCManagementPage() {
                             </div>
                           </div>
                         </motion.div>
-                      ))}
-                    </div>
+                     </div>
+                  ) : (
+                     <>
+                       <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-4">
+                             <h4 className="text-lg font-black text-gray-900 tracking-tight">Identity Records Table</h4>
+                             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest bg-gray-100 px-2 py-0.5 rounded border border-gray-200">{userProfile?.kyc_records?.length || 0} SUBMISSIONS</span>
+                          </div>
+                          
+                          {/* Bulk Actions Button */}
+                          <div className="flex items-center gap-3">
+                             <span className="text-[11px] font-bold text-gray-500">{selectedKYCRecords.length} selected</span>
+                             <button 
+                               disabled={actionLoading || selectedKYCRecords.length === 0}
+                               onClick={handleBulkApprove}
+                               className="px-4 py-2 bg-emerald-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-700 transition shadow-sm disabled:opacity-40 flex items-center gap-1.5"
+                             >
+                                <CheckCircle2 className="w-3.5 h-3.5" /> Approve Selected
+                             </button>
+                          </div>
+                       </div>
+
+                       {profileLoading ? (
+                         <div className="py-20 flex flex-col items-center justify-center text-gray-400 gap-4">
+                            <div className="w-10 h-10 border-4 border-gray-100 border-t-indigo-600 rounded-full animate-spin" />
+                            <p className="text-xs font-black uppercase tracking-widest">Syncing Identity Data...</p>
+                         </div>
+                       ) : (
+                         <div className="bg-white border border-gray-100 rounded-[1.5rem] shadow-sm overflow-hidden">
+                           <table className="w-full text-left">
+                              <thead className="bg-gray-50 border-b border-gray-100">
+                                 <tr>
+                                    <th className="px-5 py-4 w-12 text-center">
+                                       <input 
+                                         type="checkbox" 
+                                         className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                                         checked={selectedKYCRecords.length === userProfile?.kyc_records?.length && userProfile?.kyc_records?.length > 0}
+                                         onChange={(e) => {
+                                           if (e.target.checked) setSelectedKYCRecords(userProfile.kyc_records.map((r:any) => r.id));
+                                           else setSelectedKYCRecords([]);
+                                         }}
+                                       />
+                                    </th>
+                                    <th className="px-4 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Document</th>
+                                    <th className="px-4 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">SN</th>
+                                    <th className="px-4 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Submitted</th>
+                                    <th className="px-4 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Status</th>
+                                    <th className="px-5 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Action</th>
+                                 </tr>
+                              </thead>
+                              <tbody className="divide-y divide-gray-50">
+                                 {userProfile?.kyc_records?.length === 0 ? (
+                                    <tr>
+                                       <td colSpan={6} className="py-12 text-center text-gray-400 font-medium text-sm">No records uploaded yet.</td>
+                                    </tr>
+                                 ) : (
+                                    userProfile?.kyc_records?.map((record: any) => (
+                                       <tr key={record.id} className="hover:bg-gray-50/50 transition">
+                                          <td className="px-5 py-4 text-center">
+                                             <input 
+                                                type="checkbox" 
+                                                className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                                                checked={selectedKYCRecords.includes(record.id)}
+                                                onChange={(e) => {
+                                                   if (e.target.checked) setSelectedKYCRecords([...selectedKYCRecords, record.id]);
+                                                   else setSelectedKYCRecords(selectedKYCRecords.filter(id => id !== record.id));
+                                                }}
+                                             />
+                                          </td>
+                                          <td className="px-4 py-4 text-sm font-bold text-gray-900">{record.document_type_name}</td>
+                                          <td className="px-4 py-4 text-xs text-gray-500">{record.document_number || '--'}</td>
+                                          <td className="px-4 py-4 text-xs font-bold text-gray-600">{new Date(record.submitted_at).toLocaleDateString()}</td>
+                                          <td className="px-4 py-4">
+                                             <span className={cn(
+                                                "px-2 py-1 rounded-[4px] text-[9px] font-black uppercase tracking-widest border",
+                                                statusStyles[record.status as keyof typeof statusStyles] || "bg-gray-100 text-gray-500 border-gray-200"
+                                             )}>
+                                                {record.status}
+                                             </span>
+                                          </td>
+                                          <td className="px-5 py-4 text-right">
+                                             <button 
+                                                onClick={() => setDetailRecord(record)}
+                                                className="px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-[10px] font-black uppercase tracking-widest text-gray-600 hover:bg-gray-900 hover:text-white transition shadow-sm ml-auto flex items-center gap-1.5"
+                                             >
+                                                Details <ArrowRight className="w-3 h-3" />
+                                             </button>
+                                          </td>
+                                       </tr>
+                                    ))
+                                 )}
+                              </tbody>
+                           </table>
+                         </div>
+                       )}
+                     </>
                   )}
                 </div>
 
