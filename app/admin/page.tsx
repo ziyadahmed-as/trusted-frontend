@@ -144,15 +144,7 @@ export default function AdminDashboard() {
 
             <div className="mt-8">
                <RevenueChart 
-                  data={[
-                     { name: 'Sep', revenue: 2100, sales: 1500 },
-                     { name: 'Oct', revenue: 3000, sales: 2400 },
-                     { name: 'Nov', revenue: 4200, sales: 3200 },
-                     { name: 'Dec', revenue: 5800, sales: 4600 },
-                     { name: 'Jan', revenue: 4900, sales: 3900 },
-                     { name: 'Feb', revenue: 6900, sales: 5100 },
-                     { name: 'Mar', revenue: 8400, sales: 6500 },
-                  ]}
+                  data={stats?.growth_data || []}
                   dataKey1="revenue"
                   dataKey2="sales"
                   color1="#3c50e0"

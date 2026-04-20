@@ -164,6 +164,29 @@ export const apiClient = {
     return response.json();
   },
 
+  async updateUser(id: string, data: any) {
+    const response = await fetch(`${API_URL}/users/users/${id}/`, {
+      method: 'PATCH',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}` 
+      },
+      body: JSON.stringify(data)
+    });
+    const result = await response.json();
+    if (!response.ok) throw { errors: result };
+    return result;
+  },
+
+  async deleteUser(id: string) {
+    const response = await fetch(`${API_URL}/users/users/${id}/`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    });
+    if (!response.ok) throw new Error('Failed to delete user');
+    return true;
+  },
+
   // --- User KYC Methods ---
   async getKYCRequirements() {
     const response = await fetch(`${API_URL}/kyc/me/requirements/`, {

@@ -172,7 +172,7 @@ export default function VendorProfilePage() {
              </div>
              <div className="mt-8">
                <RevenueChart 
-                  data={salesHistory.map((val: number, idx: number) => ({ name: `W${idx+1}`, sales: val }))}
+                  data={salesHistory}
                   dataKey1="sales"
                   color1="#10b981"
                   height="310px"
