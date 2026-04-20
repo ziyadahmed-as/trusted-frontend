@@ -1,20 +1,22 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { VendorSidebar } from './VendorSidebar';
-import { Bell, Search } from 'lucide-react';
-import { useAuth } from '@/context/AuthContext';
+import React from "react";
+import { VendorSidebar } from "./VendorSidebar";
+import { Bell, Search } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 export function VendorShell({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
 
-  const displayName = user?.first_name && user?.last_name
-    ? `${user.first_name} ${user.last_name}`
-    : user?.username ?? 'Vendor';
+  const displayName =
+    user?.first_name && user?.last_name
+      ? `${user.first_name} ${user.last_name}`
+      : (user?.username ?? "Vendor");
 
-  const initials = user?.first_name && user?.last_name
-    ? `${user.first_name[0]}${user.last_name[0]}`.toUpperCase()
-    : user?.email?.substring(0, 2).toUpperCase() ?? 'VN';
+  const initials =
+    user?.first_name && user?.last_name
+      ? `${user.first_name[0]}${user.last_name[0]}`.toUpperCase()
+      : (user?.email?.substring(0, 2).toUpperCase() ?? "VN");
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#f1f5f9]">
@@ -29,7 +31,11 @@ export function VendorShell({ children }: { children: React.ReactNode }) {
 
             <div className="hidden sm:block">
               <div className="relative">
-                <button className="absolute left-0 top-1/2 -translate-y-1/2">
+                <button
+                  className="absolute left-0 top-1/2 -translate-y-1/2"
+                  title="Search"
+                  aria-label="Search"
+                >
                   <Search className="w-5 h-5 text-gray-400" />
                 </button>
                 <input
@@ -43,7 +49,11 @@ export function VendorShell({ children }: { children: React.ReactNode }) {
             <div className="flex items-center gap-3">
               <ul className="flex items-center gap-2">
                 <li>
-                  <button className="relative flex h-8.5 w-8.5 items-center justify-center rounded-full border border-[#e2e8f0] bg-[#f7f9fc] hover:text-[#10b981] p-2">
+                  <button
+                    className="relative flex h-8.5 w-8.5 items-center justify-center rounded-full border border-[#e2e8f0] bg-[#f7f9fc] hover:text-[#10b981] p-2"
+                    title="Notifications"
+                    aria-label="Notifications"
+                  >
                     <Bell className="w-4.5 h-4.5 text-[#64748b]" />
                     <span className="absolute -top-0.5 right-0 z-1 h-2 w-2 rounded-full bg-[#d34053]">
                       <span className="absolute -z-1 inline-flex h-full w-full animate-ping rounded-full bg-[#d34053] opacity-75"></span>
@@ -63,7 +73,7 @@ export function VendorShell({ children }: { children: React.ReactNode }) {
                 </div>
 
                 <div className="h-11 w-11 rounded-full flex items-center justify-center bg-[#10b981] text-white font-bold shadow-lg shadow-[#10b981]/20">
-                    {initials}
+                  {initials}
                 </div>
               </div>
             </div>

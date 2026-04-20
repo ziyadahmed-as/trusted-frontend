@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { apiClient } from '@/lib/api-client';
-import { 
-  Package, 
-  Clock, 
-  Truck, 
+import React, { useState, useEffect } from "react";
+import { apiClient } from "@/lib/api-client";
+import {
+  Package,
+  Clock,
+  Truck,
   Loader2,
   MoreVertical,
   CheckCircle2,
-  AlertCircle
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { StatCard } from '@/components/admin/StatCard';
+  AlertCircle,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { StatCard } from "@/components/admin/StatCard";
 
 const statusStyles = {
   PENDING: "bg-[#f59e0b]/10 text-[#f59e0b]",
@@ -22,7 +22,7 @@ const statusStyles = {
   CANCELLED: "bg-[#d34053]/10 text-[#d34053]",
 };
 
-const statusFlow = ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED'];
+const statusFlow = ["PENDING", "PROCESSING", "SHIPPED", "DELIVERED"];
 
 export default function VendorOrdersPage() {
   const [orders, setOrders] = useState<any[]>([]);
@@ -34,7 +34,7 @@ export default function VendorOrdersPage() {
       const data = await apiClient.getVendorOrders();
       setOrders(Array.isArray(data) ? data : data.results || []);
     } catch (err) {
-      console.error('Failed to fetch vendor orders:', err);
+      console.error("Failed to fetch vendor orders:", err);
     } finally {
       setLoading(false);
     }
@@ -47,15 +47,15 @@ export default function VendorOrdersPage() {
   const handleStatusUpdate = async (orderId: string, currentStatus: string) => {
     const currentIndex = statusFlow.indexOf(currentStatus);
     if (currentIndex === -1 || currentIndex === statusFlow.length - 1) return;
-    
+
     const nextStatus = statusFlow[currentIndex + 1];
     setUpdatingId(orderId);
     try {
       await apiClient.updateOrderStatus(orderId, nextStatus);
       await fetchOrders();
     } catch (err) {
-      console.error('Failed to update status:', err);
-      alert('Failed to update status. Please try again.');
+      console.error("Failed to update status:", err);
+      alert("Failed to update status. Please try again.");
     } finally {
       setUpdatingId(null);
     }
@@ -74,8 +74,12 @@ export default function VendorOrdersPage() {
       {/* HEADER SECTION */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-black md:text-3xl">Order Fulfillment</h2>
-          <p className="text-sm font-medium text-[#64748b]">Track and manage your customer orders.</p>
+          <h2 className="text-2xl font-bold text-black md:text-3xl">
+            Order Fulfillment
+          </h2>
+          <p className="text-sm font-medium text-[#64748b]">
+            Track and manage your customer orders.
+          </p>
         </div>
       </div>
 
@@ -87,8 +91,12 @@ export default function VendorOrdersPage() {
           </div>
           <div className="mt-4 flex items-end justify-between">
             <div>
-              <h4 className="text-2xl font-bold text-black">{orders.filter(o => o.status === 'PENDING').length}</h4>
-              <span className="text-sm font-medium text-[#64748b]">Pending</span>
+              <h4 className="text-2xl font-bold text-black">
+                {orders.filter((o) => o.status === "PENDING").length}
+              </h4>
+              <span className="text-sm font-medium text-[#64748b]">
+                Pending
+              </span>
             </div>
           </div>
         </div>
@@ -98,8 +106,12 @@ export default function VendorOrdersPage() {
           </div>
           <div className="mt-4 flex items-end justify-between">
             <div>
-              <h4 className="text-2xl font-bold text-black">{orders.filter(o => o.status === 'PROCESSING').length}</h4>
-              <span className="text-sm font-medium text-[#64748b]">In Processing</span>
+              <h4 className="text-2xl font-bold text-black">
+                {orders.filter((o) => o.status === "PROCESSING").length}
+              </h4>
+              <span className="text-sm font-medium text-[#64748b]">
+                In Processing
+              </span>
             </div>
           </div>
         </div>
@@ -109,8 +121,12 @@ export default function VendorOrdersPage() {
           </div>
           <div className="mt-4 flex items-end justify-between">
             <div>
-              <h4 className="text-2xl font-bold text-black">{orders.filter(o => o.status === 'SHIPPED').length}</h4>
-              <span className="text-sm font-medium text-[#64748b]">Dispatched</span>
+              <h4 className="text-2xl font-bold text-black">
+                {orders.filter((o) => o.status === "SHIPPED").length}
+              </h4>
+              <span className="text-sm font-medium text-[#64748b]">
+                Dispatched
+              </span>
             </div>
           </div>
         </div>
@@ -125,15 +141,9 @@ export default function VendorOrdersPage() {
                 <th className="py-4 px-4 font-medium text-black xl:pl-11">
                   Order ID
                 </th>
-                <th className="py-4 px-4 font-medium text-black">
-                  Products
-                </th>
-                <th className="py-4 px-4 font-medium text-black">
-                  Revenue
-                </th>
-                <th className="py-4 px-4 font-medium text-black">
-                  Status
-                </th>
+                <th className="py-4 px-4 font-medium text-black">Products</th>
+                <th className="py-4 px-4 font-medium text-black">Revenue</th>
+                <th className="py-4 px-4 font-medium text-black">Status</th>
                 <th className="py-4 px-4 font-medium text-black text-right xl:pr-11">
                   Actions
                 </th>
@@ -142,48 +152,80 @@ export default function VendorOrdersPage() {
             <tbody>
               {orders.length === 0 ? (
                 <tr>
-                   <td colSpan={5} className="py-10 text-center">
-                     <p className="text-[#64748b] font-medium">No orders found.</p>
-                   </td>
+                  <td colSpan={5} className="py-10 text-center">
+                    <p className="text-[#64748b] font-medium">
+                      No orders found.
+                    </p>
+                  </td>
                 </tr>
               ) : (
                 orders.map((order) => (
-                  <tr key={order.id} className="border-b border-[#e2e8f0] last:border-b-0 hover:bg-[#f9fafb] transition">
+                  <tr
+                    key={order.id}
+                    className="border-b border-[#e2e8f0] last:border-b-0 hover:bg-[#f9fafb] transition"
+                  >
                     <td className="py-5 px-4 pl-9 xl:pl-11">
-                      <p className="font-medium text-black text-sm">#TR-{order.id.toString().padStart(6, '0')}</p>
-                      <p className="text-sm text-[#64748b]">{new Date(order.created_at).toLocaleDateString()}</p>
+                      <p className="font-medium text-black text-sm">
+                        #TR-{order.id.toString().padStart(6, "0")}
+                      </p>
+                      <p className="text-sm text-[#64748b]">
+                        {new Date(order.created_at).toLocaleDateString()}
+                      </p>
                     </td>
                     <td className="py-5 px-4 text-sm text-black">
-                        <div className="flex flex-col gap-1 max-w-[200px]">
-                           {order.items?.slice(0, 2).map((item: any) => (
-                             <span key={item.id} className="truncate">• {item.product_name} x{item.quantity}</span>
-                           ))}
-                           {order.items?.length > 2 && <span className="text-xs text-[#3c50e0] font-medium">+{order.items.length - 2} more items</span>}
-                        </div>
+                      <div className="flex flex-col gap-1 max-w-[200px]">
+                        {order.items?.slice(0, 2).map((item: any) => (
+                          <span key={item.id} className="truncate">
+                            • {item.product_name} x{item.quantity}
+                          </span>
+                        ))}
+                        {order.items?.length > 2 && (
+                          <span className="text-xs text-[#3c50e0] font-medium">
+                            +{order.items.length - 2} more items
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="py-5 px-4 font-medium text-black">
-                       ${parseFloat(order.total_amount).toFixed(2)}
+                      ${parseFloat(order.total_amount).toFixed(2)}
                     </td>
                     <td className="py-5 px-4">
-                       <span className={cn("inline-flex rounded-full px-3 py-1 text-sm font-medium", statusStyles[order.status as keyof typeof statusStyles] || statusStyles.PENDING)}>
-                         {order.status}
-                       </span>
+                      <span
+                        className={cn(
+                          "inline-flex rounded-full px-3 py-1 text-sm font-medium",
+                          statusStyles[
+                            order.status as keyof typeof statusStyles
+                          ] || statusStyles.PENDING,
+                        )}
+                      >
+                        {order.status}
+                      </span>
                     </td>
                     <td className="py-5 px-4 pr-9 xl:pr-11 text-right">
-                       <div className="flex items-center justify-end gap-3">
-                         {statusFlow.indexOf(order.status) < statusFlow.length - 1 && (
-                            <button 
-                              onClick={() => handleStatusUpdate(order.id, order.status)}
-                              disabled={updatingId === order.id}
-                              className="inline-flex rounded bg-[#10b981] py-1 px-3 text-sm font-medium text-white hover:bg-opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                              {updatingId === order.id ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Advance'}
-                            </button>
-                          )}
-                          <button aria-label="More options" className="text-[#64748b] hover:text-black">
-                             <MoreVertical className="w-5 h-5" />
+                      <div className="flex items-center justify-end gap-3">
+                        {statusFlow.indexOf(order.status) <
+                          statusFlow.length - 1 && (
+                          <button
+                            onClick={() =>
+                              handleStatusUpdate(order.id, order.status)
+                            }
+                            disabled={updatingId === order.id}
+                            className="inline-flex rounded bg-[#10b981] py-1 px-3 text-sm font-medium text-white hover:bg-opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {updatingId === order.id ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              "Advance"
+                            )}
                           </button>
-                       </div>
+                        )}
+                        <button
+                          aria-label="More options"
+                          className="text-[#64748b] hover:text-black"
+                        >
+                          <MoreVertical className="w-5 h-5" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -192,7 +234,6 @@ export default function VendorOrdersPage() {
           </table>
         </div>
       </div>
-      
     </div>
   );
 }

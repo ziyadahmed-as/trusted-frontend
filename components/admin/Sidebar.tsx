@@ -1,48 +1,52 @@
-'use client';
+"use client";
 
-import React from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { 
-  LayoutDashboard, 
-  Users, 
-  FileCheck, 
-  MessageSquare, 
-  Settings, 
+import React from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  LayoutDashboard,
+  Users,
+  FileCheck,
+  MessageSquare,
+  Settings,
   LogOut,
   TrendingUp,
   Tag,
   Package,
-  ShieldCheck
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
-import { useAuth } from '@/context/AuthContext';
+  ShieldCheck,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+import { useAuth } from "@/context/AuthContext";
 
 const navGroups = [
   {
-    label: 'Command Center',
+    label: "Command Center",
     items: [
-      { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
-      { name: 'KYC Moderation', href: '/admin/kyc', icon: FileCheck },
-      { name: 'User Management', href: '/admin/users', icon: Users },
-    ]
+      { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
+      { name: "KYC Moderation", href: "/admin/kyc", icon: FileCheck },
+      { name: "User Management", href: "/admin/users", icon: Users },
+    ],
   },
   {
-    label: 'Analytics & Commerce',
+    label: "Analytics & Commerce",
     items: [
-      { name: 'Revenue Analytics', href: '/admin/revenue', icon: TrendingUp },
-      { name: 'Category Hub', href: '/admin/categories', icon: Tag },
-      { name: 'Inventory Control', href: '/admin/inventory', icon: Package },
-    ]
+      { name: "Revenue Analytics", href: "/admin/revenue", icon: TrendingUp },
+      { name: "Category Hub", href: "/admin/categories", icon: Tag },
+      { name: "Inventory Control", href: "/admin/inventory", icon: Package },
+    ],
   },
   {
-    label: 'Platform',
+    label: "Platform",
     items: [
-      { name: 'Conversations', href: '/admin/conversations', icon: MessageSquare },
-      { name: 'Settings', href: '/admin/settings', icon: Settings },
-    ]
-  }
+      {
+        name: "Conversations",
+        href: "/admin/conversations",
+        icon: MessageSquare,
+      },
+      { name: "Settings", href: "/admin/settings", icon: Settings },
+    ],
+  },
 ];
 
 export function Sidebar() {
@@ -50,15 +54,18 @@ export function Sidebar() {
   const { logout, user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = React.useState(true);
 
-  const initials = user?.first_name && user?.last_name
-    ? `${user.first_name[0]}${user.last_name[0]}`.toUpperCase()
-    : 'AD';
+  const initials =
+    user?.first_name && user?.last_name
+      ? `${user.first_name[0]}${user.last_name[0]}`.toUpperCase()
+      : "AD";
 
   return (
-    <aside className={cn(
-      "fixed left-0 top-0 z-40 flex h-screen flex-col overflow-y-hidden bg-[#1c2434] duration-300 ease-linear lg:static lg:translate-x-0 transition-transform",
-      sidebarOpen ? "translate-x-0 w-72" : "-translate-x-full lg:w-72"
-    )}>
+    <aside
+      className={cn(
+        "fixed left-0 top-0 z-40 flex h-screen flex-col overflow-y-hidden bg-[#1c2434] duration-300 ease-linear lg:static lg:translate-x-0 transition-transform",
+        sidebarOpen ? "translate-x-0 w-72" : "-translate-x-full lg:w-72",
+      )}
+    >
       {/* SIDEBAR HEADER */}
       <div className="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5">
         <Link href="/admin" className="flex items-center gap-3">
@@ -81,20 +88,27 @@ export function Sidebar() {
 
               <ul className="mb-6 flex flex-col gap-1.5">
                 {group.items.map((item, itemIdx) => {
-                  const isActive = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href));
+                  const isActive =
+                    pathname === item.href ||
+                    (item.href !== "/admin" && pathname.startsWith(item.href));
                   return (
                     <li key={itemIdx}>
                       <Link
                         href={item.href}
                         className={cn(
                           "group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-[#dee4ee] duration-300 ease-in-out hover:bg-[#333a48]",
-                          isActive && "bg-[#333a48]"
+                          isActive && "bg-[#333a48]",
                         )}
                       >
-                        <item.icon className={cn("w-5 h-5", isActive ? "text-white" : "text-[#dee4ee]")} />
+                        <item.icon
+                          className={cn(
+                            "w-5 h-5",
+                            isActive ? "text-white" : "text-[#dee4ee]",
+                          )}
+                        />
                         {item.name}
                         {isActive && (
-                           <div className="absolute right-4 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-[#3c50e0]"></div>
+                          <div className="absolute right-4 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-[#3c50e0]"></div>
                         )}
                       </Link>
                     </li>
@@ -109,13 +123,17 @@ export function Sidebar() {
 
       <div className="mt-auto px-6 py-6 border-t border-[#2e3a47]">
         <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-full bg-[#3c50e0] flex items-center justify-center text-white font-bold">
-                {initials}
-            </div>
-            <div className="overflow-hidden">
-                <p className="text-sm font-medium text-white truncate">{user?.username || 'Admin'}</p>
-                <p className="text-xs text-[#8a99af] truncate lowercase">{user?.role || 'administrator'}</p>
-            </div>
+          <div className="w-10 h-10 rounded-full bg-[#3c50e0] flex items-center justify-center text-white font-bold">
+            {initials}
+          </div>
+          <div className="overflow-hidden">
+            <p className="text-sm font-medium text-white truncate">
+              {user?.username || "Admin"}
+            </p>
+            <p className="text-xs text-[#8a99af] truncate lowercase">
+              {user?.role || "administrator"}
+            </p>
+          </div>
         </div>
         <button
           onClick={logout}

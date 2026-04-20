@@ -1,11 +1,22 @@
-'use client';
+"use client";
 
-import React, { useState, useRef } from 'react';
-import { Upload, CheckCircle2, AlertCircle, FileText, X, Clock, Camera, RefreshCw, MapPin, Navigation } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import Webcam from 'react-webcam';
-import { cn } from '@/lib/utils';
-import { apiClient } from '@/lib/api-client';
+import React, { useState, useRef } from "react";
+import {
+  Upload,
+  CheckCircle2,
+  AlertCircle,
+  FileText,
+  X,
+  Clock,
+  Camera,
+  RefreshCw,
+  MapPin,
+  Navigation,
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import Webcam from "react-webcam";
+import { cn } from "@/lib/utils";
+import { apiClient } from "@/lib/api-client";
 
 interface KYCUploadCardProps {
   documentType: {
@@ -20,31 +31,37 @@ interface KYCUploadCardProps {
   onSuccess: () => void;
 }
 
-export function KYCUploadCard({ documentType, currentStatus, onSuccess }: KYCUploadCardProps) {
+export function KYCUploadCard({
+  documentType,
+  currentStatus,
+  onSuccess,
+}: KYCUploadCardProps) {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
-  const [location, setLocation] = useState<{ lat: number, lng: number } | null>(null);
+  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(
+    null,
+  );
   const [fetchingLocation, setFetchingLocation] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const webcamRef = useRef<Webcam>(null);
 
   React.useEffect(() => {
     // Automatically trigger location fetch for location-sensitive documents
-    if (documentType.code === 'LOCATION_PROOF' && status === 'NOT_SUBMITTED') {
+    if (documentType.code === "LOCATION_PROOF" && status === "NOT_SUBMITTED") {
       fetchLocation();
     }
   }, []);
 
-  const status = currentStatus?.status || 'NOT_SUBMITTED';
+  const status = currentStatus?.status || "NOT_SUBMITTED";
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const selectedFile = e.target.files[0];
       if (selectedFile.size > 10 * 1024 * 1024) {
-        setError('File size exceeds 10MB limit');
+        setError("File size exceeds 10MB limit");
         return;
       }
       setFile(selectedFile);
@@ -53,7 +70,7 @@ export function KYCUploadCard({ documentType, currentStatus, onSuccess }: KYCUpl
   };
 
   const dataURLtoFile = (dataurl: string, filename: string) => {
-    const arr = dataurl.split(',');
+    const arr = dataurl.split(",");
     const mime = arr[0].match(/:(.*?);/)![1];
     const bstr = atob(arr[1]);
     let n = bstr.length;
@@ -67,7 +84,10 @@ export function KYCUploadCard({ documentType, currentStatus, onSuccess }: KYCUpl
   const handleCapture = React.useCallback(() => {
     const imageSrc = webcamRef.current?.getScreenshot();
     if (imageSrc) {
-      const capturedFile = dataURLtoFile(imageSrc, `live-photo-${Date.now()}.jpg`);
+      const capturedFile = dataURLtoFile(
+        imageSrc,
+        `live-photo-${Date.now()}.jpg`,
+      );
       setFile(capturedFile);
       setIsCameraOpen(false);
       setError(null);
@@ -76,7 +96,7 @@ export function KYCUploadCard({ documentType, currentStatus, onSuccess }: KYCUpl
 
   const fetchLocation = () => {
     if (!navigator.geolocation) {
-      setError('Geolocation is not supported by your browser');
+      setError("Geolocation is not supported by your browser");
       return;
     }
 
@@ -87,16 +107,18 @@ export function KYCUploadCard({ documentType, currentStatus, onSuccess }: KYCUpl
       (position) => {
         setLocation({
           lat: position.coords.latitude,
-          lng: position.coords.longitude
+          lng: position.coords.longitude,
         });
         setFetchingLocation(false);
       },
       (err) => {
         console.error(err);
-        setError('Failed to get location. Please allow camera/location permissions.');
+        setError(
+          "Failed to get location. Please allow camera/location permissions.",
+        );
         setFetchingLocation(false);
       },
-      { enableHighAccuracy: true, timeout: 10000 }
+      { enableHighAccuracy: true, timeout: 10000 },
     );
   };
 
@@ -108,32 +130,40 @@ export function KYCUploadCard({ documentType, currentStatus, onSuccess }: KYCUpl
     setError(null);
 
     const formData = new FormData();
-    formData.append('kyc_type', documentType.code);
+    formData.append("kyc_type", documentType.code);
 
     if (location) {
-      formData.append('latitude', location.lat.toString());
-      formData.append('longitude', location.lng.toString());
+      formData.append("latitude", location.lat.toString());
+      formData.append("longitude", location.lng.toString());
     }
 
     if (file) {
-      if (documentType.code === 'LIVE_PHOTO') {
-        formData.append('LIVE_PHOTO', file);
+      if (documentType.code === "LIVE_PHOTO") {
+        formData.append("LIVE_PHOTO", file);
       } else {
-        formData.append('document_file', file);
+        formData.append("document_file", file);
       }
     }
 
     try {
       const result = await apiClient.submitKYC(formData);
-      if (result.error || (typeof result === 'object' && !result.id && Object.keys(result).length > 0)) {
-        const firstErr = typeof result === 'string' ? result : (result.error || Object.values(result)[0]);
+      if (
+        result.error ||
+        (typeof result === "object" &&
+          !result.id &&
+          Object.keys(result).length > 0)
+      ) {
+        const firstErr =
+          typeof result === "string"
+            ? result
+            : result.error || Object.values(result)[0];
         setError(Array.isArray(firstErr) ? firstErr[0] : firstErr);
       } else {
         setFile(null);
         onSuccess();
       }
     } catch (err) {
-      setError('Failed to upload document. Please try again.');
+      setError("Failed to upload document. Please try again.");
       console.error(err);
     } finally {
       setLoading(false);
@@ -170,33 +200,46 @@ export function KYCUploadCard({ documentType, currentStatus, onSuccess }: KYCUpl
       className={cn(
         "flex flex-col lg:flex-row lg:items-center justify-between gap-6 p-6 rounded-[2rem] border transition-all duration-300",
         statusStyles[status as keyof typeof statusStyles],
-        isDragging && "border-indigo-500 bg-indigo-50/50 scale-[1.01] shadow-lg shadow-indigo-100/50"
+        isDragging &&
+          "border-indigo-500 bg-indigo-50/50 scale-[1.01] shadow-lg shadow-indigo-100/50",
       )}
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}
       onDrop={onDrop}
     >
       <div className="flex items-start lg:items-center gap-5 flex-1 min-w-0">
-        <div className={cn(
-          "w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm",
-          status === 'APPROVED' ? "bg-emerald-100 text-emerald-600" : "bg-gray-50 text-gray-500 border border-gray-100"
-        )}>
+        <div
+          className={cn(
+            "w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm",
+            status === "APPROVED"
+              ? "bg-emerald-100 text-emerald-600"
+              : "bg-gray-50 text-gray-500 border border-gray-100",
+          )}
+        >
           <FileText className="w-6 h-6" />
         </div>
 
         <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-black text-gray-900 tracking-tight truncate">{documentType.name}</h3>
-          <p className="text-[13px] font-medium text-gray-400 mt-0.5 line-clamp-2 pr-4">{documentType.description}</p>
+          <h3 className="text-lg font-black text-gray-900 tracking-tight truncate">
+            {documentType.name}
+          </h3>
+          <p className="text-[13px] font-medium text-gray-400 mt-0.5 line-clamp-2 pr-4">
+            {documentType.description}
+          </p>
           {error && (
             <div className="flex items-center gap-1.5 text-rose-600 mt-2">
               <AlertCircle className="w-3.5 h-3.5" />
-              <p className="text-[10px] font-black uppercase tracking-widest">{error}</p>
+              <p className="text-[10px] font-black uppercase tracking-widest">
+                {error}
+              </p>
             </div>
           )}
           {location && (
             <div className="inline-flex items-center gap-2 mt-3 px-3 py-1 bg-emerald-50 text-emerald-600 rounded-lg border border-emerald-100/50 animate-in fade-in slide-in-from-left-2 duration-500">
               <Navigation className="w-3 h-3 fill-emerald-600 rotate-45" />
-              <span className="text-[10px] font-black tracking-wider uppercase">GPS Locked: {location.lat.toFixed(6)}, {location.lng.toFixed(6)}</span>
+              <span className="text-[10px] font-black tracking-wider uppercase">
+                GPS Locked: {location.lat.toFixed(6)}, {location.lng.toFixed(6)}
+              </span>
             </div>
           )}
         </div>
@@ -204,15 +247,22 @@ export function KYCUploadCard({ documentType, currentStatus, onSuccess }: KYCUpl
 
       <div className="flex flex-col lg:flex-row lg:items-center gap-6 lg:gap-8 w-full lg:w-auto">
         <div className="flex flex-col lg:items-end text-left lg:text-right">
-          <div className={cn(
-            "inline-flex px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border",
-            status === 'PENDING' && "bg-amber-100 text-amber-700 border-amber-200",
-            status === 'APPROVED' && "bg-emerald-100 text-emerald-700 border-emerald-200",
-            status === 'REJECTED' && "bg-rose-100 text-rose-700 border-rose-200",
-            status === 'UNDER_REVIEW' && "bg-indigo-100 text-indigo-700 border-indigo-200",
-            status === 'NOT_SUBMITTED' && "bg-gray-100 text-gray-600 border-gray-200",
-          )}>
-            {status.replace('_', ' ')}
+          <div
+            className={cn(
+              "inline-flex px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border",
+              status === "PENDING" &&
+                "bg-amber-100 text-amber-700 border-amber-200",
+              status === "APPROVED" &&
+                "bg-emerald-100 text-emerald-700 border-emerald-200",
+              status === "REJECTED" &&
+                "bg-rose-100 text-rose-700 border-rose-200",
+              status === "UNDER_REVIEW" &&
+                "bg-indigo-100 text-indigo-700 border-indigo-200",
+              status === "NOT_SUBMITTED" &&
+                "bg-gray-100 text-gray-600 border-gray-200",
+            )}
+          >
+            {status.replace("_", " ")}
           </div>
           {currentStatus?.submitted_at && (
             <p className="text-[10px] font-bold text-gray-400 mt-1.5">
@@ -221,40 +271,58 @@ export function KYCUploadCard({ documentType, currentStatus, onSuccess }: KYCUpl
           )}
         </div>
 
-        {(status === 'NOT_SUBMITTED' || status === 'REJECTED') ? (
+        {status === "NOT_SUBMITTED" || status === "REJECTED" ? (
           <>
             <div className="w-px h-12 bg-gray-100 hidden lg:block"></div>
             <div className="flex items-center gap-3">
               {!file ? (
                 <>
-                  {documentType.code === 'LOCATION_PROOF' && (
+                  {documentType.code === "LOCATION_PROOF" && (
                     <button
                       onClick={fetchLocation}
                       disabled={fetchingLocation}
                       className="flex-1 lg:flex-none px-6 py-3.5 bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-indigo-100 transition-all flex items-center justify-center gap-2 group w-[180px]"
                     >
-                      <MapPin className={cn("w-4 h-4 transition-transform", fetchingLocation && "animate-bounce")} />
-                      {fetchingLocation ? 'Locating...' : location ? 'Location Fixed' : 'Detect Location'}
+                      <MapPin
+                        className={cn(
+                          "w-4 h-4 transition-transform",
+                          fetchingLocation && "animate-bounce",
+                        )}
+                      />
+                      {fetchingLocation
+                        ? "Locating..."
+                        : location
+                          ? "Location Fixed"
+                          : "Detect Location"}
                     </button>
                   )}
-                  {documentType.code === 'LIVE_PHOTO' && (
+                  {documentType.code === "LIVE_PHOTO" && (
                     <button
                       onClick={() => setIsCameraOpen(true)}
                       className="flex-1 lg:flex-none px-6 py-3.5 bg-indigo-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-100/50 transition-all flex items-center justify-center gap-2 group w-[180px]"
                     >
-                      <Camera className="w-4 h-4 group-hover:scale-110 transition-transform" /> Open Camera
+                      <Camera className="w-4 h-4 group-hover:scale-110 transition-transform" />{" "}
+                      Open Camera
                     </button>
                   )}
                   <button
                     onClick={() => fileInputRef.current?.click()}
                     className={cn(
                       "flex-1 lg:flex-none px-6 py-3.5 border border-gray-200 rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 group w-[180px]",
-                      documentType.code === 'LIVE_PHOTO' ? "bg-white text-gray-500" : "bg-white text-gray-900 hover:border-indigo-600 hover:text-indigo-600 hover:bg-indigo-50"
+                      documentType.code === "LIVE_PHOTO"
+                        ? "bg-white text-gray-500"
+                        : "bg-white text-gray-900 hover:border-indigo-600 hover:text-indigo-600 hover:bg-indigo-50",
                     )}
                   >
-                    <Upload className="w-4 h-4 group-hover:-translate-y-0.5 transition-transform" /> {documentType.code === 'LIVE_PHOTO' ? 'Upload Image' : 'Upload File'}
+                    <Upload className="w-4 h-4 group-hover:-translate-y-0.5 transition-transform" />{" "}
+                    {documentType.code === "LIVE_PHOTO"
+                      ? "Upload Image"
+                      : "Upload File"}
                   </button>
-                  <label htmlFor={`file-upload-${documentType.code}`}>  documentType</label>
+                  <label htmlFor={`file-upload-${documentType.code}`}>
+                    {" "}
+                    documentType
+                  </label>
 
                   <input
                     id={`file-upload-${documentType.code}`}
@@ -262,22 +330,28 @@ export function KYCUploadCard({ documentType, currentStatus, onSuccess }: KYCUpl
                     className="hidden"
                     ref={fileInputRef}
                     onChange={handleFileChange}
-                    accept={documentType.code === 'LIVE_PHOTO' ? "image/*" : ".pdf,.jpg,.jpeg,.png,.webp"}
+                    accept={
+                      documentType.code === "LIVE_PHOTO"
+                        ? "image/*"
+                        : ".pdf,.jpg,.jpeg,.png,.webp"
+                    }
                   />
 
-                  {location && documentType.code === 'LOCATION_PROOF' && (
+                  {location && documentType.code === "LOCATION_PROOF" && (
                     <button
                       onClick={handleSubmit}
                       disabled={loading}
                       className="flex-1 lg:flex-none px-6 py-3.5 bg-emerald-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-emerald-700 shadow-lg shadow-emerald-100/50 transition-all flex items-center justify-center gap-2 group w-[180px]"
                     >
-                      {loading ? 'Submitting...' : 'Submit Location'}
+                      {loading ? "Submitting..." : "Submit Location"}
                     </button>
                   )}
                 </>
               ) : (
                 <div className="flex-1 lg:flex-none flex items-center gap-2 bg-indigo-50 p-1.5 pl-4 rounded-xl border border-indigo-100 w-full lg:w-[320px]">
-                  <span className="text-xs font-bold text-indigo-900 truncate flex-1">{file.name}</span>
+                  <span className="text-xs font-bold text-indigo-900 truncate flex-1">
+                    {file.name}
+                  </span>
                   <button
                     onClick={() => setFile(null)}
                     className="p-2 text-rose-400 hover:bg-rose-100 hover:text-rose-600 rounded-lg transition-colors"
@@ -290,7 +364,7 @@ export function KYCUploadCard({ documentType, currentStatus, onSuccess }: KYCUpl
                     disabled={loading}
                     className="px-5 py-2.5 bg-indigo-600 text-white rounded-lg text-xs font-black uppercase tracking-widest hover:bg-indigo-700 shadow-md shadow-indigo-200 disabled:opacity-50 transition-all"
                   >
-                    {loading ? 'Outbox...' : 'Submit'}
+                    {loading ? "Outbox..." : "Submit"}
                   </button>
                 </div>
               )}
@@ -298,8 +372,12 @@ export function KYCUploadCard({ documentType, currentStatus, onSuccess }: KYCUpl
           </>
         ) : (
           <div className="w-[180px] hidden lg:flex justify-end hidden">
-            {status === 'APPROVED' && <CheckCircle2 className="w-6 h-6 text-emerald-500" />}
-            {status === 'PENDING' && <Clock className="w-6 h-6 text-amber-500" />}
+            {status === "APPROVED" && (
+              <CheckCircle2 className="w-6 h-6 text-emerald-500" />
+            )}
+            {status === "PENDING" && (
+              <Clock className="w-6 h-6 text-amber-500" />
+            )}
           </div>
         )}
       </div>
@@ -321,11 +399,19 @@ export function KYCUploadCard({ documentType, currentStatus, onSuccess }: KYCUpl
             >
               <div className="flex items-center justify-between p-6 border-b border-gray-100">
                 <div>
-                  <h3 className="text-xl font-black text-gray-900">Live Verification</h3>
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Camera Capture</p>
+                  <h3 className="text-xl font-black text-gray-900">
+                    Live Verification
+                  </h3>
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">
+                    Camera Capture
+                  </p>
                 </div>
-                <label htmlFor={`file-upload-${documentType.code}`}> open your camera </label>
-                <button id={`file-upload-${documentType.code}`}
+                <label htmlFor={`file-upload-${documentType.code}`}>
+                  {" "}
+                  open your camera{" "}
+                </label>
+                <button
+                  id={`file-upload-${documentType.code}`}
                   onClick={() => setIsCameraOpen(false)}
                   className="p-2 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors text-gray-400 hover:text-gray-600"
                 >
@@ -342,7 +428,7 @@ export function KYCUploadCard({ documentType, currentStatus, onSuccess }: KYCUpl
                     videoConstraints={{
                       width: 720,
                       height: 720,
-                      facingMode: "user"
+                      facingMode: "user",
                     }}
                     className="w-full h-full object-cover"
                   />

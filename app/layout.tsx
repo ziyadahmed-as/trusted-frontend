@@ -18,7 +18,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "TrestBiyyo - Premium Ecommerce Marketplace",
-  description: "Experience the next level of online shopping and vendor management with TrestBiyyo.",
+  description:
+    "Experience the next level of online shopping and vendor management with TrestBiyyo.",
 };
 
 export default function RootLayout({

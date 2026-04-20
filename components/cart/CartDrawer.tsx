@@ -1,14 +1,21 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X, ShoppingBag, Plus, Minus, Trash2, ArrowRight } from 'lucide-react';
-import { useCart } from '@/context/CartContext';
-import { cn } from '@/lib/utils';
-import Link from 'next/link';
+import React from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { X, ShoppingBag, Plus, Minus, Trash2, ArrowRight } from "lucide-react";
+import { useCart } from "@/context/CartContext";
+import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 export function CartDrawer() {
-  const { isDrawerOpen, closeDrawer, items, removeFromCart, updateQuantity, cartTotal } = useCart();
+  const {
+    isDrawerOpen,
+    closeDrawer,
+    items,
+    removeFromCart,
+    updateQuantity,
+    cartTotal,
+  } = useCart();
 
   return (
     <AnimatePresence>
@@ -25,10 +32,10 @@ export function CartDrawer() {
 
           {/* Drawer */}
           <motion.div
-            initial={{ x: '100%', opacity: 0 }}
+            initial={{ x: "100%", opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
-            exit={{ x: '100%', opacity: 0 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            exit={{ x: "100%", opacity: 0 }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
             className="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-[101] flex flex-col"
           >
             {/* Header */}
@@ -37,7 +44,9 @@ export function CartDrawer() {
                 <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600">
                   <ShoppingBag className="w-5 h-5" />
                 </div>
-                <h2 className="text-xl font-black text-gray-900 tracking-tight">Your Cart</h2>
+                <h2 className="text-xl font-black text-gray-900 tracking-tight">
+                  Your Cart
+                </h2>
               </div>
               <button
                 onClick={closeDrawer}
@@ -55,8 +64,12 @@ export function CartDrawer() {
                   <div className="w-24 h-24 rounded-full bg-gray-50 flex items-center justify-center text-gray-300 mb-4">
                     <ShoppingBag className="w-12 h-12" />
                   </div>
-                  <h3 className="text-lg font-bold text-gray-900">Your cart is empty</h3>
-                  <p className="text-sm text-gray-500 max-w-[200px]">Looks like you haven't added anything yet.</p>
+                  <h3 className="text-lg font-bold text-gray-900">
+                    Your cart is empty
+                  </h3>
+                  <p className="text-sm text-gray-500 max-w-[200px]">
+                    Looks like you haven't added anything yet.
+                  </p>
                   <button
                     onClick={closeDrawer}
                     className="mt-4 px-6 py-3 bg-gray-900 text-white rounded-xl font-bold text-sm hover:bg-indigo-600 transition-colors"
@@ -78,7 +91,11 @@ export function CartDrawer() {
                       {/* Product Image Placeholder */}
                       <div className="w-20 h-20 rounded-xl bg-gray-50 flex-shrink-0 flex items-center justify-center overflow-hidden relative">
                         {item.image ? (
-                          <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                          <img
+                            src={item.image}
+                            alt={item.name}
+                            className="w-full h-full object-cover"
+                          />
                         ) : (
                           <ShoppingBag className="w-8 h-8 text-gray-300" />
                         )}
@@ -88,7 +105,9 @@ export function CartDrawer() {
                       <div className="flex-1 flex flex-col justify-between">
                         <div>
                           <div className="flex justify-between items-start">
-                            <h4 className="font-bold text-gray-900 text-sm line-clamp-2 pr-4">{item.name}</h4>
+                            <h4 className="font-bold text-gray-900 text-sm line-clamp-2 pr-4">
+                              {item.name}
+                            </h4>
                             <button
                               onClick={() => removeFromCart(item.id)}
                               aria-label="Remove item from cart"
@@ -97,14 +116,18 @@ export function CartDrawer() {
                               <Trash2 className="w-4 h-4" />
                             </button>
                           </div>
-                          <p className="text-sm font-black text-indigo-600 mt-1">${item.price.toFixed(2)}</p>
+                          <p className="text-sm font-black text-indigo-600 mt-1">
+                            ${item.price.toFixed(2)}
+                          </p>
                         </div>
 
                         {/* Quantity Controls */}
                         <div className="flex items-center justify-between mt-3">
                           <div className="flex items-center gap-3 px-2 py-1 bg-gray-50 rounded-lg">
                             <button
-                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                              onClick={() =>
+                                updateQuantity(item.id, item.quantity - 1)
+                              }
                               aria-label="Decrease quantity"
                               className="text-gray-400 hover:text-gray-900 disabled:opacity-50"
                             >
@@ -114,7 +137,9 @@ export function CartDrawer() {
                               {item.quantity}
                             </span>
                             <button
-                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                              onClick={() =>
+                                updateQuantity(item.id, item.quantity + 1)
+                              }
                               disabled={item.quantity >= item.stock}
                               aria-label="Increase quantity"
                               className="text-gray-400 hover:text-gray-900 disabled:opacity-50"
@@ -139,28 +164,38 @@ export function CartDrawer() {
                 <div className="space-y-3 mb-6">
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-gray-500 font-medium">Subtotal</span>
-                    <span className="font-bold text-gray-900">${cartTotal.toFixed(2)}</span>
+                    <span className="font-bold text-gray-900">
+                      ${cartTotal.toFixed(2)}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-gray-500 font-medium">Shipping</span>
-                    <span className="text-emerald-600 font-bold">Calculated at checkout</span>
+                    <span className="text-emerald-600 font-bold">
+                      Calculated at checkout
+                    </span>
                   </div>
                   <div className="h-px bg-gray-200 my-2" />
                   <div className="flex items-center justify-between">
-                    <span className="text-base font-bold text-gray-900">Total</span>
+                    <span className="text-base font-bold text-gray-900">
+                      Total
+                    </span>
                     <span className="text-2xl font-black text-gray-900 tracking-tighter italic">
                       ${cartTotal.toFixed(2)}
                     </span>
                   </div>
                 </div>
 
-                <Link href="/checkout" onClick={closeDrawer} className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black text-sm uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-indigo-600 hover:shadow-xl hover:shadow-indigo-200 transition-all active:scale-[0.98]">
+                <Link
+                  href="/checkout"
+                  onClick={closeDrawer}
+                  className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black text-sm uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-indigo-600 hover:shadow-xl hover:shadow-indigo-200 transition-all active:scale-[0.98]"
+                >
                   Proceed to Checkout <ArrowRight className="w-4 h-4" />
                 </Link>
                 <div className="mt-4 text-center">
-                   <p className="text-[10px] text-gray-400 font-medium uppercase tracking-widest">
-                     Secure checkout via Stripe
-                   </p>
+                  <p className="text-[10px] text-gray-400 font-medium uppercase tracking-widest">
+                    Secure checkout via Stripe
+                  </p>
                 </div>
               </div>
             )}

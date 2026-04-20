@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingBag, ChevronLeft, ChevronRight } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ShoppingBag, ChevronLeft, ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ProductGalleryProps {
   images: Array<{
@@ -37,10 +37,16 @@ export function ProductGallery({ images }: ProductGalleryProps) {
             onClick={() => setActiveIdx(idx)}
             className={cn(
               "relative w-20 h-20 rounded-2xl overflow-hidden border-2 transition-all flex-shrink-0",
-              idx === activeIdx ? "border-indigo-600 shadow-xl shadow-indigo-100" : "border-gray-100 hover:border-gray-300"
+              idx === activeIdx
+                ? "border-indigo-600 shadow-xl shadow-indigo-100"
+                : "border-gray-100 hover:border-gray-300",
             )}
           >
-            <img src={img.image} alt="Thumbnail" className="w-full h-full object-cover" />
+            <img
+              src={img.image}
+              alt="Thumbnail"
+              className="w-full h-full object-cover"
+            />
             {idx === activeIdx && (
               <div className="absolute inset-0 bg-indigo-600/5" />
             )}
@@ -66,15 +72,23 @@ export function ProductGallery({ images }: ProductGalleryProps) {
         {/* Navigation Arrows */}
         {images.length > 1 && (
           <>
-            <button 
-              onClick={() => setActiveIdx((prev) => (prev === 0 ? images.length - 1 : prev - 1))}
+            <button
+              onClick={() =>
+                setActiveIdx((prev) =>
+                  prev === 0 ? images.length - 1 : prev - 1,
+                )
+              }
               aria-label="Previous Image"
               className="absolute left-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/80 backdrop-blur-md rounded-2xl flex items-center justify-center text-gray-900 shadow-xl opacity-0 group-hover:opacity-100 transition-all hover:bg-white active:scale-90"
             >
               <ChevronLeft className="w-6 h-6" />
             </button>
-            <button 
-              onClick={() => setActiveIdx((prev) => (prev === images.length - 1 ? 0 : prev + 1))}
+            <button
+              onClick={() =>
+                setActiveIdx((prev) =>
+                  prev === images.length - 1 ? 0 : prev + 1,
+                )
+              }
               aria-label="Next Image"
               className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/80 backdrop-blur-md rounded-2xl flex items-center justify-center text-gray-900 shadow-xl opacity-0 group-hover:opacity-100 transition-all hover:bg-white active:scale-90"
             >

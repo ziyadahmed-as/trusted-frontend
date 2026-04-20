@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/context/AuthContext';
-import { apiClient } from '@/lib/api-client';
-import { ProductCard } from '@/components/ProductCard';
-import { ChevronDown, Star, X, Filter } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import React, { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
+import { apiClient } from "@/lib/api-client";
+import { ProductCard } from "@/components/ProductCard";
+import { ChevronDown, Star, X, Filter } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function Home() {
   const router = useRouter();
@@ -18,28 +18,33 @@ export default function Home() {
   // Redirect Admins and high-privilege roles if they land here
   useEffect(() => {
     if (!authLoading && user) {
-      if (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') {
-        router.push('/admin');
-      } else if ((user.role === 'VENDOR' || user.role === 'DRIVER') && !user.is_verified) {
-        router.push('/kyc');
+      if (user.role === "ADMIN" || user.role === "SUPER_ADMIN") {
+        router.push("/admin");
+      } else if (
+        (user.role === "VENDOR" || user.role === "DRIVER") &&
+        !user.is_verified
+      ) {
+        router.push("/kyc");
       }
       // Verified Vendors/Drivers might want to see the shop, so we let them stay
-      // or we could redirect them too if the user prefers. 
+      // or we could redirect them too if the user prefers.
       // For now, let's just make sure Admin goes to his dashboard.
     }
   }, [user, authLoading, router]);
 
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
-  const [minPrice, setMinPrice] = useState<string>('');
-  const [maxPrice, setMaxPrice] = useState<string>('');
-  const [sortBy, setSortBy] = useState<string>('featured');
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
+    null,
+  );
+  const [minPrice, setMinPrice] = useState<string>("");
+  const [maxPrice, setMaxPrice] = useState<string>("");
+  const [sortBy, setSortBy] = useState<string>("featured");
 
   const fetchInitialData = async () => {
     try {
       const cats = await apiClient.getCategories();
       setCategories(Array.isArray(cats) ? cats : cats.results || []);
     } catch (err) {
-      console.error('Failed to fetch categories', err);
+      console.error("Failed to fetch categories", err);
     }
   };
 
@@ -52,16 +57,16 @@ export default function Home() {
       if (maxPrice) params.max_price = maxPrice;
 
       // Handle Sorting
-      if (sortBy === 'price-low') params.ordering = 'price';
-      else if (sortBy === 'price-high') params.ordering = '-price';
-      else if (sortBy === 'rating') params.ordering = '-average_rating';
-      else if (sortBy === 'newest') params.ordering = '-created_at';
-      else if (sortBy === 'featured') params.is_featured = 'true';
+      if (sortBy === "price-low") params.ordering = "price";
+      else if (sortBy === "price-high") params.ordering = "-price";
+      else if (sortBy === "rating") params.ordering = "-average_rating";
+      else if (sortBy === "newest") params.ordering = "-created_at";
+      else if (sortBy === "featured") params.is_featured = "true";
 
       const data = await apiClient.getPublicProducts(params);
       setProducts(data.results || data);
     } catch (err) {
-      console.error('Failed to fetch products', err);
+      console.error("Failed to fetch products", err);
     } finally {
       setLoading(false);
     }
@@ -80,9 +85,9 @@ export default function Home() {
 
   const clearFilters = () => {
     setSelectedCategoryId(null);
-    setMinPrice('');
-    setMaxPrice('');
-    setSortBy('featured');
+    setMinPrice("");
+    setMaxPrice("");
+    setSortBy("featured");
   };
 
   return (
@@ -105,13 +110,17 @@ export default function Home() {
 
         {/* Categories Section */}
         <section>
-          <h3 className="font-bold text-xs text-gray-400 uppercase tracking-widest mb-4">Categories</h3>
+          <h3 className="font-bold text-xs text-gray-400 uppercase tracking-widest mb-4">
+            Categories
+          </h3>
           <ul className="space-y-2">
             <li
               onClick={() => setSelectedCategoryId(null)}
               className={cn(
                 "text-sm font-medium cursor-pointer transition-all px-3 py-2 rounded-lg",
-                !selectedCategoryId ? "bg-indigo-50 text-indigo-700" : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                !selectedCategoryId
+                  ? "bg-indigo-50 text-indigo-700"
+                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
               )}
             >
               All Departments
@@ -122,7 +131,9 @@ export default function Home() {
                 onClick={() => setSelectedCategoryId(cat.id.toString())}
                 className={cn(
                   "text-sm font-medium cursor-pointer transition-all px-3 py-2 rounded-lg",
-                  selectedCategoryId === cat.id.toString() ? "bg-indigo-50 text-indigo-700" : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                  selectedCategoryId === cat.id.toString()
+                    ? "bg-indigo-50 text-indigo-700"
+                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
                 )}
               >
                 {cat.name}
@@ -133,10 +144,14 @@ export default function Home() {
 
         {/* Price Range Section */}
         <section>
-          <h3 className="font-bold text-xs text-gray-400 uppercase tracking-widest mb-4">Price Range</h3>
+          <h3 className="font-bold text-xs text-gray-400 uppercase tracking-widest mb-4">
+            Price Range
+          </h3>
           <div className="flex items-center gap-2">
             <div className="relative flex-1">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">$</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">
+                $
+              </span>
               <input
                 type="number"
                 placeholder="Min"
@@ -147,7 +162,9 @@ export default function Home() {
             </div>
             <span className="text-gray-300">—</span>
             <div className="relative flex-1">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">$</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">
+                $
+              </span>
               <input
                 type="number"
                 placeholder="Max"
@@ -166,16 +183,27 @@ export default function Home() {
         <div className="flex flex-col sm:flex-row items-center justify-between bg-white px-6 py-4 rounded-2xl border border-gray-100 mb-8 shadow-sm">
           <div className="text-sm font-bold text-gray-900 mb-4 sm:mb-0">
             {loading ? (
-              <span className="text-gray-400 animate-pulse">Running search...</span>
+              <span className="text-gray-400 animate-pulse">
+                Running search...
+              </span>
             ) : (
               <>
-                Showing <span className="text-indigo-600 italic">1-{products.length}</span> of {products.length} products
+                Showing{" "}
+                <span className="text-indigo-600 italic">
+                  1-{products.length}
+                </span>{" "}
+                of {products.length} products
               </>
             )}
           </div>
 
           <div className="flex items-center gap-4">
-            <label htmlFor="sort-select" className="text-[10px] font-black uppercase tracking-widest text-gray-400">Sort by</label>
+            <label
+              htmlFor="sort-select"
+              className="text-[10px] font-black uppercase tracking-widest text-gray-400"
+            >
+              Sort by
+            </label>
             <div className="relative group">
               <select
                 id="sort-select"
@@ -199,7 +227,10 @@ export default function Home() {
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {[...Array(8)].map((_, i) => (
-              <div key={i} className="bg-white border text-card-foreground shadow-sm rounded-3xl animate-pulse aspect-square overflow-hidden">
+              <div
+                key={i}
+                className="bg-white border text-card-foreground shadow-sm rounded-3xl animate-pulse aspect-square overflow-hidden"
+              >
                 <div className="w-full h-2/3 bg-gray-100" />
                 <div className="p-4 space-y-2">
                   <div className="h-4 bg-gray-100 rounded w-3/4" />
@@ -213,8 +244,13 @@ export default function Home() {
             <div className="w-20 h-20 bg-gray-100 rounded-3xl flex items-center justify-center text-gray-300 mb-6">
               <X className="w-10 h-10" />
             </div>
-            <h3 className="text-xl font-black text-gray-900 italic tracking-tight mb-2">No matches found</h3>
-            <p className="text-gray-400 text-sm font-medium max-w-xs">We couldn't find any products matching your current filters. Try relaxing your constraints.</p>
+            <h3 className="text-xl font-black text-gray-900 italic tracking-tight mb-2">
+              No matches found
+            </h3>
+            <p className="text-gray-400 text-sm font-medium max-w-xs">
+              We couldn't find any products matching your current filters. Try
+              relaxing your constraints.
+            </p>
             <button
               onClick={clearFilters}
               className="mt-6 px-8 py-3 bg-gray-900 text-white rounded-xl font-black uppercase tracking-widest text-[10px] hover:bg-indigo-600 transition-all shadow-xl shadow-gray-200"
@@ -224,8 +260,12 @@ export default function Home() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {products.map(product => (
-              <ProductCard key={product.id} product={product} variant="compact" />
+            {products.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                variant="compact"
+              />
             ))}
           </div>
         )}

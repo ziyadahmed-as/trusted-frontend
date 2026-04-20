@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { 
-  ShieldCheck, 
-  Truck, 
-  RotateCcw, 
-  CreditCard, 
-  Plus, 
-  Minus, 
-  ShoppingCart, 
+import React, { useState } from "react";
+import {
+  ShieldCheck,
+  Truck,
+  RotateCcw,
+  CreditCard,
+  Plus,
+  Minus,
+  ShoppingCart,
   Zap,
-  CheckCircle2
-} from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { cn } from '@/lib/utils';
-import { useCart } from '@/context/CartContext';
+  CheckCircle2,
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
+import { useCart } from "@/context/CartContext";
 
 interface BuyBoxProps {
   product: {
@@ -33,7 +33,7 @@ export function BuyBox({ product }: BuyBoxProps) {
 
   const price = parseFloat(product.price);
   const inStock = product.stock > 0;
-  
+
   const handleAddToCart = () => {
     addToCart({
       id: product.id.toString(),
@@ -53,19 +53,25 @@ export function BuyBox({ product }: BuyBoxProps) {
         {/* Price & Stock */}
         <div>
           <div className="flex items-baseline gap-2 mb-2">
-            <span className="text-4xl font-black text-gray-900 tracking-tighter italic">${price.toFixed(2)}</span>
+            <span className="text-4xl font-black text-gray-900 tracking-tighter italic">
+              ${price.toFixed(2)}
+            </span>
             <span className="text-sm font-bold text-gray-400">USD</span>
           </div>
           <div className="flex items-center gap-2">
             {inStock ? (
               <div className="flex items-center gap-1.5 text-emerald-600">
                 <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-xs font-black uppercase tracking-widest">In Stock</span>
+                <span className="text-xs font-black uppercase tracking-widest">
+                  In Stock
+                </span>
               </div>
             ) : (
               <div className="flex items-center gap-1.5 text-rose-600">
                 <div className="w-2 h-2 rounded-full bg-rose-500" />
-                <span className="text-xs font-black uppercase tracking-widest">Out of Stock</span>
+                <span className="text-xs font-black uppercase tracking-widest">
+                  Out of Stock
+                </span>
               </div>
             )}
           </div>
@@ -74,18 +80,22 @@ export function BuyBox({ product }: BuyBoxProps) {
         {/* Quantity Selector */}
         {inStock && (
           <div className="flex flex-col gap-3">
-            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Select Quantity</label>
+            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+              Select Quantity
+            </label>
             <div className="flex items-center justify-between p-2 bg-gray-50 rounded-2xl border border-gray-100">
-              <button 
-                onClick={() => setQuantity(q => Math.max(1, q - 1))}
+              <button
+                onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                 aria-label="Decrease quantity"
                 className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-gray-900 shadow-sm hover:bg-gray-100 active:scale-90 transition-all"
               >
                 <Minus className="w-4 h-4" />
               </button>
               <span className="text-lg font-black italic">{quantity}</span>
-              <button 
-                onClick={() => setQuantity(q => Math.min(product.stock, q + 1))}
+              <button
+                onClick={() =>
+                  setQuantity((q) => Math.min(product.stock, q + 1))
+                }
                 aria-label="Increase quantity"
                 className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-gray-900 shadow-sm hover:bg-gray-100 active:scale-90 transition-all"
               >
@@ -97,19 +107,19 @@ export function BuyBox({ product }: BuyBoxProps) {
 
         {/* CTAs */}
         <div className="space-y-3 pt-2">
-          <button 
+          <button
             onClick={handleAddToCart}
             disabled={!inStock}
             className={cn(
               "w-full py-5 rounded-[1.5rem] font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 transition-all relative overflow-hidden",
-              added 
-                ? "bg-emerald-500 text-white" 
-                : "bg-gray-900 text-white hover:bg-indigo-600 active:scale-[0.98] shadow-2xl shadow-gray-200"
+              added
+                ? "bg-emerald-500 text-white"
+                : "bg-gray-900 text-white hover:bg-indigo-600 active:scale-[0.98] shadow-2xl shadow-gray-200",
             )}
           >
             <AnimatePresence mode="wait">
               {added ? (
-                <motion.div 
+                <motion.div
                   key="added"
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
@@ -119,7 +129,7 @@ export function BuyBox({ product }: BuyBoxProps) {
                   <span>Added to Cart</span>
                 </motion.div>
               ) : (
-                <motion.div 
+                <motion.div
                   key="idle"
                   initial={{ y: -20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
@@ -131,8 +141,11 @@ export function BuyBox({ product }: BuyBoxProps) {
               )}
             </AnimatePresence>
           </button>
-          
-          <button disabled={!inStock} className="w-full py-5 bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-[1.5rem] font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:bg-indigo-100 transition-all active:scale-[0.98] disabled:opacity-50">
+
+          <button
+            disabled={!inStock}
+            className="w-full py-5 bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-[1.5rem] font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:bg-indigo-100 transition-all active:scale-[0.98] disabled:opacity-50"
+          >
             <Zap className="w-5 h-5 fill-indigo-600" />
             Buy Now
           </button>
@@ -145,8 +158,12 @@ export function BuyBox({ product }: BuyBoxProps) {
               <Truck className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-xs font-black text-gray-900 uppercase tracking-tight italic">Fast Delivery</p>
-              <p className="text-[10px] font-bold text-gray-400">Free shipping on orders over $150</p>
+              <p className="text-xs font-black text-gray-900 uppercase tracking-tight italic">
+                Fast Delivery
+              </p>
+              <p className="text-[10px] font-bold text-gray-400">
+                Free shipping on orders over $150
+              </p>
             </div>
           </div>
           <div className="flex gap-4">
@@ -154,8 +171,12 @@ export function BuyBox({ product }: BuyBoxProps) {
               <RotateCcw className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-xs font-black text-gray-900 uppercase tracking-tight italic">30-Day Returns</p>
-              <p className="text-[10px] font-bold text-gray-400">Hassle-free exchange policy</p>
+              <p className="text-xs font-black text-gray-900 uppercase tracking-tight italic">
+                30-Day Returns
+              </p>
+              <p className="text-[10px] font-bold text-gray-400">
+                Hassle-free exchange policy
+              </p>
             </div>
           </div>
           <div className="flex gap-4">
@@ -163,8 +184,12 @@ export function BuyBox({ product }: BuyBoxProps) {
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-xs font-black text-gray-900 uppercase tracking-tight italic">Secured Checkout</p>
-              <p className="text-[10px] font-bold text-gray-400">Bank-level encryption protected</p>
+              <p className="text-xs font-black text-gray-900 uppercase tracking-tight italic">
+                Secured Checkout
+              </p>
+              <p className="text-[10px] font-bold text-gray-400">
+                Bank-level encryption protected
+              </p>
             </div>
           </div>
         </div>
