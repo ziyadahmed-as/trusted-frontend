@@ -21,11 +21,18 @@ import {
 import { cn } from "@/lib/utils";
 import { apiClient } from "@/lib/api-client";
 import { motion, AnimatePresence } from "framer-motion";
+import { 
+  Key, 
+  Ban, 
+  UserCheck as UserCheckIcon,
+  AlertTriangle 
+} from "lucide-react";
 
 export default function UserManagementPage() {
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeTab, setActiveTab] = useState("ALL");
 
   // Modals
   const [showEditModal, setShowEditModal] = useState(false);
@@ -35,6 +42,13 @@ export default function UserManagementPage() {
     last_name: "",
     role: "",
     is_active: true,
+  });
+
+  // Password Change Modal
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [passwordData, setPasswordData] = useState({
+    new_password: "",
+    confirm_password: "",
   });
 
   // Add User Modal
@@ -114,17 +128,34 @@ export default function UserManagementPage() {
     }
   };
 
-  const handleDelete = async (id: string, name: string) => {
-    if (
-      confirm(
-        `Are you sure you want to permanently delete user ${name}?`
-      )
-    ) {
+  const handlePasswordChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingUser) return;
+    if (passwordData.new_password !== passwordData.confirm_password) {
+      alert("Passwords do not match");
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      await apiClient.updateUser(editingUser.id, { password: passwordData.new_password });
+      setShowPasswordModal(false);
+      setPasswordData({ new_password: "", confirm_password: "" });
+      alert("Password updated successfully");
+    } catch (err) {
+      console.error("Password update failed", err);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleToggleActive = async (user: any) => {
+    const action = user.is_active ? "suspend" : "activate";
+    if (confirm(`Are you sure you want to ${action} ${user.username}?`)) {
       try {
-        await apiClient.deleteUser(id);
+        await apiClient.updateUser(user.id, { is_active: !user.is_active });
         fetchUsers();
       } catch (err) {
-        console.error("Delete failed", err);
+        console.error("Toggle status failed", err);
       }
     }
   };
@@ -139,8 +170,9 @@ export default function UserManagementPage() {
 
   const filteredUsers = users.filter(
     (u) =>
-      u.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      u.username?.toLowerCase().includes(searchQuery.toLowerCase())
+      (activeTab === "ALL" || u.role === activeTab) &&
+      (u.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+       u.username?.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   return (
@@ -156,7 +188,24 @@ export default function UserManagementPage() {
             {users.length} Registered Accounts Managed
           </p>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-6">
+           <div className="flex items-center gap-2 p-1 bg-gray-50 border border-gray-100 rounded-2xl">
+              {["ALL", "VENDOR", "BUYER", "ADMIN", "DRIVER"].map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={cn(
+                    "px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all",
+                    activeTab === tab
+                      ? "bg-white text-gray-900 shadow-sm border border-gray-100"
+                      : "text-gray-400 hover:text-gray-600",
+                  )}
+                >
+                  {tab}S
+                </button>
+              ))}
+           </div>
+           <div className="flex items-center gap-4">
            <div className="relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input 
@@ -236,6 +285,23 @@ export default function UserManagementPage() {
                     </td>
                     <td className="py-6 px-10">
                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button 
+                            onClick={() => { setEditingUser(user); setShowPasswordModal(true); }} 
+                            title="Reset Security Key"
+                            className="p-3 bg-white text-gray-400 hover:text-amber-600 hover:shadow-lg rounded-xl transition-all border border-gray-100"
+                          >
+                             <Key className="w-4 h-4" />
+                          </button>
+                          <button 
+                            onClick={() => handleToggleActive(user)} 
+                            title={user.is_active ? "Suspend Entity" : "Activate Entity"}
+                            className={cn(
+                              "p-3 bg-white hover:shadow-lg rounded-xl transition-all border border-gray-100",
+                              user.is_active ? "text-gray-400 hover:text-rose-600" : "text-rose-500 hover:text-emerald-600"
+                            )}
+                          >
+                             {user.is_active ? <Ban className="w-4 h-4" /> : <UserCheckIcon className="w-4 h-4" />}
+                          </button>
                           <button onClick={() => openEditModal(user)} className="p-3 bg-white text-gray-400 hover:text-indigo-600 hover:shadow-lg rounded-xl transition-all border border-gray-100">
                              <Edit className="w-4 h-4" />
                           </button>
@@ -349,6 +415,68 @@ export default function UserManagementPage() {
                         </button>
                       </form>
                    )}
+                </div>
+             </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+      {/* PASSWORD CHANGE MODAL */}
+      <AnimatePresence>
+        {showPasswordModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
+             <motion.div 
+               initial={{ opacity: 0 }}
+               animate={{ opacity: 1 }}
+               exit={{ opacity: 0 }}
+               onClick={() => setShowPasswordModal(false)}
+               className="absolute inset-0 bg-gray-900/40 backdrop-blur-md"
+             />
+             <motion.div
+               initial={{ opacity: 0, scale: 0.9, y: 20 }}
+               animate={{ opacity: 1, scale: 1, y: 0 }}
+               exit={{ opacity: 0, scale: 0.9, y: 20 }}
+               className="relative w-full max-w-md bg-white rounded-[3rem] border border-gray-100 shadow-2xl overflow-hidden"
+             >
+                <div className="p-10 border-b border-gray-50 flex items-center justify-between">
+                   <div>
+                      <h3 className="text-2xl font-black text-gray-900 tracking-tighter italic">
+                        Security <span className="text-amber-600">Override</span>
+                      </h3>
+                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                        Force password update for {editingUser?.username}
+                      </p>
+                   </div>
+                   <button onClick={() => setShowPasswordModal(false)} className="p-3 bg-gray-50 text-gray-400 hover:text-rose-500 rounded-2xl transition-colors">
+                      <XCircle className="w-6 h-6" />
+                   </button>
+                </div>
+
+                <div className="p-10">
+                   <form onSubmit={handlePasswordChange} className="space-y-6">
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">New Security Key</label>
+                         <input 
+                           type="password"
+                           required
+                           value={passwordData.new_password}
+                           onChange={(e) => setPasswordData({...passwordData, new_password: e.target.value})}
+                           className="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 text-xs font-bold focus:ring-4 focus:ring-amber-100 outline-none transition-all"
+                         />
+                      </div>
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Confirm Security Key</label>
+                         <input 
+                           type="password"
+                           required
+                           value={passwordData.confirm_password}
+                           onChange={(e) => setPasswordData({...passwordData, confirm_password: e.target.value})}
+                           className="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 text-xs font-bold focus:ring-4 focus:ring-amber-100 outline-none transition-all"
+                         />
+                      </div>
+                      <button disabled={isSubmitting} type="submit" className="w-full py-5 bg-gray-900 text-white rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest hover:bg-amber-600 transition-all flex items-center justify-center gap-3">
+                         {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Override Password"}
+                      </button>
+                   </form>
                 </div>
              </motion.div>
           </div>

@@ -132,14 +132,16 @@ export default function AdminDashboard() {
           trendValue="5.2%"
           color="amber"
         />
-        <StatCard
-          title="KYC Pending"
-          value={kycStats.pending?.toString() || "0"}
-          icon={FileCheck}
-          trend={kycStats.pending > 10 ? "down" : "up"}
-          trendValue={kycStats.pending > 10 ? "Critical" : "Steady"}
-          color="rose"
-        />
+        <Link href="/admin/kyc">
+          <StatCard
+            title="KYC Pending"
+            value={kycStats.pending?.toString() || "0"}
+            icon={FileCheck}
+            trend={kycStats.pending > 10 ? "down" : "up"}
+            trendValue={kycStats.pending > 10 ? "Critical" : "Steady"}
+            color="rose"
+          />
+        </Link>
       </div>
 
       {/* CHARTS & RECENT ACTIVITY GRID */}
