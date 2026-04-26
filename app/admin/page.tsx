@@ -12,11 +12,15 @@ import {
   AlertCircle,
   TrendingUp,
   Activity,
+  ArrowRight,
+  Clock,
 } from "lucide-react";
 import { StatCard } from "@/components/admin/StatCard";
 import { apiClient } from "@/lib/api-client";
 import { cn } from "@/lib/utils";
 import { RevenueChart } from "@/components/charts/RevenueChart";
+import { motion } from "framer-motion";
+import Link from "next/link";
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState<any>(null);
@@ -47,10 +51,10 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="h-[70vh] flex flex-col items-center justify-center gap-4">
-        <Loader2 className="w-10 h-10 text-[#3c50e0] animate-spin" />
-        <p className="text-sm font-medium text-[#64748b]">
-          Loading dashboard analytics...
+      <div className="h-[80vh] flex flex-col items-center justify-center gap-6">
+        <div className="w-16 h-16 border-4 border-indigo-600/20 border-t-indigo-600 rounded-full animate-spin" />
+        <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] animate-pulse">
+          Synchronizing Platform Data...
         </p>
       </div>
     );
@@ -60,45 +64,57 @@ export default function AdminDashboard() {
   const kycStats = stats?.kyc_stats || { pending: 0, total: 0 };
 
   return (
-    <div className="space-y-6 md:space-y-8">
+    <div className="space-y-12 pb-20">
       {/* HEADER SECTION */}
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-black md:text-3xl">
-            Dashboard Overview
+      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between border-b border-gray-100 pb-10">
+        <div className="space-y-2">
+          <h2 className="text-4xl font-black text-gray-900 tracking-tighter italic">
+            Platform <span className="text-gray-300">Intelligence.</span>
           </h2>
-          <p className="text-sm font-medium text-[#64748b]">
-            Detailed platform performance metrics
+          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+            {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
           </p>
+        </div>
+        <div className="flex items-center gap-3">
+           <div className="px-4 py-2 bg-emerald-50 text-emerald-600 rounded-full text-[10px] font-black uppercase tracking-widest border border-emerald-100 flex items-center gap-2">
+              <Activity className="w-3 h-3" />
+              System Healthy
+           </div>
         </div>
       </div>
 
       {notification && (
-        <div
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
           className={cn(
-            "p-4 rounded-sm border flex items-center gap-3 transition-all",
+            "p-6 rounded-[2rem] border flex items-center justify-between transition-all",
             notification.type === "success"
-              ? "bg-[#10b981]/5 border-[#10b981]/20 text-[#10b981]"
-              : "bg-[#d34053]/5 border-[#d34053]/20 text-[#d34053]",
+              ? "bg-emerald-50 border-emerald-100 text-emerald-700"
+              : "bg-rose-50 border-rose-100 text-rose-700",
           )}
         >
-          {notification.type === "success" ? (
-            <CheckCircle2 className="w-5 h-5" />
-          ) : (
-            <AlertCircle className="w-5 h-5" />
-          )}
-          <span className="text-sm font-medium">{notification.message}</span>
-        </div>
+          <div className="flex items-center gap-4">
+            {notification.type === "success" ? (
+              <CheckCircle2 className="w-6 h-6" />
+            ) : (
+              <AlertCircle className="w-6 h-6" />
+            )}
+            <span className="text-sm font-bold italic">{notification.message}</span>
+          </div>
+          <button onClick={() => setNotification(null)} className="text-[10px] font-black uppercase tracking-widest opacity-50 hover:opacity-100">Dismiss</button>
+        </motion.div>
       )}
 
       {/* STAT CARDS GRID */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
         <StatCard
           title="Total Revenue"
           value={`$${(stats?.total_revenue || 0).toLocaleString()}`}
-          icon={Eye}
+          icon={DollarSign}
           trend="up"
           trendValue="12.4%"
+          color="indigo"
         />
         <StatCard
           title="Total Orders"
@@ -106,6 +122,7 @@ export default function AdminDashboard() {
           icon={ShoppingBag}
           trend="up"
           trendValue="8.1%"
+          color="emerald"
         />
         <StatCard
           title="Active Vendors"
@@ -113,137 +130,116 @@ export default function AdminDashboard() {
           icon={Users}
           trend="up"
           trendValue="5.2%"
+          color="amber"
         />
         <StatCard
           title="KYC Pending"
           value={kycStats.pending?.toString() || "0"}
           icon={FileCheck}
           trend={kycStats.pending > 10 ? "down" : "up"}
-          trendValue={kycStats.pending > 10 ? "High" : "Low"}
+          trendValue={kycStats.pending > 10 ? "Critical" : "Steady"}
+          color="rose"
         />
       </div>
 
       {/* CHARTS & RECENT ACTIVITY GRID */}
-      <div className="grid grid-cols-1 gap-4 md:gap-6 lg:grid-cols-12 2xl:gap-7.5">
-        {/* Market Intel / Chart Placeholder */}
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
+        {/* Revenue Analytics */}
         <div className="col-span-1 lg:col-span-8">
-          <div className="rounded-sm border border-[#e2e8f0] bg-white px-5 pt-7.5 pb-5 shadow-sm sm:px-7.5">
-            <div className="flex flex-wrap items-start justify-between gap-3 sm:flex-nowrap">
-              <div className="flex w-full flex-wrap gap-3 sm:gap-5">
-                <div className="flex min-w-47.5">
-                  <span className="mt-1 mr-2 flex h-4 w-full max-w-4 items-center justify-center rounded-full border border-[#3c50e0]">
-                    <span className="block h-2.5 w-full max-w-2.5 rounded-full bg-[#3c50e0]"></span>
-                  </span>
-                  <div className="w-full">
-                    <p className="font-semibold text-[#3c50e0]">
-                      Total Revenue
-                    </p>
-                    <p className="text-sm font-medium text-[#64748b]">
-                      Current Period
-                    </p>
-                  </div>
-                </div>
-                <div className="flex min-w-47.5">
-                  <span className="mt-1 mr-2 flex h-4 w-full max-w-4 items-center justify-center rounded-full border border-[#10b981]">
-                    <span className="block h-2.5 w-full max-w-2.5 rounded-full bg-[#10b981]"></span>
-                  </span>
-                  <div className="w-full">
-                    <p className="font-semibold text-[#10b981]">Total Sales</p>
-                    <p className="text-sm font-medium text-[#64748b]">
-                      Current Period
-                    </p>
-                  </div>
-                </div>
+          <div className="rounded-[3rem] border border-gray-100 bg-white p-10 shadow-2xl shadow-gray-200/50">
+            <div className="flex flex-wrap items-start justify-between gap-6 mb-12">
+              <div className="space-y-1">
+                <h3 className="text-2xl font-black text-gray-900 tracking-tighter italic">Growth Analytics</h3>
+                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Revenue vs Sales Performance</p>
               </div>
-              <div className="flex w-full max-w-45 justify-end">
-                <div className="inline-flex items-center rounded-md bg-[#f7f9fc] p-1.5">
-                  <button className="rounded bg-white px-3 py-1 text-xs font-medium text-black shadow-sm h-hover:shadow-card">
-                    Day
+              <div className="flex items-center gap-2 p-1.5 bg-gray-50 rounded-2xl border border-gray-100">
+                {["Day", "Week", "Month"].map((period) => (
+                  <button key={period} className={cn(
+                    "px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                    period === "Week" ? "bg-white text-indigo-600 shadow-sm" : "text-gray-400 hover:text-gray-900"
+                  )}>
+                    {period}
                   </button>
-                  <button className="rounded px-3 py-1 text-xs font-medium text-black h-hover:bg-white h-hover:shadow-card">
-                    Week
-                  </button>
-                  <button className="rounded px-3 py-1 text-xs font-medium text-black h-hover:bg-white h-hover:shadow-card">
-                    Month
-                  </button>
-                </div>
+                ))}
               </div>
             </div>
 
-            <div className="mt-8">
+            <div className="h-[400px]">
               <RevenueChart
                 data={stats?.growth_data || []}
                 dataKey1="revenue"
                 dataKey2="sales"
-                color1="#3c50e0"
+                color1="#4f46e5"
                 color2="#10b981"
-                height="350px"
+                height="100%"
               />
             </div>
           </div>
         </div>
 
-        {/* Recent Activity / Feed */}
+        {/* Recent Activity Feed */}
         <div className="col-span-1 lg:col-span-4">
-          <div className="rounded-sm border border-[#e2e8f0] bg-white px-7.5 py-6 shadow-sm">
-            <h4 className="mb-6 text-xl font-bold text-black">
-              Recent Activity
-            </h4>
+          <div className="rounded-[3rem] border border-gray-100 bg-white p-10 shadow-2xl shadow-gray-200/50 flex flex-col h-full">
+            <div className="flex items-center justify-between mb-10">
+              <h4 className="text-2xl font-black text-gray-900 tracking-tighter italic">Activity</h4>
+              <div className="p-3 bg-indigo-50 text-indigo-600 rounded-2xl">
+                 <Clock className="w-5 h-5" />
+              </div>
+            </div>
 
-            <div className="flex flex-col gap-5">
+            <div className="flex-1 space-y-8 overflow-y-auto pr-2 custom-scrollbar">
               {activities.length > 0 ? (
                 activities.map((activity: any, idx: number) => (
-                  <div
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.1 }}
                     key={activity.id}
-                    className="flex items-center gap-4 border-b border-[#e2e8f0] pb-4 last:border-0 last:pb-0"
+                    className="flex items-center gap-5 group cursor-pointer"
                   >
-                    <div className="h-10 w-10 min-w-[40px] rounded-full bg-[#3c50e0]/5 flex items-center justify-center text-[#3c50e0]">
+                    <div className="h-14 w-14 min-w-[56px] rounded-2xl bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-indigo-600 group-hover:text-white transition-all group-hover:rotate-6">
                       {activity.type === "KYC" ? (
-                        <FileCheck className="w-5 h-5" />
+                        <FileCheck className="w-6 h-6" />
                       ) : (
-                        <Users className="w-5 h-5" />
+                        <Users className="w-6 h-6" />
                       )}
                     </div>
-                    <div className="flex-1 overflow-hidden">
-                      <h5 className="text-sm font-bold text-black truncate">
+                    <div className="flex-1 space-y-1">
+                      <h5 className="text-sm font-black text-gray-900 tracking-tight italic">
                         {activity.user}
                       </h5>
-                      <p className="text-xs text-[#64748b] truncate">
+                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">
                         {activity.action}
                       </p>
+                      <div className="flex items-center gap-3 pt-1">
+                         <span className="text-[9px] font-black text-gray-300">{activity.time}</span>
+                         <span className={cn(
+                            "text-[8px] font-black uppercase tracking-[0.2em] px-2 py-0.5 rounded-md",
+                            activity.status === "APPROVED" ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"
+                         )}>
+                           {activity.status}
+                         </span>
+                      </div>
                     </div>
-                    <div className="text-right whitespace-nowrap">
-                      <p className="text-[10px] font-medium text-[#8a99af]">
-                        {activity.time}
-                      </p>
-                      <span
-                        className={cn(
-                          "text-[10px] font-bold uppercase",
-                          activity.status === "APPROVED"
-                            ? "text-[#10b981]"
-                            : "text-[#f59e0b]",
-                        )}
-                      >
-                        {activity.status}
-                      </span>
-                    </div>
-                  </div>
+                  </motion.div>
                 ))
               ) : (
-                <div className="py-10 text-center">
-                  <p className="text-sm text-[#64748b]">
-                    No recent activity found.
-                  </p>
+                <div className="flex flex-col items-center justify-center h-full text-center space-y-4 opacity-30">
+                  <Activity className="w-12 h-12" />
+                  <p className="text-[10px] font-black uppercase tracking-widest">No Recent activity</p>
                 </div>
               )}
             </div>
 
-            <button className="mt-6 w-full rounded-md border border-[#3c50e0] py-2 text-sm font-medium text-[#3c50e0] hover:bg-[#3c50e0] hover:text-white transition-all">
-              View All Activity
-            </button>
+            <Link href="/admin/users" className="mt-10 flex items-center justify-center gap-2 w-full py-4 bg-gray-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-600 transition-all group">
+              Audit Logs
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </Link>
           </div>
         </div>
       </div>
     </div>
+  );
+}
   );
 }
