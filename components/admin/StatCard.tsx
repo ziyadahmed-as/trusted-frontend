@@ -3,6 +3,7 @@
 import React from "react";
 import { LucideIcon, ArrowUp, ArrowDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 interface StatCardProps {
   title: string;
@@ -20,35 +21,62 @@ export function StatCard({
   icon: Icon,
   trend,
   trendValue,
+  color = "indigo",
 }: StatCardProps) {
+  const colorMap = {
+    indigo: "text-indigo-600 bg-indigo-50 border-indigo-100",
+    emerald: "text-emerald-600 bg-emerald-50 border-emerald-100",
+    amber: "text-amber-600 bg-amber-50 border-amber-100",
+    rose: "text-rose-600 bg-rose-50 border-rose-100",
+    blue: "text-blue-600 bg-blue-50 border-blue-100",
+  };
+
   return (
-    <div className="rounded-sm border border-[#e2e8f0] bg-white px-7.5 py-6 shadow-sm">
-      <div className="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-[#eff4fb]">
-        <Icon className="w-6 h-6 text-[#3c50e0]" />
-      </div>
-
-      <div className="mt-4 flex items-end justify-between">
-        <div>
-          <h4 className="text-title-md font-bold text-black">{value}</h4>
-          <span className="text-sm font-medium text-[#64748b]">{title}</span>
+    <motion.div
+      whileHover={{ y: -5 }}
+      className="p-8 bg-white rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-200/50 flex flex-col gap-6 group transition-all"
+    >
+      <div className="flex items-center justify-between">
+        <div className={cn(
+          "w-14 h-14 rounded-2xl flex items-center justify-center border transition-all group-hover:rotate-6",
+          colorMap[color]
+        )}>
+          <Icon className="w-7 h-7" />
         </div>
-
         {trend && (
-          <span
-            className={cn(
-              "flex items-center gap-1 text-sm font-medium",
-              trend === "up" ? "text-[#10b981]" : "text-[#d34053]",
-            )}
-          >
+          <div className={cn(
+            "px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-1",
+            trend === "up" ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600"
+          )}>
+            {trend === "up" ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />}
             {trendValue}
-            {trend === "up" ? (
-              <ArrowUp className="w-3 h-3" />
-            ) : (
-              <ArrowDown className="w-3 h-3" />
-            )}
-          </span>
+          </div>
         )}
       </div>
-    </div>
+
+      <div className="space-y-1">
+        <h4 className="text-3xl font-black text-gray-900 tracking-tighter italic">
+          {value}
+        </h4>
+        <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
+          {title}
+        </p>
+      </div>
+
+      <div className="w-full h-1 bg-gray-50 rounded-full overflow-hidden">
+        <motion.div 
+          initial={{ width: 0 }}
+          whileInView={{ width: "70%" }}
+          transition={{ duration: 1, ease: "easeOut" }}
+          className={cn(
+            "h-full rounded-full",
+            color === "indigo" ? "bg-indigo-600" : 
+            color === "emerald" ? "bg-emerald-600" :
+            color === "amber" ? "bg-amber-600" :
+            "bg-rose-600"
+          )}
+        />
+      </div>
+    </motion.div>
   );
 }
