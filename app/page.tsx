@@ -45,7 +45,7 @@ export default function Home() {
     try {
       const cats = await apiClient.getCategories();
       setCategories(Array.isArray(cats) ? cats : cats.results || []);
-      
+
       // Fetch specifically featured products for the landing section
       const featured = await apiClient.getPublicProducts({ is_featured: "true" });
       setFeaturedProducts((featured.results || featured).slice(0, 4));
@@ -118,7 +118,7 @@ export default function Home() {
               </h3>
             </div>
             <Link href="#catalog" className="px-8 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-900 hover:text-white transition-all">
-               Discover All Products
+              Discover All Products
             </Link>
           </div>
 
@@ -235,7 +235,7 @@ export default function Home() {
               <div className="flex items-center gap-6">
                 <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Sort By</span>
                 <div className="relative">
-                  <select
+                  <select title="Sort By"
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
                     className="appearance-none bg-gray-50 border border-gray-100 px-8 py-3 rounded-2xl text-sm font-black text-gray-900 outline-none focus:border-indigo-600 cursor-pointer pr-12 italic"
@@ -285,30 +285,28 @@ export default function Home() {
 
       {/* 6. Newsletter / CTA */}
       <section className="py-40 bg-indigo-600 px-6 relative overflow-hidden">
-         <div className="absolute top-0 right-0 w-[40%] h-full bg-white/5 skew-x-[-20deg] translate-x-20" />
-         <div className="max-w-4xl mx-auto text-center space-y-12 relative z-10">
-            <h2 className="text-6xl md:text-7xl font-black text-white tracking-tighter italic leading-none">
-               Join the <br />
-               <span className="text-indigo-200">Inner Circle.</span>
-            </h2>
-            <p className="text-xl font-medium text-indigo-100 italic">
-               Get exclusive access to early drops, verified vendor stories, and premium discounts.
-            </p>
-            <form className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
-               <input 
-                  type="email" 
-                  placeholder="Enter your email" 
-                  className="flex-1 px-8 py-5 rounded-[2rem] bg-white text-gray-900 font-bold outline-none focus:ring-4 focus:ring-indigo-400 transition-all shadow-2xl"
-               />
-               <button className="px-10 py-5 bg-gray-900 text-white rounded-[2rem] font-black uppercase tracking-widest text-xs hover:bg-white hover:text-indigo-600 transition-all active:scale-95 shadow-2xl">
-                  Subscribe
-               </button>
-            </form>
-            <p className="text-[10px] font-black text-indigo-300 uppercase tracking-[0.2em]">No spam. Just excellence. Unsubscribe anytime.</p>
-         </div>
+        <div className="absolute top-0 right-0 w-[40%] h-full bg-white/5 skew-x-[-20deg] translate-x-20" />
+        <div className="max-w-4xl mx-auto text-center space-y-12 relative z-10">
+          <h2 className="text-6xl md:text-7xl font-black text-white tracking-tighter italic leading-none">
+            Join the <br />
+            <span className="text-indigo-200">Inner Circle.</span>
+          </h2>
+          <p className="text-xl font-medium text-indigo-100 italic">
+            Get exclusive access to early drops, verified vendor stories, and premium discounts.
+          </p>
+          <form className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
+            <input
+              type="email"
+              placeholder="Enter your email"
+              className="flex-1 px-8 py-5 rounded-[2rem] bg-white text-gray-900 font-bold outline-none focus:ring-4 focus:ring-indigo-400 transition-all shadow-2xl"
+            />
+            <button className="px-10 py-5 bg-gray-900 text-white rounded-[2rem] font-black uppercase tracking-widest text-xs hover:bg-white hover:text-indigo-600 transition-all active:scale-95 shadow-2xl">
+              Subscribe
+            </button>
+          </form>
+          <p className="text-[10px] font-black text-indigo-300 uppercase tracking-[0.2em]">No spam. Just excellence. Unsubscribe anytime.</p>
+        </div>
       </section>
     </main>
-  );
-}
   );
 }
