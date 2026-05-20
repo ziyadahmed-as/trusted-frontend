@@ -220,8 +220,12 @@ export const apiClient = {
     const response = await fetch(`${API_URL}/users/users/me/`, {
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
     });
-    if (!response.ok) throw new Error('Failed to fetch profile');
-    return response.json();
+    const result = await response.json();
+    if (!response.ok) {
+      console.error('[API Client] Failed to fetch profile:', response.status, result);
+      return null;
+    }
+    return result;
   },
 
   // --- Product Methods ---
