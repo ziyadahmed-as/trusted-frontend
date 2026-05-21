@@ -4,13 +4,8 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { apiClient } from "@/lib/api-client";
-import { ProductCard } from "@/components/ProductCard";
-import { ChevronDown, Star, X, Filter, Sparkles, ArrowRight } from "lucide-react";
+import { ChevronRight, Flame, Clock, Zap, LayoutGrid, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Hero } from "@/components/home/Hero";
-import { FeatureSection } from "@/components/home/FeatureSection";
-import { CategoryHighlights } from "@/components/home/CategoryHighlights";
-import { motion } from "framer-motion";
 import Link from "next/link";
 
 export default function Home() {
@@ -20,22 +15,13 @@ export default function Home() {
   const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
-  // Filters State
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
-  const [minPrice, setMinPrice] = useState<string>("");
-  const [maxPrice, setMaxPrice] = useState<string>("");
-  const [sortBy, setSortBy] = useState<string>("featured");
-
-  // Redirect Logic
   useEffect(() => {
     if (!authLoading && user) {
       if (user.role === "ADMIN" || user.role === "SUPER_ADMIN") {
         router.push("/admin");
-      } else if (
-        (user.role === "VENDOR" || user.role === "DRIVER") &&
-        !user.is_verified
-      ) {
+      } else if ((user.role === "VENDOR" || user.role === "DRIVER") && !user.is_verified) {
         router.push("/kyc");
       }
     }
@@ -46,9 +32,8 @@ export default function Home() {
       const cats = await apiClient.getCategories();
       setCategories(Array.isArray(cats) ? cats : cats.results || []);
 
-      // Fetch specifically featured products for the landing section
       const featured = await apiClient.getPublicProducts({ is_featured: "true" });
-      setFeaturedProducts((featured.results || featured).slice(0, 4));
+      setFeaturedProducts((featured.results || featured).slice(0, 6));
     } catch (err) {
       console.error("Failed to fetch initial home data", err);
     }
@@ -57,17 +42,8 @@ export default function Home() {
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     try {
-      const params: any = {};
-      if (selectedCategoryId) params.category = selectedCategoryId;
-      if (minPrice) params.min_price = minPrice;
-      if (maxPrice) params.max_price = maxPrice;
-
-      // Handle Sorting
-      if (sortBy === "price-low") params.ordering = "price";
-      else if (sortBy === "price-high") params.ordering = "-price";
-      else if (sortBy === "rating") params.ordering = "-average_rating";
-      else if (sortBy === "newest") params.ordering = "-created_at";
-      else if (sortBy === "featured") params.is_featured = "true";
+      const params: any = { ordering: "-created_at" };
+      if (activeCategory) params.category = activeCategory;
 
       const data = await apiClient.getPublicProducts(params);
       setProducts(data.results || data);
@@ -76,237 +52,179 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  }, [selectedCategoryId, minPrice, maxPrice, sortBy]);
+  }, [activeCategory]);
 
   useEffect(() => {
     fetchInitialData();
   }, []);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      fetchProducts();
-    }, 300);
-    return () => clearTimeout(timer);
+    fetchProducts();
   }, [fetchProducts]);
 
-  const clearFilters = () => {
-    setSelectedCategoryId(null);
-    setMinPrice("");
-    setMaxPrice("");
-    setSortBy("featured");
-  };
-
   return (
-    <main className="min-h-screen bg-white">
-      {/* 1. Hero Section */}
-      <Hero />
-
-      {/* 2. Features Section */}
-      <FeatureSection />
-
-      {/* 3. Category Highlights */}
-      <CategoryHighlights />
-
-      {/* 4. Featured Products Spotlight */}
-      <section className="py-32 bg-white px-6 overflow-hidden">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-20">
-            <div className="space-y-4">
-              <h2 className="text-xs font-black text-indigo-600 uppercase tracking-[0.3em] italic">The Spotlight</h2>
-              <h3 className="text-6xl font-black text-gray-900 tracking-tighter italic">
-                Editor's <span className="text-gray-300">Picks.</span>
-              </h3>
-            </div>
-            <Link href="#catalog" className="px-8 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-900 hover:text-white transition-all">
-              Discover All Products
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {featuredProducts.length > 0 ? (
-              featuredProducts.map((p) => (
-                <ProductCard key={p.id} product={p} variant="featured" />
-              ))
-            ) : (
-              [...Array(4)].map((_, i) => (
-                <div key={i} className="aspect-[3/4] bg-gray-50 rounded-[3rem] animate-pulse" />
-              ))
+    <main className="min-h-screen bg-[#f2f2f2] pb-20">
+      {/* Top Categories Navigation */}
+      <div className="bg-white shadow-sm sticky top-0 z-40 overflow-x-auto no-scrollbar">
+        <div className="max-w-[1400px] mx-auto px-4 flex items-center gap-6 whitespace-nowrap h-12">
+          <button 
+            onClick={() => setActiveCategory(null)}
+            className={cn("text-sm font-semibold transition-colors border-b-2 h-full flex items-center px-1", 
+              !activeCategory ? "border-red-500 text-red-500" : "border-transparent text-gray-700 hover:text-red-500"
             )}
-          </div>
-        </div>
-      </section>
-
-      {/* 5. Main Catalog Section */}
-      <section id="catalog" className="py-32 bg-gray-50 px-6">
-        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-16">
-          {/* Sidebar: Advanced Filters */}
-          <aside className="w-full lg:w-72 space-y-12 shrink-0">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <h2 className="text-2xl font-black text-gray-900 tracking-tight italic">Filters</h2>
-                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Refine your search</p>
-              </div>
-              {(selectedCategoryId || minPrice || maxPrice) && (
-                <button
-                  onClick={clearFilters}
-                  className="text-[10px] font-black uppercase tracking-widest text-indigo-600 hover:text-indigo-800 transition-colors"
-                >
-                  Clear All
-                </button>
+          >
+            Recommended
+          </button>
+          {categories.map(cat => (
+            <button 
+              key={cat.id}
+              onClick={() => setActiveCategory(cat.id.toString())}
+              className={cn("text-sm font-semibold transition-colors border-b-2 h-full flex items-center px-1", 
+                activeCategory === cat.id.toString() ? "border-red-500 text-red-500" : "border-transparent text-gray-700 hover:text-red-500"
               )}
-            </div>
+            >
+              {cat.name}
+            </button>
+          ))}
+        </div>
+      </div>
 
-            {/* Categories */}
-            <div className="space-y-6">
-              <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Categories</h3>
-              <ul className="space-y-1">
-                <li
-                  onClick={() => setSelectedCategoryId(null)}
-                  className={cn(
-                    "text-sm font-bold cursor-pointer transition-all px-4 py-3 rounded-2xl border-2",
-                    !selectedCategoryId
-                      ? "bg-white border-indigo-600 text-indigo-600 shadow-xl shadow-indigo-100"
-                      : "bg-transparent border-transparent text-gray-500 hover:bg-white/50 hover:text-gray-900",
-                  )}
-                >
-                  All Departments
-                </li>
-                {categories.map((cat) => (
-                  <li
-                    key={cat.id}
-                    onClick={() => setSelectedCategoryId(cat.id.toString())}
-                    className={cn(
-                      "text-sm font-bold cursor-pointer transition-all px-4 py-3 rounded-2xl border-2",
-                      selectedCategoryId === cat.id.toString()
-                        ? "bg-white border-indigo-600 text-indigo-600 shadow-xl shadow-indigo-100"
-                        : "bg-transparent border-transparent text-gray-500 hover:bg-white/50 hover:text-gray-900",
-                    )}
-                  >
+      <div className="max-w-[1400px] mx-auto px-4 mt-4 space-y-4">
+        
+        {/* Banner Section (AliExpress Style) */}
+        {!activeCategory && (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 h-[360px]">
+            <div className="hidden md:flex flex-col bg-white rounded-xl shadow-sm p-4 h-full border border-gray-100">
+              <div className="flex items-center gap-2 font-bold text-gray-800 mb-4 pb-2 border-b border-gray-100">
+                <LayoutGrid className="w-5 h-5 text-red-500" />
+                Categories
+              </div>
+              <div className="flex-1 overflow-y-auto space-y-1 pr-2 custom-scrollbar">
+                {categories.map(cat => (
+                  <button key={cat.id} onClick={() => setActiveCategory(cat.id.toString())} className="w-full text-left px-3 py-2.5 text-sm text-gray-600 hover:bg-red-50 hover:text-red-500 rounded-lg transition-colors flex items-center justify-between group">
                     {cat.name}
-                  </li>
+                    <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </button>
                 ))}
-              </ul>
-            </div>
-
-            {/* Price Range */}
-            <div className="space-y-6">
-              <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Price Range</h3>
-              <div className="flex flex-col gap-4">
-                <div className="relative group">
-                  <span className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-black">$</span>
-                  <input
-                    type="number"
-                    placeholder="Min"
-                    value={minPrice}
-                    onChange={(e) => setMinPrice(e.target.value)}
-                    className="w-full pl-10 pr-5 py-4 bg-white border border-gray-100 rounded-2xl text-sm outline-none focus:border-indigo-600 transition-all font-bold shadow-sm"
-                  />
-                </div>
-                <div className="relative group">
-                  <span className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-black">$</span>
-                  <input
-                    type="number"
-                    placeholder="Max"
-                    value={maxPrice}
-                    onChange={(e) => setMaxPrice(e.target.value)}
-                    className="w-full pl-10 pr-5 py-4 bg-white border border-gray-100 rounded-2xl text-sm outline-none focus:border-indigo-600 transition-all font-bold shadow-sm"
-                  />
-                </div>
               </div>
             </div>
-          </aside>
-
-          {/* Catalog Main Content */}
-          <div className="flex-1 space-y-12">
-            {/* Sort & Stats Bar */}
-            <div className="flex flex-col sm:flex-row items-center justify-between bg-white px-8 py-6 rounded-[2.5rem] border border-gray-100 shadow-sm">
-              <div className="text-sm font-black text-gray-900 italic tracking-tight mb-4 sm:mb-0">
-                {loading ? (
-                  <span className="text-gray-300 animate-pulse uppercase text-[10px] tracking-widest font-black">
-                    Refreshing Catalog...
+            
+            <div className="col-span-1 md:col-span-3 rounded-xl overflow-hidden relative group h-full">
+              <div className="absolute inset-0 bg-gradient-to-r from-gray-300 via-green-200 to-green-300"></div>
+              <div className="absolute inset-0 opacity-20 mix-blend-overlay" style={{ backgroundImage: "url('data:image/svg+xml,%3Csvg width=\\'60\\' height=\\'60\\' viewBox=\\'0 0 60 60\\' xmlns=\\'http://www.w3.org/2000/svg\\'%3E%3Cg fill=\\'none\\' fill-rule=\\'evenodd\\'%3E%3Cg fill=\\'%23ffffff\\' fill-opacity=\\'1\\'%3E%3Cpath d=\\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')" }}></div>
+              <div className="relative h-full flex flex-col justify-center px-10 md:px-16 text-white w-full md:w-2/3">
+                <span className="inline-block px-3 py-1 bg-yellow-400 text-red-900 font-bold text-xs uppercase rounded-full w-max mb-4 shadow-sm tracking-wider">
+                  Super Deals
+                </span>
+                <h1 className="text-4xl md:text-6xl font-black mb-2 leading-tight uppercase tracking-tight">Mega <br/>Sale</h1>
+                <div className="flex items-center gap-2 mb-8">
+                  <span className="bg-black/20 px-3 py-1.5 rounded-lg font-bold text-sm backdrop-blur-sm">Up to 70% Off</span>
+                  <span className="bg-black/20 px-3 py-1.5 rounded-lg font-bold text-sm backdrop-blur-sm flex items-center gap-1">
+                    <Clock className="w-4 h-4" /> Ends in 02:45:10
                   </span>
-                ) : (
-                  <>
-                    Catalog / <span className="text-indigo-600">{products.length} Items Found</span>
-                  </>
-                )}
-              </div>
-
-              <div className="flex items-center gap-6">
-                <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Sort By</span>
-                <div className="relative">
-                  <select title="Sort By"
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}
-                    className="appearance-none bg-gray-50 border border-gray-100 px-8 py-3 rounded-2xl text-sm font-black text-gray-900 outline-none focus:border-indigo-600 cursor-pointer pr-12 italic"
-                  >
-                    <option value="featured">Featured First</option>
-                    <option value="newest">Newest Arrivals</option>
-                    <option value="price-low">Price: Low to High</option>
-                    <option value="price-high">Price: High to Low</option>
-                    <option value="rating">Avg. Customer Review</option>
-                  </select>
-                  <ChevronDown className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400" />
                 </div>
-              </div>
-            </div>
-
-            {/* Grid Display */}
-            {loading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-10">
-                {[...Array(6)].map((_, i) => (
-                  <div key={i} className="aspect-[3/4] bg-white rounded-[3rem] border border-gray-100 animate-pulse" />
-                ))}
-              </div>
-            ) : products.length === 0 ? (
-              <div className="py-40 flex flex-col items-center justify-center text-center bg-white rounded-[4rem] border border-gray-100">
-                <div className="w-24 h-24 bg-gray-50 rounded-3xl flex items-center justify-center text-gray-200 mb-8">
-                  <X className="w-12 h-12" />
-                </div>
-                <h3 className="text-2xl font-black text-gray-900 italic tracking-tight mb-4">No results found</h3>
-                <p className="text-gray-400 text-sm font-bold max-w-xs mb-10 italic">We couldn't find any products matching your specific filters. Try a different approach.</p>
-                <button
-                  onClick={clearFilters}
-                  className="px-10 py-4 bg-gray-900 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-indigo-600 transition-all shadow-xl shadow-gray-200"
-                >
-                  Reset All Filters
+                <button className="bg-white text-red-600 px-8 py-3.5 rounded-full font-bold w-max shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all active:scale-95 flex items-center gap-2">
+                  Shop Now <ChevronRight className="w-5 h-5" />
                 </button>
               </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-10">
-                {products.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
-              </div>
-            )}
+              <div className="absolute top-1/2 -translate-y-1/2 right-10 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+            </div>
           </div>
-        </div>
-      </section>
+        )}
 
-      {/* 6. Newsletter / CTA */}
-      <section className="py-40 bg-indigo-600 px-6 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-[40%] h-full bg-white/5 skew-x-[-20deg] translate-x-20" />
-        <div className="max-w-4xl mx-auto text-center space-y-12 relative z-10">
-          <h2 className="text-6xl md:text-7xl font-black text-white tracking-tighter italic leading-none">
-            Join the <br />
-            <span className="text-indigo-200">Inner Circle.</span>
-          </h2>
-          <p className="text-xl font-medium text-indigo-100 italic">
-            Get exclusive access to early drops, verified vendor stories, and premium discounts.
-          </p>
-          <form className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="flex-1 px-8 py-5 rounded-[2rem] bg-white text-gray-900 font-bold outline-none focus:ring-4 focus:ring-indigo-400 transition-all shadow-2xl"
-            />
-            <button className="px-10 py-5 bg-gray-900 text-white rounded-[2rem] font-black uppercase tracking-widest text-xs hover:bg-white hover:text-indigo-600 transition-all active:scale-95 shadow-2xl">
-              Subscribe
-            </button>
-          </form>
-          <p className="text-[10px] font-black text-indigo-300 uppercase tracking-[0.2em]">No spam. Just excellence. Unsubscribe anytime.</p>
+        {/* Flash Deals / Featured */}
+        {!activeCategory && featuredProducts.length > 0 && (
+          <div className="bg-white rounded-xl shadow-sm p-4 md:p-6 border border-gray-100">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="bg-red-500 text-white p-2 rounded-lg">
+                  <Flame className="w-6 h-6" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                    SuperDeals
+                    <span className="bg-red-100 text-red-600 text-xs px-2 py-0.5 rounded font-bold">Top Products</span>
+                  </h2>
+                </div>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+              {featuredProducts.map(p => (
+                <Link href={`/product/${p.id}`} key={p.id} className="group cursor-pointer">
+                  <div className="relative aspect-square bg-gray-50 rounded-lg overflow-hidden mb-2">
+                    <div className="absolute top-0 left-0 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-br-lg z-10 flex items-center gap-1">
+                      <Zap className="w-3 h-3" /> HOT
+                    </div>
+                    <div className="absolute inset-0 flex items-center justify-center text-gray-300 group-hover:scale-105 transition-transform duration-300 bg-gray-100">
+                       <LayoutGrid className="w-12 h-12 opacity-20" />
+                    </div>
+                  </div>
+                  <div className="px-1">
+                    <div className="text-red-600 font-bold text-lg leading-none mb-1">
+                      ${parseFloat(p.price).toFixed(2)}
+                    </div>
+                    <div className="text-xs text-gray-400 line-through mb-1">
+                      ${(parseFloat(p.price) * 1.5).toFixed(2)}
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* More to Love / All Products */}
+        <div className="pt-4">
+          <div className="flex items-center justify-center gap-4 mb-8">
+            <div className="h-px bg-gray-300 flex-1 max-w-[100px]"></div>
+            <h2 className="text-2xl font-bold text-gray-800 tracking-tight">More to love</h2>
+            <div className="h-px bg-gray-300 flex-1 max-w-[100px]"></div>
+          </div>
+
+          {loading ? (
+             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+               {[...Array(12)].map((_, i) => (
+                 <div key={i} className="aspect-square bg-white rounded-xl shadow-sm border border-gray-100 animate-pulse" />
+               ))}
+             </div>
+          ) : products.length === 0 ? (
+            <div className="py-20 flex flex-col items-center justify-center bg-white rounded-xl shadow-sm">
+              <Search className="w-16 h-16 text-gray-300 mb-4" />
+              <p className="text-gray-500 font-medium">No products found in this category.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4">
+              {products.map(product => (
+                <Link href={`/product/${product.id}`} key={product.id} className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow border border-gray-100 overflow-hidden flex flex-col group hover:border-red-500">
+                  <div className="aspect-square bg-gray-50 relative overflow-hidden">
+                    <div className="absolute inset-0 flex items-center justify-center group-hover:scale-105 transition-transform duration-500 bg-gray-100">
+                      <LayoutGrid className="w-12 h-12 text-gray-300 opacity-50" />
+                    </div>
+                  </div>
+                  <div className="p-3 flex flex-col flex-1">
+                    <h3 className="text-[13px] text-gray-700 line-clamp-2 leading-tight mb-2 group-hover:text-red-500 transition-colors h-9">
+                      {product.name}
+                    </h3>
+                    <div className="mt-auto">
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-xs font-bold text-gray-900">$</span>
+                        <span className="text-lg font-black text-gray-900">{parseFloat(product.price).toFixed(2)}</span>
+                      </div>
+                      <div className="flex items-center justify-between mt-1">
+                        <span className="text-[10px] text-gray-400">
+                          {product.stock > 0 ? `${product.stock} sold` : 'Out of stock'}
+                        </span>
+                        <span className="text-[10px] bg-red-50 text-red-500 font-bold px-1.5 py-0.5 rounded">Free Shipping</span>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
-      </section>
+      </div>
     </main>
   );
 }

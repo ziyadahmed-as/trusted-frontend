@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 /* Global Styles - Premium Design System */
 :root {
   --background: #f8fafc;
@@ -6,7 +8,7 @@
   --card-foreground: #1c2434;
   --popover: #ffffff;
   --popover-foreground: #1c2434;
-  --primary: #3c50e0;
+  --primary: #0D47A1;
   --primary-foreground: #ffffff;
   --secondary: #eff4fb;
   --secondary-foreground: #1c2434;
@@ -78,6 +80,30 @@ button, input, textarea, select {
 .text-center { text-align: center; }
 .text-primary { color: var(--primary); }
 .bg-primary { background-color: var(--primary); color: var(--primary-foreground); }
+
+/* Scrollbar utilities */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
 
 /* Transitions */
 .transition {

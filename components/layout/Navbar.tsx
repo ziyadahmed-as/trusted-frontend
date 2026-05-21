@@ -15,7 +15,7 @@ import { useAuth } from "@/context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
-import styles from './Navbar.module.css';
+// Removed CSS module import; styling now handled via Tailwind classes
 export function Navbar() {
   const { cartCount, openDrawer } = useCart();
   const { user, logout } = useAuth();
@@ -33,7 +33,7 @@ export function Navbar() {
   };
 
   return (
-    <nav className={`sticky top-0 z-50 w-full bg-white/80 backdrop-blur-xl border-b border-gray-100 shadow-sm ${styles.navbar}`} >
+    <nav className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-xl border-b border-gray-100 shadow-sm" >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo & Mobile Menu */}
@@ -45,13 +45,13 @@ export function Navbar() {
               <Menu className="w-6 h-6" />
             </button>
             <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-10 h-10 rounded-2xl bg-gray-900 flex items-center justify-center group-hover:rotate-12 transition-transform duration-500 shadow-lg shadow-gray-200">
-                <span className="text-white font-black text-xl italic tracking-tighter">
+              <div className="w-10 h-10 rounded-xl bg-red-600 flex items-center justify-center shadow-sm">
+                <span className="text-white font-black text-xl tracking-tighter">
                   TB
                 </span>
               </div>
-              <span className="text-xl font-black text-gray-900 tracking-tight hidden sm:block">
-                Trest<span className="text-indigo-600">Biyyo</span>
+              <span className="text-2xl font-black text-gray-900 tracking-tight hidden sm:block">
+                Trest<span className="text-red-600">Biyyo</span>
               </span>
             </Link>
           </div>
@@ -59,19 +59,19 @@ export function Navbar() {
           {/* Search (Desktop) */}
           <form
             onSubmit={handleSearch}
-            className="hidden md:flex flex-1 max-w-xl mx-8"
+            className="hidden md:flex flex-1 max-w-2xl mx-8"
           >
-            <div className="relative w-full group">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <Search className="h-5 w-5 text-gray-400 group-focus-within:text-indigo-600 transition-all" />
-              </div>
+            <div className="flex w-full">
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search premium products..."
-                className="w-full bg-gray-50 border-2 border-transparent text-gray-900 text-sm rounded-2xl focus:ring-0 focus:border-indigo-600 outline-none block pl-12 p-3.5 transition-all shadow-inner"
+                placeholder="I'm shopping for..."
+                className="w-full bg-white border-2 border-red-500 border-r-0 text-gray-900 text-sm rounded-l-full outline-none block pl-6 p-2.5 shadow-sm"
               />
+              <button type="submit" className="bg-red-500 text-white px-6 rounded-r-full hover:bg-red-600 transition-colors flex items-center justify-center">
+                <Search className="h-5 w-5" />
+              </button>
             </div>
           </form>
 
@@ -84,10 +84,10 @@ export function Navbar() {
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                   className="flex items-center gap-2 p-2 rounded-xl text-gray-900 hover:bg-gray-50 transition-colors group"
                 >
-                  <div className="w-8 h-8 rounded-full bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 text-xs font-black uppercase">
+                  <div className="w-8 h-8 rounded-full bg-red-50 border border-red-100 flex items-center justify-center text-red-600 text-xs font-black uppercase">
                     {user.username?.[0] || "U"}
                   </div>
-                  <span className="text-sm font-bold hidden lg:block italic tracking-tight">
+                  <span className="text-sm font-bold hidden lg:block tracking-tight">
                     {user.username}
                   </span>
                   <ChevronDown
@@ -133,7 +133,7 @@ export function Navbar() {
                           return (
                             <Link
                               href={dashboardUrl}
-                              className="flex items-center gap-2 px-4 py-2.5 text-sm font-bold text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
+                              className="flex items-center gap-2 px-4 py-2.5 text-sm font-bold text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors"
                               onClick={() => setIsUserMenuOpen(false)}
                             >
                               <UserCircle className="w-4 h-4" />
@@ -159,38 +159,37 @@ export function Navbar() {
             ) : (
               <Link
                 href="/login"
-                className="flex items-center gap-2 p-2 px-4 rounded-xl text-indigo-600 bg-indigo-50 hover:bg-indigo-100 transition-all active:scale-95"
+                className="flex items-center gap-2 p-2 px-4 rounded-xl text-gray-700 hover:text-red-600 hover:bg-red-50 transition-all"
               >
-                <UserCircle className="w-6 h-6" />
-                <span className="text-sm font-black uppercase tracking-widest hidden lg:block">
-                  Sign In
-                </span>
+                <UserCircle className="w-7 h-7" />
+                <div className="hidden lg:flex flex-col items-start leading-none gap-1">
+                  <span className="text-[10px] text-gray-500">Welcome</span>
+                  <span className="text-sm font-bold">Sign In / Register</span>
+                </div>
               </Link>
             )}
 
             {/* Cart Reveal Button */}
             <button
               onClick={openDrawer}
-              className="relative p-3 rounded-2xl bg-gray-50 text-gray-400 hover:text-gray-900 hover:bg-gray-100 transition-all group flex items-center gap-3 active:scale-95"
+              className="relative p-2 rounded-xl text-gray-700 hover:text-red-600 hover:bg-red-50 transition-all group flex items-center gap-2"
             >
               <div className="relative">
-                <ShoppingBag className="w-6 h-6 group-hover:scale-110 transition-transform" />
+                <ShoppingBag className="w-7 h-7" />
                 {cartCount > 0 && (
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-rose-500 border-2 border-white flex items-center justify-center text-[9px] font-black text-white shadow-sm"
+                    className="absolute -top-1 -right-2 w-4 h-4 rounded-full bg-red-500 flex items-center justify-center text-[10px] font-bold text-white shadow-sm"
                   >
                     {cartCount}
                   </motion.div>
                 )}
               </div>
-              {cartCount > 0 && (
-                <span className="text-sm font-bold text-gray-900 hidden sm:block italic tracking-tight">
-                  {cartCount}{" "}
-                  <span className="text-gray-400 font-medium">items</span>
-                </span>
-              )}
+              <div className="hidden lg:flex flex-col items-start leading-none gap-1">
+                <span className="text-[10px] bg-red-100 text-red-600 px-1 rounded font-bold">{cartCount > 0 ? cartCount : '0'}</span>
+                <span className="text-sm font-bold">Cart</span>
+              </div>
             </button>
           </div>
         </div>

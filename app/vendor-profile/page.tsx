@@ -6,17 +6,14 @@ import {
   CheckCircle2,
   AlertCircle,
   Package,
-  TrendingUp,
   ShoppingCart,
   DollarSign,
-  Activity,
   User,
   Settings,
   ArrowRight,
   Sparkles,
 } from "lucide-react";
 import { apiClient } from "@/lib/api-client";
-import { cn } from "@/lib/utils";
 import { StatCard } from "@/components/admin/StatCard";
 import { RevenueChart } from "@/components/charts/RevenueChart";
 import { motion } from "framer-motion";
@@ -80,10 +77,10 @@ export default function VendorProfilePage() {
 
   if (loading) {
     return (
-      <div className="h-[80vh] flex flex-col items-center justify-center gap-6">
-        <div className="w-16 h-16 border-4 border-emerald-600/20 border-t-emerald-600 rounded-full animate-spin" />
-        <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] animate-pulse">
-          Loading Store Intelligence...
+      <div className="h-[80vh] flex flex-col items-center justify-center gap-4">
+        <div className="w-10 h-10 border-4 border-red-500/20 border-t-red-500 rounded-full animate-spin" />
+        <p className="text-sm font-semibold text-gray-500">
+          Loading Store...
         </p>
       </div>
     );
@@ -95,62 +92,56 @@ export default function VendorProfilePage() {
       : [40, 65, 45, 80, 55, 95, 70, 85, 60, 100, 75, 90];
 
   return (
-    <div className="space-y-12 pb-20">
+    <div className="space-y-8 pb-20 max-w-[1400px] mx-auto px-4 mt-6">
       {/* HEADER SECTION */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between border-b border-gray-100 pb-10">
+      <div className="flex flex-col md:flex-row md:items-end md:justify-between border-b border-gray-200 pb-6">
         <div className="space-y-2">
            <div className="flex items-center gap-3">
-              <h2 className="text-4xl font-black text-gray-900 tracking-tighter italic">
-                Store <span className="text-gray-300">Command.</span>
+              <h2 className="text-2xl font-bold text-gray-900">
+                Seller Center
               </h2>
-              <div className="px-3 py-1 bg-amber-50 text-amber-600 rounded-lg text-[10px] font-black uppercase tracking-widest border border-amber-100 flex items-center gap-2">
+              <div className="px-2 py-1 bg-yellow-50 text-yellow-700 rounded text-xs font-bold border border-yellow-200 flex items-center gap-1">
                  <Sparkles className="w-3 h-3" />
                  {profile.subscription_tier} Tier
               </div>
            </div>
-          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-            Logged in as {profile.store_name || "Merchant"}
+          <p className="text-sm text-gray-500 font-semibold">
+            Store Name: {profile.store_name || "Merchant"}
           </p>
         </div>
-        <div className="flex items-center gap-4">
-           <Link href="/vendor-profile/products" className="px-6 py-3 bg-gray-50 text-gray-900 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-900 hover:text-white transition-all shadow-sm">
-              Inventory
+        <div className="flex items-center gap-3 mt-4 md:mt-0">
+           <Link href="/vendor-profile/products" className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-md text-sm font-bold hover:bg-gray-50 transition-colors shadow-sm">
+              Manage Products
            </Link>
-           <Link href="/vendor-profile/orders" className="px-6 py-3 bg-indigo-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-900 transition-all shadow-lg shadow-indigo-100">
-              Orders
+           <Link href="/vendor-profile/orders" className="px-4 py-2 bg-red-600 text-white rounded-md text-sm font-bold hover:bg-red-700 transition-colors shadow-sm">
+              Manage Orders
            </Link>
         </div>
       </div>
 
       {stats.pending_count > 0 && (
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="p-8 rounded-[2.5rem] bg-rose-50 border border-rose-100 text-rose-700 flex flex-col md:flex-row items-center justify-between gap-6 transition-all"
-        >
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-rose-500 shadow-sm">
-               <AlertCircle className="w-6 h-6" />
-            </div>
+        <div className="p-4 rounded-md bg-red-50 border border-red-200 text-red-700 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <AlertCircle className="w-6 h-6 text-red-600" />
             <div>
-               <p className="text-lg font-black tracking-tight italic">Action Required</p>
-               <p className="text-sm font-medium opacity-70">You have {stats.pending_count} pending orders requiring immediate fulfillment.</p>
+               <p className="font-bold text-red-800">Action Required</p>
+               <p className="text-sm">You have {stats.pending_count} pending orders waiting to be fulfilled.</p>
             </div>
           </div>
           <Link
             href="/vendor-profile/orders"
-            className="px-8 py-3 bg-rose-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-900 transition-all flex items-center gap-2 group"
+            className="px-4 py-2 bg-white border border-red-200 text-red-600 rounded-md text-sm font-bold hover:bg-red-50 transition-colors flex items-center gap-2 whitespace-nowrap"
           >
-            Resolve Now
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            Fulfill Orders
+            <ArrowRight className="w-4 h-4" />
           </Link>
-        </motion.div>
+        </div>
       )}
 
       {/* STAT CARDS GRID */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatCard
-          title="Gross Revenue"
+          title="Revenue"
           value={`$${parseFloat(stats.total_sales.toString()).toLocaleString()}`}
           icon={DollarSign}
           trend="up"
@@ -158,7 +149,7 @@ export default function VendorProfilePage() {
           color="emerald"
         />
         <StatCard
-          title="Order Volume"
+          title="Orders"
           value={stats.order_count.toString()}
           icon={ShoppingCart}
           trend="up"
@@ -166,7 +157,7 @@ export default function VendorProfilePage() {
           color="indigo"
         />
         <StatCard
-          title="Fulfillment"
+          title="Pending Fulfillment"
           value={stats.pending_count.toString()}
           icon={Package}
           trend={stats.pending_count > 5 ? "down" : "up"}
@@ -174,26 +165,25 @@ export default function VendorProfilePage() {
           color="rose"
         />
         <StatCard
-          title="Platform Tier"
+          title="Store Tier"
           value={profile.subscription_tier}
           icon={User}
           color="amber"
         />
       </div>
 
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Sales Analytics Chart */}
-        <div className="col-span-1 lg:col-span-7 xl:col-span-8">
-          <div className="rounded-[3rem] border border-gray-100 bg-white p-10 shadow-2xl shadow-gray-200/50">
-            <div className="mb-10 space-y-1">
-              <h3 className="text-2xl font-black text-gray-900 tracking-tighter italic">Sales Analytics</h3>
-              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Performance over last 12 periods</p>
+        <div className="lg:col-span-2">
+          <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm h-full">
+            <div className="mb-6 flex justify-between items-center border-b border-gray-100 pb-4">
+              <h3 className="text-lg font-bold text-gray-900">Store Performance</h3>
             </div>
-            <div className="h-[350px]">
+            <div className="h-[300px]">
               <RevenueChart
                 data={salesHistory}
                 dataKey1="sales"
-                color1="#10b981"
+                color1="#ef4444"
                 height="100%"
               />
             </div>
@@ -201,28 +191,26 @@ export default function VendorProfilePage() {
         </div>
 
         {/* Store Settings form */}
-        <div className="col-span-1 lg:col-span-5 xl:col-span-4">
-          <div className="rounded-[3rem] border border-gray-100 bg-white p-10 shadow-2xl shadow-gray-200/50 h-full flex flex-col">
-            <div className="flex items-center gap-3 mb-10">
-               <div className="p-3 bg-gray-50 rounded-2xl text-gray-400">
-                  <Settings className="w-6 h-6" />
-               </div>
-               <h4 className="text-2xl font-black text-gray-900 tracking-tighter italic">Configure</h4>
+        <div className="lg:col-span-1">
+          <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm h-full flex flex-col">
+            <div className="flex items-center gap-2 mb-6 border-b border-gray-100 pb-4">
+               <Settings className="w-5 h-5 text-gray-600" />
+               <h4 className="text-lg font-bold text-gray-900">Store Settings</h4>
             </div>
 
-            <form onSubmit={handleSave} className="space-y-8 flex-1">
-              <div className="space-y-3">
+            <form onSubmit={handleSave} className="space-y-5 flex-1">
+              <div>
                 <label
                   htmlFor="store_name"
-                  className="text-[10px] font-black text-gray-400 uppercase tracking-widest"
+                  className="block text-sm font-semibold text-gray-700 mb-1"
                 >
                   Store Name
                 </label>
                 <input
                   id="store_name"
                   type="text"
-                  className="w-full rounded-2xl border border-gray-50 bg-gray-50 py-4 px-6 outline-none transition-all focus:bg-white focus:ring-4 focus:ring-emerald-100 focus:border-emerald-600 font-bold italic shadow-inner"
-                  placeholder="e.g. Premium Essentials"
+                  className="w-full rounded-md border border-gray-300 bg-white py-2 px-3 outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 text-gray-900 transition-all"
+                  placeholder="e.g. Premium Store"
                   value={profile.store_name}
                   onChange={(e) =>
                     setProfile({ ...profile, store_name: e.target.value })
@@ -231,18 +219,18 @@ export default function VendorProfilePage() {
                 />
               </div>
 
-              <div className="space-y-3">
+              <div>
                 <label
                   htmlFor="description"
-                  className="text-[10px] font-black text-gray-400 uppercase tracking-widest"
+                  className="block text-sm font-semibold text-gray-700 mb-1"
                 >
-                  Brand Vision
+                  Store Description
                 </label>
                 <textarea
                   id="description"
-                  rows={5}
-                  className="w-full rounded-2xl border border-gray-50 bg-gray-50 py-4 px-6 outline-none transition-all focus:bg-white focus:ring-4 focus:ring-emerald-100 focus:border-emerald-600 font-medium italic shadow-inner resize-none"
-                  placeholder="Tell your customers about your brand..."
+                  rows={4}
+                  className="w-full rounded-md border border-gray-300 bg-white py-2 px-3 outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 text-gray-900 transition-all resize-none"
+                  placeholder="Describe your store..."
                   value={profile.description}
                   onChange={(e) =>
                     setProfile({ ...profile, description: e.target.value })
@@ -251,20 +239,20 @@ export default function VendorProfilePage() {
                 />
               </div>
 
-              <div className="pt-4">
+              <div className="pt-2">
                 <button
                   type="submit"
                   disabled={saving}
-                  className="flex w-full items-center justify-center gap-3 rounded-2xl bg-gray-900 p-5 font-black uppercase tracking-[0.2em] text-white text-[10px] hover:bg-emerald-600 transition-all shadow-xl shadow-gray-200 active:scale-95 disabled:opacity-50"
+                  className="flex w-full items-center justify-center gap-2 rounded-md bg-red-600 py-2 font-bold text-white hover:bg-red-700 transition-colors disabled:opacity-50"
                 >
                   {saving ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <Loader2 className="w-4 h-4 animate-spin" />
                   ) : saveSuccess ? (
                     <>
-                      <CheckCircle2 className="w-5 h-5 text-emerald-400" /> Success
+                      <CheckCircle2 className="w-4 h-4" /> Saved Successfully
                     </>
                   ) : (
-                    "Save Identity"
+                    "Save Changes"
                   )}
                 </button>
               </div>

@@ -131,59 +131,59 @@ export default function VendorProductsPage() {
   if (loading) {
     return (
       <div className="h-[70vh] flex flex-col items-center justify-center gap-4">
-        <Loader2 className="w-10 h-10 text-[#10b981] animate-spin" />
+        <Loader2 className="w-10 h-10 text-red-500 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 md:space-y-8">
+    <div className="space-y-6 md:space-y-8 max-w-[1400px] mx-auto px-4 mt-6 pb-20">
       {/* HEADER SECTION */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-gray-200 pb-6">
         <div>
-          <h2 className="text-2xl font-bold text-black md:text-3xl">
+          <h2 className="text-2xl font-bold text-gray-900 md:text-3xl">
             Products Dashboard
           </h2>
-          <p className="text-sm font-medium text-[#64748b]">
+          <p className="text-sm text-gray-500 font-semibold mt-1">
             Manage your store inventory, pricing, and visibility.
           </p>
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 rounded bg-[#10b981] py-2 px-4 font-medium text-white hover:bg-opacity-90 transition"
+          className="flex items-center gap-2 rounded-md bg-red-600 py-2.5 px-4 font-bold text-white hover:bg-red-700 transition-colors shadow-sm"
         >
           <Plus className="w-5 h-5" /> Add New Product
         </button>
       </div>
 
       {/* PRODUCTS TABLE PORTION */}
-      <div className="rounded-sm border border-[#e2e8f0] bg-white px-5 pt-6 pb-2.5 shadow-sm sm:px-7.5 xl:pb-1">
+      <div className="rounded-lg border border-gray-200 bg-white shadow-sm overflow-hidden">
         <div className="max-w-full overflow-x-auto">
           <table className="w-full table-auto">
             <thead>
-              <tr className="bg-gray-2 text-left bg-[#f7f9fc]">
-                <th className="min-w-[220px] py-4 px-4 font-medium text-black xl:pl-11">
+              <tr className="bg-gray-50 text-left border-b border-gray-200">
+                <th className="min-w-[220px] py-4 px-6 font-bold text-gray-900">
                   Product Info
                 </th>
-                <th className="min-w-[150px] py-4 px-4 font-medium text-black">
+                <th className="min-w-[150px] py-4 px-6 font-bold text-gray-900">
                   Category
                 </th>
-                <th className="min-w-[120px] py-4 px-4 font-medium text-black">
+                <th className="min-w-[120px] py-4 px-6 font-bold text-gray-900">
                   Price
                 </th>
-                <th className="min-w-[120px] py-4 px-4 font-medium text-black">
+                <th className="min-w-[120px] py-4 px-6 font-bold text-gray-900">
                   Stock
                 </th>
-                <th className="py-4 px-4 font-medium text-black text-right xl:pr-11">
+                <th className="py-4 px-6 font-bold text-gray-900 text-right">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-gray-100">
               {products.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="py-10 text-center">
-                    <p className="text-[#64748b] font-medium">
+                  <td colSpan={5} className="py-12 text-center bg-white">
+                    <p className="text-gray-500 font-medium">
                       No products found. Add your first product to get started.
                     </p>
                   </td>
@@ -192,68 +192,69 @@ export default function VendorProductsPage() {
                 products.map((prod) => (
                   <tr
                     key={prod.id}
-                    className="border-b border-[#e2e8f0] last:border-b-0 hover:bg-[#f9fafb] transition"
+                    className="hover:bg-gray-50 transition-colors"
                   >
-                    <td className="py-5 px-4 pl-9 xl:pl-11">
-                      <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 flex items-center justify-center rounded-full bg-[#f7f9fc]">
-                          <Archive className="w-5 h-5 text-[#10b981]" />
+                    <td className="py-4 px-6">
+                      <div className="flex items-center gap-4">
+                        <div className="h-12 w-12 flex items-center justify-center rounded-md bg-gray-100 border border-gray-200">
+                          <Archive className="w-6 h-6 text-gray-500" />
                         </div>
                         <div>
-                          <h5 className="font-medium text-black">
+                          <h5 className="font-bold text-gray-900">
                             {prod.name}
                           </h5>
-                          <p className="text-sm text-[#64748b]">{prod.slug}</p>
+                          <p className="text-xs text-gray-500 mt-0.5">{prod.slug}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="py-5 px-4">
-                      <p className="text-black">
+                    <td className="py-4 px-6">
+                      <p className="text-sm text-gray-700 font-semibold">
                         {prod.category
                           ? categories.find((c) => c.id === prod.category)
                               ?.name || `ID: ${prod.category}`
                           : "Uncategorized"}
                       </p>
                     </td>
-                    <td className="py-5 px-4">
-                      <p className="text-black">
+                    <td className="py-4 px-6">
+                      <p className="text-sm font-bold text-gray-900">
                         ${parseFloat(prod.price).toFixed(2)}
                       </p>
                     </td>
-                    <td className="py-5 px-4">
-                      <p
+                    <td className="py-4 px-6">
+                      <span
                         className={cn(
-                          "inline-flex rounded-full px-3 py-1 text-sm font-medium",
+                          "inline-flex rounded-md px-2.5 py-1 text-xs font-bold",
                           prod.stock > 10
-                            ? "bg-[#10b981]/10 text-[#10b981]"
+                            ? "bg-green-100 text-green-700"
                             : prod.stock > 0
-                              ? "bg-[#f59e0b]/10 text-[#f59e0b]"
-                              : "bg-[#d34053]/10 text-[#d34053]",
+                              ? "bg-orange-100 text-orange-700"
+                              : "bg-red-100 text-red-700",
                         )}
                       >
                         {prod.stock} in stock
-                      </p>
+                      </span>
                     </td>
-                    <td className="py-5 px-4 pr-9 xl:pr-11 text-right">
+                    <td className="py-4 px-6 text-right">
                       <div className="flex items-center justify-end gap-3">
-                        <button
+                        <Link
+                          href={`/product/${prod.id}`}
                           title="View Store"
-                          className="text-[#64748b] hover:text-[#10b981] transition"
+                          className="text-gray-400 hover:text-red-600 transition-colors"
                         >
                           <Eye className="w-5 h-5" />
-                        </button>
+                        </Link>
                         {prod.vendor === user?.email && (
                           <>
                             <button
                               title="Edit"
-                              className="text-[#64748b] hover:text-[#3c50e0] transition"
+                              className="text-gray-400 hover:text-blue-600 transition-colors"
                             >
                               <Edit className="w-5 h-5" />
                             </button>
                             <button
                               onClick={() => handleDelete(prod.id)}
                               title="Delete"
-                              className="text-[#64748b] hover:text-[#d34053] transition"
+                              className="text-gray-400 hover:text-red-600 transition-colors"
                             >
                               <Trash2 className="w-5 h-5" />
                             </button>
@@ -271,27 +272,27 @@ export default function VendorProductsPage() {
 
       {/* Add Product Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-2xl rounded-sm border border-[#e2e8f0] bg-white shadow-default">
-            <div className="border-b border-[#e2e8f0] py-4 px-6.5 flex justify-between items-center">
-              <h3 className="font-semibold text-black">Add New Product</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/60 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-2xl rounded-lg border border-gray-200 bg-white shadow-xl">
+            <div className="border-b border-gray-100 py-4 px-6 flex justify-between items-center bg-gray-50 rounded-t-lg">
+              <h3 className="font-bold text-gray-900 text-lg">Add New Product</h3>
               <button
                 onClick={() => setShowModal(false)}
-                className="text-[#64748b] hover:text-black"
+                className="text-gray-400 hover:text-gray-900 transition-colors"
                 title="Close"
                 aria-label="Close Modal"
               >
-                <XCircle className="w-5 h-5" />
+                <XCircle className="w-6 h-6" />
               </button>
             </div>
             <form
               id="product-form"
               onSubmit={handleAddProduct}
-              className="p-6.5"
+              className="p-6 space-y-5"
             >
-              <div className="mb-4.5">
-                <label className="mb-2.5 block text-black">
-                  Product Name <span className="text-[#d34053]">*</span>
+              <div>
+                <label className="mb-1.5 block text-sm font-semibold text-gray-700">
+                  Product Name <span className="text-red-500">*</span>
                 </label>
                 <input
                   required
@@ -299,13 +300,13 @@ export default function VendorProductsPage() {
                   value={formData.name}
                   onChange={handleInputChange}
                   placeholder="e.g. Premium Wireless Headphones"
-                  className="w-full rounded border border-[#e2e8f0] bg-transparent py-3 px-5 font-medium outline-none transition focus:border-[#10b981] active:border-[#10b981]"
+                  className="w-full rounded-md border border-gray-300 bg-white py-2 px-3 outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 text-gray-900 transition-all"
                 />
               </div>
-              <div className="mb-4.5 flex flex-col gap-4.5 sm:flex-row">
+              <div className="flex flex-col gap-5 sm:flex-row">
                 <div className="w-full sm:w-1/2">
-                  <label className="mb-2.5 block text-black">
-                    Category <span className="text-[#d34053]">*</span>
+                  <label className="mb-1.5 block text-sm font-semibold text-gray-700">
+                    Category <span className="text-red-500">*</span>
                   </label>
                   <select
                     required
@@ -314,7 +315,7 @@ export default function VendorProductsPage() {
                     aria-label="Select Category"
                     value={formData.category}
                     onChange={handleInputChange}
-                    className="w-full rounded border border-[#e2e8f0] bg-transparent py-3 px-5 font-medium outline-none transition focus:border-[#10b981] active:border-[#10b981]"
+                    className="w-full rounded-md border border-gray-300 bg-white py-2 px-3 outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 text-gray-900 transition-all"
                   >
                     <option value="" disabled>
                       Select a category...
@@ -327,8 +328,8 @@ export default function VendorProductsPage() {
                   </select>
                 </div>
                 <div className="w-full sm:w-1/2">
-                  <label className="mb-2.5 block text-black">
-                    Price ($) <span className="text-[#d34053]">*</span>
+                  <label className="mb-1.5 block text-sm font-semibold text-gray-700">
+                    Price ($) <span className="text-red-500">*</span>
                   </label>
                   <input
                     required
@@ -339,13 +340,13 @@ export default function VendorProductsPage() {
                     value={formData.price}
                     onChange={handleInputChange}
                     placeholder="0.00"
-                    className="w-full rounded border border-[#e2e8f0] bg-transparent py-3 px-5 font-medium outline-none transition focus:border-[#10b981] active:border-[#10b981]"
+                    className="w-full rounded-md border border-gray-300 bg-white py-2 px-3 outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 text-gray-900 transition-all"
                   />
                 </div>
               </div>
-              <div className="mb-4.5">
-                <label className="mb-2.5 block text-black">
-                  Initial Stock <span className="text-[#d34053]">*</span>
+              <div>
+                <label className="mb-1.5 block text-sm font-semibold text-gray-700">
+                  Initial Stock <span className="text-red-500">*</span>
                 </label>
                 <input
                   required
@@ -355,12 +356,12 @@ export default function VendorProductsPage() {
                   value={formData.stock}
                   onChange={handleInputChange}
                   placeholder="e.g. 50"
-                  className="w-full rounded border border-[#e2e8f0] bg-transparent py-3 px-5 font-medium outline-none transition focus:border-[#10b981] active:border-[#10b981]"
+                  className="w-full rounded-md border border-gray-300 bg-white py-2 px-3 outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 text-gray-900 transition-all"
                 />
               </div>
-              <div className="mb-6">
-                <label className="mb-2.5 block text-black">
-                  Description <span className="text-[#d34053]">*</span>
+              <div className="mb-2">
+                <label className="mb-1.5 block text-sm font-semibold text-gray-700">
+                  Description <span className="text-red-500">*</span>
                 </label>
                 <textarea
                   required
@@ -369,13 +370,13 @@ export default function VendorProductsPage() {
                   onChange={handleInputChange}
                   rows={4}
                   placeholder="Detailed product description..."
-                  className="w-full rounded border border-[#e2e8f0] bg-transparent py-3 px-5 font-medium outline-none transition focus:border-[#10b981] active:border-[#10b981] resize-none"
+                  className="w-full rounded-md border border-gray-300 bg-white py-2 px-3 outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 text-gray-900 transition-all resize-none"
                 />
               </div>
               <button
                 type="submit"
                 disabled={modalLoading}
-                className="flex w-full justify-center rounded bg-[#10b981] p-3 font-medium text-white hover:bg-opacity-90 disabled:opacity-50 transition"
+                className="flex w-full justify-center items-center gap-2 rounded-md bg-red-600 py-2.5 font-bold text-white hover:bg-red-700 disabled:opacity-50 transition-colors"
               >
                 {modalLoading ? (
                   <Loader2 className="w-5 h-5 animate-spin" />

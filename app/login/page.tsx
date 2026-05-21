@@ -45,23 +45,20 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f8fafc] py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)] p-10 border border-gray-50 animate-in fade-in zoom-in duration-500">
-        <div className="text-center mb-10">
-          <h1 className="text-4xl font-black text-indigo-600 mb-2 tracking-tighter">
-            TrestBiyyo.
+    <div className="min-h-screen flex items-center justify-center bg-[#f2f2f2] py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-red-600 mb-2">
+            TrestBiyyo
           </h1>
-          <h2 className="text-2xl font-bold text-gray-900">Welcome Back</h2>
-          <p className="text-gray-500 mt-2">
-            Manage your stores and orders with ease.
-          </p>
+          <h2 className="text-xl font-bold text-gray-900">Sign in to your account</h2>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label
               htmlFor="email"
-              className="block text-[13px] font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1 cursor-pointer"
+              className="block text-sm font-semibold text-gray-700 mb-1"
             >
               Email Address
             </label>
@@ -69,7 +66,7 @@ export default function LoginPage() {
               id="email"
               type="email"
               required
-              className="w-full px-5 py-4 bg-gray-50 border-transparent focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all duration-200 outline-none rounded-2xl text-gray-700"
+              className="w-full px-3 py-2 bg-white border border-gray-300 focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-colors outline-none rounded-md text-gray-900"
               placeholder="name@example.com"
               value={formData.email}
               onChange={(e) =>
@@ -78,26 +75,25 @@ export default function LoginPage() {
             />
           </div>
           <div>
-            <div className="flex justify-between items-center mb-2 ml-1">
+            <div className="flex justify-between items-center mb-1">
               <label
                 htmlFor="password"
-                className="block text-[13px] font-bold text-gray-400 uppercase tracking-wider cursor-pointer"
+                className="block text-sm font-semibold text-gray-700"
               >
                 Password
               </label>
               <Link
                 href="/forgot-password"
-                title="Forgot Password?"
-                className="text-xs font-bold text-indigo-600 hover:underline"
+                className="text-xs font-semibold text-red-600 hover:text-red-700 hover:underline"
               >
-                Forgot?
+                Forgot Password?
               </Link>
             </div>
             <input
               id="password"
               type="password"
               required
-              className="w-full px-5 py-4 bg-gray-50 border-transparent focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-100 transition-all duration-200 outline-none rounded-2xl text-gray-700"
+              className="w-full px-3 py-2 bg-white border border-gray-300 focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-colors outline-none rounded-md text-gray-900"
               placeholder="••••••••"
               value={formData.password}
               onChange={(e) =>
@@ -109,24 +105,24 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-4 px-8 bg-indigo-600 text-white font-bold rounded-2xl hover:bg-indigo-700 transition-all duration-300 shadow-xl shadow-indigo-100 flex items-center justify-center gap-2"
+            className="w-full py-2.5 px-4 bg-red-600 text-white font-bold rounded-md hover:bg-red-700 transition-colors flex items-center justify-center gap-2 mt-6"
           >
             {loading ? (
-              <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
             ) : (
               "Sign In"
             )}
           </button>
         </form>
 
-        <div className="mt-8 text-center">
-          <p className="text-gray-400 text-sm">
-            Don't have an account?{" "}
+        <div className="mt-6 text-center pt-6 border-t border-gray-100">
+          <p className="text-gray-600 text-sm">
+            New to TrestBiyyo?{" "}
             <Link
               href="/register"
-              className="text-indigo-600 font-bold hover:underline"
+              className="text-red-600 font-bold hover:underline"
             >
-              Create Account
+              Register here
             </Link>
           </p>
         </div>

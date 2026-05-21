@@ -12,12 +12,10 @@ import {
   ShoppingBag,
   ShieldCheck,
   ChevronRight,
-  TrendingUp,
   MessageCircle,
   AlertCircle,
 } from "lucide-react";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 interface PageProps {
@@ -54,28 +52,28 @@ export default function OrderDetailPage({ params }: PageProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="w-16 h-16 border-4 border-indigo-600/20 border-t-indigo-600 rounded-full animate-spin"></div>
+      <div className="min-h-screen bg-[#f2f2f2] flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-red-500/20 border-t-red-500 rounded-full animate-spin"></div>
       </div>
     );
   }
 
   if (error || !order) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
-        <div className="max-w-md w-full bg-white p-12 rounded-[3.5rem] border border-gray-100 text-center shadow-xl shadow-gray-200/50">
-          <div className="w-20 h-20 bg-rose-50 text-rose-500 rounded-3xl flex items-center justify-center mx-auto mb-8">
-            <AlertCircle className="w-10 h-10" />
+      <div className="min-h-screen bg-[#f2f2f2] flex items-center justify-center p-6">
+        <div className="max-w-md w-full bg-white p-8 rounded-lg border border-gray-200 text-center shadow-sm">
+          <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
+            <AlertCircle className="w-8 h-8" />
           </div>
-          <h1 className="text-3xl font-black text-gray-900 tracking-tighter mb-4 italic">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
             Order Not Found
           </h1>
-          <p className="text-gray-400 font-bold mb-10 leading-relaxed">
+          <p className="text-gray-500 font-medium mb-8">
             {error}
           </p>
           <Link
             href="/orders"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-gray-900 text-white rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-indigo-600 transition-all"
+            className="inline-flex items-center justify-center gap-2 w-full py-3 bg-red-600 text-white rounded-md font-bold hover:bg-red-700 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Orders
@@ -91,54 +89,52 @@ export default function OrderDetailPage({ params }: PageProps) {
   const finalIndex = currentStatusIndex === -1 ? 0 : currentStatusIndex;
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] pb-24">
-      {/* Dynamic Header */}
-      <nav className="sticky top-0 w-full z-50 bg-white/80 backdrop-blur-2xl border-b border-gray-50">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-4 text-xs font-black text-gray-400 uppercase tracking-widest">
+    <div className="min-h-screen bg-[#f2f2f2] pb-20">
+      {/* Breadcrumb / Top Bar */}
+      <div className="bg-white border-b border-gray-200 sticky top-0 z-40">
+        <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-2 text-sm text-gray-500 font-medium">
             <Link
               href="/orders"
-              className="hover:text-indigo-600 transition-colors"
+              className="hover:text-red-600 transition-colors"
             >
-              Order Center
+              My Orders
             </Link>
-            <ChevronRight className="w-4 h-4 opacity-30" />
-            <span className="text-gray-900 italic tracking-tighter text-sm">
-              Order #TR-{order.id.toString().padStart(6, "0")}
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-gray-900 font-semibold truncate max-w-[200px]">
+              Order #TR-{order.id.toString().padStart(8, "0")}
             </span>
           </div>
-          <button className="px-6 py-2.5 bg-indigo-50 text-indigo-600 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all">
+          <button className="px-4 py-1.5 border border-gray-300 text-gray-700 rounded-md text-sm font-bold hover:bg-gray-50 transition-colors">
             Support
           </button>
         </div>
-      </nav>
+      </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-12 lg:py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Main Info */}
-          <div className="lg:col-span-8 space-y-10">
+          <div className="lg:col-span-8 space-y-6">
             {/* Tracking Status */}
-            <div className="bg-white p-10 rounded-[3.5rem] border border-gray-100 shadow-[0_20px_50px_rgba(0,0,0,0.02)]">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-16">
+            <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                 <div>
-                  <h2 className="text-xs font-black text-indigo-600 uppercase tracking-[0.3em] mb-2 italic">
-                    Logistics Status
+                  <h2 className="text-lg font-bold text-gray-900">
+                    Order Status
                   </h2>
-                  <h3 className="text-4xl font-black text-gray-900 tracking-tighter italic">
-                    Tracking <span className="text-gray-400">Timeline</span>
-                  </h3>
+                  <p className="text-sm text-gray-500">
+                    Track the progress of your package
+                  </p>
                 </div>
-                <div className="flex items-center gap-4 px-6 py-3 bg-gray-50 rounded-2xl border border-gray-100">
-                  <Clock className="w-5 h-5 text-indigo-600" />
+                <div className="flex items-center gap-3 px-4 py-2 bg-gray-50 rounded-md border border-gray-200">
+                  <Clock className="w-5 h-5 text-gray-500" />
                   <div>
-                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-0.5">
+                    <p className="text-xs text-gray-500 font-semibold mb-0.5">
                       Estimated Arrival
                     </p>
-                    <p className="text-sm font-black text-gray-900 italic">
+                    <p className="text-sm font-bold text-gray-900">
                       {order.estimated_delivery_date
-                        ? new Date(
-                            order.estimated_delivery_date,
-                          ).toLocaleDateString()
+                        ? new Date(order.estimated_delivery_date).toLocaleDateString()
                         : "TBD"}
                     </p>
                   </div>
@@ -146,11 +142,11 @@ export default function OrderDetailPage({ params }: PageProps) {
               </div>
 
               {/* Tracking Visual */}
-              <div className="relative pt-12 pb-8">
-                <div className="absolute top-1/2 left-0 w-full h-1 bg-gray-50 -translate-y-1/2 hidden md:block">
+              <div className="relative pt-6 pb-4">
+                <div className="absolute top-1/2 left-0 w-full h-1 bg-gray-200 -translate-y-1/2 hidden md:block z-0">
                   <div
                     className={cn(
-                      "h-full bg-indigo-600 transition-all duration-1000",
+                      "h-full bg-red-500 transition-all duration-1000",
                       finalIndex === 0 && "w-0",
                       finalIndex === 1 && "w-1/3",
                       finalIndex === 2 && "w-2/3",
@@ -159,7 +155,7 @@ export default function OrderDetailPage({ params }: PageProps) {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-10 relative">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 relative z-10">
                   {statusSteps.map((step, idx) => {
                     const isCompleted = idx <= finalIndex;
                     const isCurrent = idx === finalIndex;
@@ -167,19 +163,19 @@ export default function OrderDetailPage({ params }: PageProps) {
                     return (
                       <div
                         key={step.id}
-                        className="flex flex-col items-center text-center space-y-4"
+                        className="flex flex-col items-center text-center space-y-3 bg-white px-2 py-1"
                       >
                         <div
                           className={cn(
-                            "w-16 h-16 rounded-[1.5rem] flex items-center justify-center transition-all duration-500 relative z-10",
+                            "w-12 h-12 rounded-full flex items-center justify-center transition-all duration-500 border-4 border-white",
                             isCompleted
-                              ? "bg-indigo-600 text-white shadow-xl shadow-indigo-100 ring-8 ring-white"
-                              : "bg-gray-50 text-gray-300 ring-8 ring-white",
+                              ? "bg-red-500 text-white"
+                              : "bg-gray-100 text-gray-400",
                           )}
                         >
                           <step.icon
                             className={cn(
-                              "w-7 h-7",
+                              "w-5 h-5",
                               isCurrent && "animate-pulse",
                             )}
                           />
@@ -187,15 +183,15 @@ export default function OrderDetailPage({ params }: PageProps) {
                         <div>
                           <p
                             className={cn(
-                              "text-[10px] font-black uppercase tracking-widest",
-                              isCompleted ? "text-indigo-600" : "text-gray-300",
+                              "text-xs font-bold",
+                              isCompleted ? "text-gray-900" : "text-gray-400",
                             )}
                           >
                             {step.label}
                           </p>
                           {isCurrent && (
-                            <p className="text-[9px] font-black text-emerald-500 uppercase mt-1 animate-bounce">
-                              Active
+                            <p className="text-[10px] font-bold text-red-500 uppercase mt-0.5">
+                              Current
                             </p>
                           )}
                         </div>
@@ -207,35 +203,35 @@ export default function OrderDetailPage({ params }: PageProps) {
             </div>
 
             {/* Items List */}
-            <div className="bg-white rounded-[3.5rem] border border-gray-100 shadow-[0_20px_50px_rgba(0,0,0,0.02)] overflow-hidden">
-              <div className="p-10 border-b border-gray-50 bg-gray-50/20">
-                <h3 className="text-2xl font-black text-gray-900 tracking-tighter italic">
-                  Package <span className="text-gray-400">Contents</span>
+            <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-200 bg-gray-50 flex items-center justify-between">
+                <h3 className="text-base font-bold text-gray-900">
+                  Package Contents
                 </h3>
               </div>
-              <div className="p-10 divide-y divide-gray-50">
+              <div className="divide-y divide-gray-100 p-6">
                 {order.items?.map((item: any) => (
                   <div
                     key={item.id}
-                    className="py-8 first:pt-0 last:pb-0 flex gap-8 group"
+                    className="py-4 first:pt-0 last:pb-0 flex gap-4"
                   >
-                    <div className="w-24 h-24 bg-gray-50 border border-gray-100 rounded-[2rem] flex items-center justify-center text-indigo-600 font-black italic shadow-inner group-hover:scale-105 transition-transform duration-500">
+                    <div className="w-20 h-20 bg-gray-50 border border-gray-200 rounded-md flex items-center justify-center text-gray-400 font-bold">
                       {item.product_name?.[0] || "P"}
                     </div>
-                    <div className="flex-1 space-y-2">
+                    <div className="flex-1 space-y-1">
                       <div className="flex justify-between items-start">
-                        <h4 className="text-lg font-black text-gray-900 italic tracking-tight">
+                        <h4 className="text-sm font-semibold text-gray-900 line-clamp-2 pr-4">
                           {item.product_name}
                         </h4>
-                        <p className="text-xl font-black text-gray-900 tracking-tighter">
+                        <p className="text-base font-bold text-gray-900">
                           ${parseFloat(item.price_at_purchase).toFixed(2)}
                         </p>
                       </div>
-                      <div className="flex items-center gap-6">
-                        <div className="px-3 py-1 bg-gray-50 rounded-lg text-[10px] font-black text-gray-400 uppercase tracking-widest border border-gray-100">
+                      <div className="flex items-center gap-4 text-xs text-gray-500">
+                        <div className="font-semibold text-gray-700">
                           Qty: {item.quantity}
                         </div>
-                        <p className="text-xs font-bold text-gray-400">
+                        <p>
                           SKU: TR-PROD-{item.product}
                         </p>
                       </div>
@@ -247,84 +243,74 @@ export default function OrderDetailPage({ params }: PageProps) {
           </div>
 
           {/* Sidebar */}
-          <div className="lg:col-span-4 space-y-8">
+          <div className="lg:col-span-4 space-y-6">
             {/* Purchase Summary */}
-            <div className="bg-gray-900 p-10 rounded-[3rem] text-white shadow-2xl shadow-indigo-100/20">
-              <div className="space-y-4 mb-10 pb-10 border-b border-white/10">
-                <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">
-                  Financial Summary
-                </p>
-                <div className="flex justify-between items-center text-lg italic">
-                  <span className="text-gray-500 font-bold">Total Items</span>
-                  <span className="font-black tracking-tighter">
+            <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+              <h3 className="text-base font-bold text-gray-900 mb-4 border-b border-gray-100 pb-2">
+                Order Summary
+              </h3>
+              
+              <div className="space-y-3 mb-4 pb-4 border-b border-gray-100 text-sm">
+                <div className="flex justify-between items-center text-gray-600">
+                  <span>Total Items</span>
+                  <span className="font-semibold text-gray-900">
                     {order.items?.length || 0}
                   </span>
                 </div>
-                <div className="flex justify-between items-center text-lg italic">
-                  <span className="text-gray-500 font-bold">Subtotal</span>
-                  <span className="font-black tracking-tighter">
+                <div className="flex justify-between items-center text-gray-600">
+                  <span>Subtotal</span>
+                  <span className="font-semibold text-gray-900">
                     ${parseFloat(order.total_amount).toFixed(2)}
                   </span>
                 </div>
-                <div className="flex justify-between items-center text-lg italic">
-                  <span className="text-gray-500 font-bold">
-                    Applied Gateway
-                  </span>
-                  <span className="text-xs font-black uppercase tracking-widest text-indigo-400">
+                <div className="flex justify-between items-center text-gray-600">
+                  <span>Payment Method</span>
+                  <span className="font-semibold text-gray-900">
                     {order.payment_gateway}
                   </span>
                 </div>
               </div>
 
-              <div className="flex justify-between items-end">
-                <div>
-                  <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-1">
-                    Total Paid
-                  </p>
-                  <p className="text-4xl font-black italic tracking-tighter text-white">
-                    ${parseFloat(order.total_amount).toFixed(2)}
-                  </p>
-                </div>
-                <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-indigo-400">
-                  <TrendingUp className="w-6 h-6" />
-                </div>
+              <div className="flex justify-between items-center mb-6">
+                <span className="text-base font-bold text-gray-900">
+                  Total Paid
+                </span>
+                <span className="text-2xl font-black text-red-600">
+                  ${parseFloat(order.total_amount).toFixed(2)}
+                </span>
               </div>
             </div>
 
             {/* Shipping Details */}
-            <div className="bg-white p-10 rounded-[3rem] border border-gray-100 shadow-sm space-y-8">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600">
-                  <MapPin className="w-6 h-6" />
-                </div>
+            <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm space-y-6">
+              <div className="flex items-start gap-3">
+                <MapPin className="w-5 h-5 text-gray-500 mt-0.5" />
                 <div>
-                  <h3 className="text-xs font-black text-indigo-600 uppercase tracking-widest mb-0.5 italic">
-                    Shipping To
+                  <h3 className="text-sm font-bold text-gray-900 mb-1">
+                    Shipping Address
                   </h3>
-                  <p className="text-sm font-black text-gray-900 italic">
-                    User Address Point
+                  <p className="text-sm text-gray-600">
+                    User Address Point (Saved Address)
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600">
-                  <ShieldCheck className="w-6 h-6" />
-                </div>
+              <div className="flex items-start gap-3">
+                <ShieldCheck className="w-5 h-5 text-gray-500 mt-0.5" />
                 <div>
-                  <h3 className="text-xs font-black text-indigo-600 uppercase tracking-widest mb-0.5 italic">
-                    Order Security
+                  <h3 className="text-sm font-bold text-gray-900 mb-1">
+                    Payment Security
                   </h3>
-                  <p className="text-xs font-bold text-gray-400">
+                  <p className="text-sm text-gray-600">
                     Encrypted transaction verified via {order.payment_gateway}
                   </p>
                 </div>
               </div>
 
-              <div className="pt-8 border-t border-gray-50">
-                <button className="w-full py-4 bg-gray-50 hover:bg-gray-100 rounded-2xl text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center justify-center gap-2 group">
-                  <MessageCircle className="w-4 h-4 group-hover:rotate-12 transition-transform" />
-                  Message Vendor
+              <div className="pt-4 border-t border-gray-100">
+                <button className="w-full py-2 bg-white border border-gray-300 hover:bg-gray-50 rounded-md text-sm font-bold text-gray-700 transition-colors flex items-center justify-center gap-2">
+                  <MessageCircle className="w-4 h-4" />
+                  Contact Seller
                 </button>
               </div>
             </div>
